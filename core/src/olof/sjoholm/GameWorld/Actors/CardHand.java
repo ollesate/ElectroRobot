@@ -13,19 +13,25 @@ import olof.sjoholm.Interfaces.ICardHand;
  */
 
 public class CardHand extends Group implements ICardHand {
-    private final List<Card> cards;
+    private final List<BaseCard> cards;
 
     public CardHand() {
-        cards = new ArrayList<Card>();
+        cards = new ArrayList<BaseCard>();
         setScale(0.5f);
     }
 
     @Override
     public void createRandomCard(olof.sjoholm.Interfaces.MovableToken movableToken) {
-        addCard(new Card(movableToken));
+        BaseCard card;
+        if (Math.random() > 0.75f) {
+            card = new MoveCard(movableToken);
+        } else {
+            card = new RotateCard(movableToken);
+        }
+        addCard(card);
     }
 
-    private void addCard(Card card) {
+    private void addCard(BaseCard card) {
         cards.add(card);
 
         card.setX(cards.indexOf(card) * 45);

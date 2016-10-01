@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
+import olof.sjoholm.GameWorld.Utils.Rotation;
 import olof.sjoholm.GameWorld.Utils.TankAnimation;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.IGameBoard;
@@ -79,14 +80,29 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
         setBoardX(getBoardX() + direction.x * actualSteps);
         setBoardY(getBoardY() + direction.y * actualSteps);
 
-        setColor(Color.BLUE);
-
         SequenceAction moveSequence = Actions.sequence(
                 getMovementSequence(actualSteps, direction),
                 getWaitSequence(waitSteps),
                 finishedAction
         );
         addAction(moveSequence);
+    }
+
+    @Override
+    public void rotate(Rotation rotation, Callback finishedCallback) {
+        this.finishedCallback = finishedCallback;
+        setAnimating(true);
+
+        SequenceAction sequence = Actions.sequence(
+                Actions.rotateBy(
+                        rotation.degrees,
+                        stepSpeed * rotation.duration,
+                        Interpolation.linear
+                ),
+                Actions.delay(stepDelay),
+                finishedAction
+        );
+        addAction(sequence);
     }
 
     private Action getMovementSequence(int steps, Direction direction) {

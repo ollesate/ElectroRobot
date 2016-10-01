@@ -56,15 +56,4 @@ public class CardUtil {
         return cards;
     }
 
-    public static void select(List<ICard> cards) {
-        for (ICard card : cards) {
-            card.select();
-        }
-    }
-
-    public static void unselect(List<ICard> cards) {
-        for (ICard card : cards) {
-            card.unselect();
-        }
-    }
 }

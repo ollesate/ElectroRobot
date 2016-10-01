@@ -3,7 +3,7 @@ package olof.sjoholm.Interfaces;
 /**
  * Created by sjoholm on 27/09/16.
  */
-public interface ICard extends ICardView {
+public interface ICard {
 
     void playCard(Callback finishedCallback);
 
@@ -11,9 +11,4 @@ public interface ICard extends ICardView {
 
     void delete();
 
-    @Override
-    void select();
-
-    @Override
-    void unselect();
 }

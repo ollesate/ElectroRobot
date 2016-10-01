@@ -22,6 +22,10 @@ public class Textures {
     public static SpriteSheetRegion TILE;
     public static Texture spritesheet;
 
+    public static Texture rotate_left;
+    public static Texture rotate_right;
+    public static Texture rotate_uturn;
+
     Textures() {
 
     }
@@ -38,6 +42,10 @@ public class Textures {
         down = new Texture("down.png");
         left = new Texture("left.png");
         right = new Texture("right.png");
+
+        rotate_left = new Texture("rotate_left.png");
+        rotate_right = new Texture("rotate_right.png");
+        rotate_uturn = new Texture("uturn.png");
 
         spritesheet = new Texture("spritesheet.png");
         

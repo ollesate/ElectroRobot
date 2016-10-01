@@ -28,6 +28,8 @@ public class TankAnimation implements Drawable {
             regions[i] = getFrame(i);
         }
 
+        actor.setOrigin(Constants.STEP_SIZE / 2, Constants.STEP_SIZE / 2);
+
         animation = new Animation(frameDuration, regions);
     }
 
@@ -60,6 +62,10 @@ public class TankAnimation implements Drawable {
         batch.draw(
                 animation.getKeyFrame(duration, true),
                 actor.getX(), actor.getY(),
-                actor.getWidth(), actor.getHeight());
+                actor.getOriginX(), actor.getOriginY(),
+                actor.getWidth(), actor.getHeight(),
+                actor.getScaleX(), actor.getScaleY(),
+                actor.getRotation()
+                );
     }
 }
