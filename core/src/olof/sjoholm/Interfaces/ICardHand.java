@@ -1,6 +1,4 @@
-package olof.sjoholm.GameLogic;
-
-import olof.sjoholm.GameWorld.Actors.MovableToken;
+package olof.sjoholm.Interfaces;
 
 /**
  * Created by sjoholm on 27/09/16.

@@ -7,20 +7,41 @@ import com.badlogic.gdx.graphics.Texture;
  */
 
 public class Textures {
-    public static final Texture origTexture = new Texture("badlogic.jpg");
-    public static final Texture one = new Texture("one.png");
-    public static final Texture two = new Texture("two.png");
-    public static final Texture three = new Texture("three.png");
-    public static final Texture four = new Texture("four.png");
-    public static final Texture five = new Texture("five.png");
+    public static Texture origTexture;
+    public static Texture one;
+    public static Texture two;
+    public static Texture three;
+    public static Texture four;
+    public static Texture five;
 
-    public static final Texture up = new Texture("up.png");
-    public static final Texture down = new Texture("down.png");
-    public static final Texture left = new Texture("left.png");
-    public static final Texture right = new Texture("right.png");
+    public static Texture up;
+    public static Texture down;
+    public static Texture left;
+    public static Texture right;
 
-    public Textures() {
+    public static SpriteSheetRegion TILE;
+    public static Texture spritesheet;
 
+    Textures() {
+
+    }
+
+    public static void initialize() {
+        origTexture = new Texture("badlogic.jpg");
+        one = new Texture("one.png");
+        two = new Texture("two.png");
+        three = new Texture("three.png");
+        four = new Texture("four.png");
+        five = new Texture("five.png");
+
+        up = new Texture("up.png");
+        down = new Texture("down.png");
+        left = new Texture("left.png");
+        right = new Texture("right.png");
+
+        spritesheet = new Texture("spritesheet.png");
+        
+        TILE = new SpriteSheetRegion(spritesheet, 1, 0);;
     }
 
     public static void dispose() {
@@ -34,5 +55,6 @@ public class Textures {
         down.dispose();
         left.dispose();
         right.dispose();
+        spritesheet.dispose();
     }
 }

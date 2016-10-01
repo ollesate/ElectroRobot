@@ -1,21 +1,19 @@
-package olof.sjoholm.GameLogic;
+package olof.sjoholm.GameWorld.Actors;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
-import olof.sjoholm.GameWorld.Actors.BaseActor;
-import olof.sjoholm.GameWorld.Actors.Direction;
-import olof.sjoholm.GameWorld.Actors.ICardView;
-import olof.sjoholm.GameWorld.Actors.MovableToken;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
+import olof.sjoholm.GameWorld.Utils.Direction;
+import olof.sjoholm.Interfaces.Callback;
+import olof.sjoholm.Interfaces.MovableToken;
 
 /**
  * Created by sjoholm on 24/09/16.
  */
-public class Card extends Group implements ICard {
-    private MovableToken movableToken;
+public class Card extends Group implements olof.sjoholm.Interfaces.ICard {
+    private olof.sjoholm.Interfaces.MovableToken movableToken;
     private int steps;
     private Direction direction;
 
@@ -38,7 +36,7 @@ public class Card extends Group implements ICard {
     }
 
     @Override
-    public void playCard(final Callback callback) {
+    public void playCard(final olof.sjoholm.Interfaces.Callback callback) {
         select();
         movableToken.move(steps, direction, new Callback() {
             @Override

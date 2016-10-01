@@ -1,6 +1,5 @@
 package olof.sjoholm.GameLogic;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
@@ -13,11 +12,11 @@ import olof.sjoholm.GameWorld.Utils.CardUtil;
  * @author sjoholm
  */
 public class GameManager {
-    private IGameBoard gameBoard;
+    private olof.sjoholm.Interfaces.IGameBoard gameBoard;
 
     private List<Player> players = new ArrayList<Player>();
 
-    public GameManager(IGameBoard gameBoard) {
+    public GameManager(olof.sjoholm.Interfaces.IGameBoard gameBoard) {
         this.gameBoard = gameBoard;
         setupBoard();
         startGame();
@@ -47,7 +46,7 @@ public class GameManager {
 
     private void startTurn() {
         dealCards();
-        playRoundsUntilFinished(new Callback() {
+        playRoundsUntilFinished(new olof.sjoholm.Interfaces.Callback() {
             @Override
             public void callback() {
                 onTurnFinished();
@@ -60,11 +59,11 @@ public class GameManager {
         startTurn();
     }
 
-    private void playRoundsUntilFinished(final Callback onFinished) {
-        List<ICard> cards = CardUtil.popTopCards(players);
+    private void playRoundsUntilFinished(final olof.sjoholm.Interfaces.Callback onFinished) {
+        List<olof.sjoholm.Interfaces.ICard> cards = CardUtil.popTopCards(players);
 
         if (cards.size() > 0) {
-            playRound(cards, new Callback() {
+            playRound(cards, new olof.sjoholm.Interfaces.Callback() {
                 @Override
                 public void callback() {
                     playRoundsUntilFinished(onFinished);
@@ -75,8 +74,8 @@ public class GameManager {
         }
     }
 
-    private void playRound(final List<ICard> cards, final Callback onFinished) {
-        CardSequence.playCards(cards, new Callback() {
+    private void playRound(final List<olof.sjoholm.Interfaces.ICard> cards, final olof.sjoholm.Interfaces.Callback onFinished) {
+        CardSequence.playCards(cards, new olof.sjoholm.Interfaces.Callback() {
             @Override
             public void callback() {
                 Gdx.app.log("Tag", "Round finished");

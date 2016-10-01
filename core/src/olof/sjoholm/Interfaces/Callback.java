@@ -1,4 +1,4 @@
-package olof.sjoholm.GameLogic;
+package olof.sjoholm.Interfaces;
 
 /**
  * Created by sjoholm on 26/09/16.

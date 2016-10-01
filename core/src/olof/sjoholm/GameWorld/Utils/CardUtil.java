@@ -5,9 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameLogic.ICard;
+import olof.sjoholm.Interfaces.ICard;
 import olof.sjoholm.GameLogic.Player;
-import olof.sjoholm.GameWorld.Actors.Direction;
 import olof.sjoholm.GameWorld.Assets.Textures;
 
 /**

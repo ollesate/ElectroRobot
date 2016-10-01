@@ -13,6 +13,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		Textures.initialize();
         gameScreen = new GameScreen();
 		batch = new SpriteBatch();
 	}

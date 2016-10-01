@@ -2,6 +2,7 @@ package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -11,6 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class BaseActor extends Actor {
     private Texture texture;
+    private Rectangle bounds;
+
+    {
+        bounds = new Rectangle();
+    }
 
     public BaseActor() {
 
@@ -43,6 +49,10 @@ public class BaseActor extends Actor {
             batch.setColor(getColor());
             batch.draw(texture, getX(), getY(), getWidth(), getHeight());
         }
+    }
+
+    public Rectangle getBounds() {
+        return bounds.set(getX(), getY(), getWidth(), getHeight());
     }
 
 }

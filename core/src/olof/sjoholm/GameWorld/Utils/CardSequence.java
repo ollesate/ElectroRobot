@@ -1,11 +1,9 @@
 package olof.sjoholm.GameWorld.Utils;
 
-import com.badlogic.gdx.Gdx;
-
 import java.util.List;
 
-import olof.sjoholm.GameLogic.Callback;
-import olof.sjoholm.GameLogic.ICard;
+import olof.sjoholm.Interfaces.Callback;
+import olof.sjoholm.Interfaces.ICard;
 
 /**
  * Created by sjoholm on 27/09/16.

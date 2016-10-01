@@ -5,7 +5,9 @@ package olof.sjoholm.GameWorld.Utils;
  */
 
 public class Constants {
-    public static final int ViewportWidth = 1000;
-    public static final int ViewportHeight = 500;
-    public static final int StepSize = 25;
+    public static final int WORLD_WIDTH = 1000;
+    public static final int WORLD_HEIGHT = 500;
+    public static final float STEP_SIZE = 32f;
+    public static final int IMMOBILE = 1;
+    public static final int OUT_OF_BOUNDS = -1;
 }

@@ -5,9 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameLogic.Card;
-import olof.sjoholm.GameLogic.ICard;
-import olof.sjoholm.GameLogic.ICardHand;
+import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ICardHand;
 
 /**
  * Created by sjoholm on 27/09/16.
@@ -18,10 +17,11 @@ public class CardHand extends Group implements ICardHand {
 
     public CardHand() {
         cards = new ArrayList<Card>();
+        setScale(0.5f);
     }
 
     @Override
-    public void createRandomCard(MovableToken movableToken) {
+    public void createRandomCard(olof.sjoholm.Interfaces.MovableToken movableToken) {
         addCard(new Card(movableToken));
     }
 

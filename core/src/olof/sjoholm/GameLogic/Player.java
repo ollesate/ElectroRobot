@@ -1,15 +1,16 @@
 package olof.sjoholm.GameLogic;
 
-import olof.sjoholm.GameWorld.Actors.MovableToken;
+import olof.sjoholm.Interfaces.*;
+import olof.sjoholm.Interfaces.ICard;
 
 /**
  * Created by sjoholm on 27/09/16.
  */
 public class Player {
-    private ICardHand cardHand;
+    private olof.sjoholm.Interfaces.ICardHand cardHand;
     private MovableToken movableToken;
 
-    public Player(MovableToken movableToken, ICardHand cardHand) {
+    public Player(MovableToken movableToken, olof.sjoholm.Interfaces.ICardHand cardHand) {
         this.cardHand = cardHand;
         this.movableToken = movableToken;
     }

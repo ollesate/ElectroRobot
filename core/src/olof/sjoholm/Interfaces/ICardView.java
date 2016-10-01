@@ -1,4 +1,4 @@
-package olof.sjoholm.GameWorld.Actors;
+package olof.sjoholm.Interfaces;
 
 /**
  * Created by sjoholm on 25/09/16.
