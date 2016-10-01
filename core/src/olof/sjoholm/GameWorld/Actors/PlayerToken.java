@@ -7,10 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import olof.sjoholm.GameWorld.Utils.TextureDrawable;
+import olof.sjoholm.GameWorld.Utils.TankAnimation;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.IGameBoard;
-import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.Interfaces.MovableToken;
@@ -20,15 +19,15 @@ import olof.sjoholm.Interfaces.MovableToken;
  */
 public class PlayerToken extends GameBoardActor implements MovableToken {
     private float stepSize = Constants.STEP_SIZE;
-    private float stepDelay = .75f;
-    private float stepSpeed = .25f;
+    private float stepDelay = .25f;
+    private float stepSpeed = .75f;
     private Callback finishedCallback;
-    private Vector2 currentMovement;
     private IGameBoard gameBoard;
+    private TankAnimation tankAnimation;
 
     {
-        currentMovement = new Vector2();
-        setDrawable(new TextureDrawable(this, Textures.origTexture));
+        tankAnimation = new TankAnimation(this);
+        setDrawable(tankAnimation);
         setSize(Constants.STEP_SIZE, Constants.STEP_SIZE);
     }
 
@@ -36,9 +35,24 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
         @Override
         public boolean act(float delta) {
             finishedCallback.callback();
-            currentMovement.setZero();
             setColor(Color.WHITE);
             setAnimating(false);
+            return true;
+        }
+    };
+
+    private final Action animationResumeAction = new Action() {
+        @Override
+        public boolean act(float delta) {
+            tankAnimation.resume();
+            return true;
+        }
+    };
+
+    private final Action animationPauseAction = new Action() {
+        @Override
+        public boolean act(float delta) {
+            tankAnimation.pause();
             return true;
         }
     };
@@ -103,12 +117,19 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
 
     private SequenceAction getSingleMoveSequence(Vector2 movement) {
         return Actions.sequence(
+                animationResumeAction,
                 Actions.moveBy(movement.x, movement.y, stepSpeed, Interpolation.linear),
+                animationPauseAction,
                 Actions.delay(stepDelay)
         );
     }
 
     private Action getSingleWaitSequence() {
-        return Actions.delay(stepDelay + stepSpeed);
+        return Actions.sequence(
+                animationResumeAction,
+                Actions.delay(stepSpeed),
+                animationPauseAction,
+                Actions.delay(stepDelay)
+        );
     }
 }
