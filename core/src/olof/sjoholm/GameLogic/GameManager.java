@@ -7,16 +7,19 @@ import java.util.List;
 
 import olof.sjoholm.GameWorld.Utils.CardSequence;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
+import olof.sjoholm.Interfaces.Callback;
+import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.IGameBoard;
 
 /**
  * @author sjoholm
  */
 public class GameManager {
-    private olof.sjoholm.Interfaces.IGameBoard gameBoard;
+    private IGameBoard gameBoard;
 
     private List<Player> players = new ArrayList<Player>();
 
-    public GameManager(olof.sjoholm.Interfaces.IGameBoard gameBoard) {
+    public GameManager(IGameBoard gameBoard) {
         this.gameBoard = gameBoard;
         setupBoard();
         startGame();
@@ -59,8 +62,8 @@ public class GameManager {
         startTurn();
     }
 
-    private void playRoundsUntilFinished(final olof.sjoholm.Interfaces.Callback onFinished) {
-        List<olof.sjoholm.Interfaces.ICard> cards = CardUtil.popTopCards(players);
+    private void playRoundsUntilFinished(final Callback onFinished) {
+        List<ICard> cards = CardUtil.popTopCards(players);
 
         if (cards.size() > 0) {
             playRound(cards, new olof.sjoholm.Interfaces.Callback() {
@@ -74,7 +77,7 @@ public class GameManager {
         }
     }
 
-    private void playRound(final List<olof.sjoholm.Interfaces.ICard> cards, final olof.sjoholm.Interfaces.Callback onFinished) {
+    private void playRound(final List<ICard> cards, final Callback onFinished) {
         CardSequence.playCards(cards, new olof.sjoholm.Interfaces.Callback() {
             @Override
             public void callback() {
