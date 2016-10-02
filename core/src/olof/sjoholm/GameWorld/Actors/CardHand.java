@@ -1,29 +1,32 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.utils.Queue;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import olof.sjoholm.GameWorld.Actors.Cards.BaseCard;
+import olof.sjoholm.GameWorld.Actors.Cards.MoveCard;
+import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.ICard;
 import olof.sjoholm.Interfaces.ICardHand;
+import olof.sjoholm.Interfaces.MovableToken;
 
 /**
  * Created by sjoholm on 27/09/16.
  */
 
-public class CardHand extends Group implements ICardHand {
-    private final List<BaseCard> cards;
+class CardHand extends Group implements ICardHand {
+    private final Queue<BaseCard> playableCards;
 
-    public CardHand() {
-        cards = new ArrayList<BaseCard>();
+    CardHand() {
+        playableCards = new Queue<BaseCard>();
         setScale(0.5f);
     }
 
     @Override
-    public void createRandomCard(olof.sjoholm.Interfaces.MovableToken movableToken) {
+    public void createRandomCard(MovableToken movableToken) {
         BaseCard card;
-        if (Math.random() > 0.75f) {
+        if (Math.random() > 0.25f) {
             card = new MoveCard(movableToken);
         } else {
             card = new RotateCard(movableToken);
@@ -32,25 +35,32 @@ public class CardHand extends Group implements ICardHand {
     }
 
     private void addCard(BaseCard card) {
-        cards.add(card);
+        playableCards.addLast(card);
 
-        card.setX(cards.indexOf(card) * 45);
+        int index = playableCards.size - 1;
+
+        card.setX(index * 45);
 
         addActor(card);
     }
 
     @Override
     public int size() {
-        return cards.size();
+        return playableCards.size;
     }
 
     @Override
     public ICard popTopCard() {
-        if (cards.size() > 0) {
-            ICard card = cards.get(0);
-            cards.remove(card);
+        if (playableCards.size > 0) {
+            ICard card = playableCards.removeFirst();;
             return card;
         }
         return null;
+    }
+
+    @Override
+    public void clearAllCards() {
+        playableCards.clear();
+        clearChildren();
     }
 }

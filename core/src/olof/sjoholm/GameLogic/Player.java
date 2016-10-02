@@ -16,6 +16,7 @@ public class Player {
     }
 
     public void dealFiveCards() {
+        cardHand.clearAllCards();
         for (int i = 0; i < 5; i++) {
             cardHand.createRandomCard(movableToken);
         }

@@ -1,4 +1,4 @@
-package olof.sjoholm.GameWorld.Actors;
+package olof.sjoholm.GameWorld.Actors.Cards;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -13,7 +13,7 @@ import olof.sjoholm.Interfaces.MovableToken;
  * Created by sjoholm on 01/10/16.
  */
 
-public class RotateCard extends BaseCard implements ICard {
+public class RotateCard extends olof.sjoholm.GameWorld.Actors.Cards.BaseCard implements ICard {
     private int priority;
     private MovableToken movableToken;
     private Rotation rotation;

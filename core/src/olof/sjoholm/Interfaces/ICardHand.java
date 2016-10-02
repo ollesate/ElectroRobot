@@ -11,4 +11,6 @@ public interface ICardHand {
 
     ICard popTopCard();
 
+    void clearAllCards();
+
 }

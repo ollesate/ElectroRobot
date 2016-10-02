@@ -12,29 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class BaseActor extends Actor {
     private Texture texture;
-    private Rectangle bounds;
-
-    {
-        bounds = new Rectangle();
-    }
-
-    public BaseActor() {
-
-    }
 
     public BaseActor(Texture texture) {
         setTexture(texture);
-    }
-
-    public BaseActor(Texture texture, float x, float y) {
-        setTexture(texture);
-        setX(x);
-        setY(y);
-    }
-
-    public void setPosition(Vector2 position) {
-        setX(position.x);
-        setY(position.y);
     }
 
     protected void setTexture(Texture texture) {
@@ -49,10 +29,6 @@ public class BaseActor extends Actor {
             batch.setColor(getColor());
             batch.draw(texture, getX(), getY(), getWidth(), getHeight());
         }
-    }
-
-    public Rectangle getBounds() {
-        return bounds.set(getX(), getY(), getWidth(), getHeight());
     }
 
 }

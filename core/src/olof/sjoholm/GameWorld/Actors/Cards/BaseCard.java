@@ -1,9 +1,10 @@
-package olof.sjoholm.GameWorld.Actors;
+package olof.sjoholm.GameWorld.Actors.Cards;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
+import olof.sjoholm.GameWorld.Actors.BaseActor;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.Interfaces.ICard;
 

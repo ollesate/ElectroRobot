@@ -1,8 +1,6 @@
-package olof.sjoholm.GameWorld.Actors;
+package olof.sjoholm.GameWorld.Actors.Cards;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import olof.sjoholm.GameWorld.Utils.CardUtil;
@@ -14,7 +12,7 @@ import olof.sjoholm.Interfaces.MovableToken;
 /**
  * Created by sjoholm on 24/09/16.
  */
-public class MoveCard extends BaseCard implements ICard {
+public class MoveCard extends olof.sjoholm.GameWorld.Actors.Cards.BaseCard implements ICard {
     private MovableToken movableToken;
     private int steps;
     private Direction direction;
