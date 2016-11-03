@@ -1,4 +1,4 @@
-package olof.sjoholm.GameWorld.Server.Lobby;
+package olof.sjoholm.GameWorld.Server.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Action;

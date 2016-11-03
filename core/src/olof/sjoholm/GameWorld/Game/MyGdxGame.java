@@ -6,7 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.GameWorld.Client.ScreenManager;
+import olof.sjoholm.GameWorld.Client.Screens.ScreenManager;
 import olof.sjoholm.GameWorld.Client.ClientGameHandler;
 import olof.sjoholm.GameWorld.Server.ServerGame;
 import olof.sjoholm.GameWorld.Utils.Logger;

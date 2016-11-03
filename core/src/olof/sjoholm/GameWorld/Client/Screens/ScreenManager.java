@@ -1,9 +1,7 @@
-package olof.sjoholm.GameWorld.Client;
+package olof.sjoholm.GameWorld.Client.Screens;
 
 import com.badlogic.gdx.Game;
 
-import olof.sjoholm.GameWorld.Client.Game.GameScreen;
-import olof.sjoholm.GameWorld.Client.Lobby.LobbyScreen;
 import olof.sjoholm.GameWorld.Utils.Logger;
 
 /**

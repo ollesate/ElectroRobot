@@ -1,4 +1,4 @@
-package olof.sjoholm.GameWorld.Server.Game;
+package olof.sjoholm.GameWorld.Server.Screens;
 
 
 import com.badlogic.gdx.math.Vector2;

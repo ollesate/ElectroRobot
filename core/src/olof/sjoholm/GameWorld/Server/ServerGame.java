@@ -3,8 +3,8 @@ package olof.sjoholm.GameWorld.Server;
 import com.badlogic.gdx.Game;
 
 import olof.sjoholm.GameWorld.Net.ServerConnection;
-import olof.sjoholm.GameWorld.Server.Game.GameScreen;
-import olof.sjoholm.GameWorld.Server.Lobby.LobbyScreen;
+import olof.sjoholm.GameWorld.Server.Screens.GameScreen;
+import olof.sjoholm.GameWorld.Server.Screens.LobbyScreen;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Both.Protocol;
