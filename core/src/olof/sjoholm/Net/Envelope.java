@@ -29,9 +29,12 @@ public class Envelope implements Serializable {
     }
 
     public static class Message extends Envelope {
+        private static final String type = Message.class.getSimpleName();
 
         public Message(String contents) {
-            super(contents, "String");
+            super(contents, type);
         }
     }
+
+
 }

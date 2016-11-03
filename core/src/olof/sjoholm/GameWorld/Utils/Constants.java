@@ -5,7 +5,7 @@ package olof.sjoholm.GameWorld.Utils;
  */
 
 public class Constants {
-    public static final int WORLD_WIDTH = 1000;
+    public static final int WORLD_WIDTH = 500;
     public static final int WORLD_HEIGHT = 500;
     public static final float STEP_SIZE = 32f;
     public static final int IMMOBILE = 1;

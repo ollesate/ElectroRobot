@@ -5,29 +5,40 @@ import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.ServerSocketHints;
 
-import java.io.IOException;
-
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Interfaces.Callback;
+import olof.sjoholm.Net.Both.*;
 import olof.sjoholm.Net.Envelope;
-import olof.sjoholm.Net.ServerConstants;
 
 /**
  * Created by sjoholm on 02/10/16.
  */
 
-public class Server implements IncomingConnectionListener.ConnectionListener {
-    private IncomingConnectionListener connectionListener;
-    private Client client;
+public class Server implements ConnectionWorker.ConnectionListener {
+    private ConnectionWorker connectionListener;
+    private ClientManager clientManager;
+    private Callback onConnectorsUpdated;
+    private final ThreadWorker threadWorker;
+    private OnClientStateUpdated clientStateUpdated;
 
-    public Server() {
+    public Server(String host, int port, final OnMessageListener onMessageListener,
+                  final OnClientStateUpdated clientStateUpdated) {
+        this.clientStateUpdated = clientStateUpdated;
         ServerSocket socket = Gdx.net.newServerSocket(
                 Net.Protocol.TCP,
-                ServerConstants.HOST_NAME,
-                ServerConstants.CONNECTION_PORT,
+                host,
+                port,
                 new ServerSocketHints()
         );
-        connectionListener = new IncomingConnectionListener(this, socket);
+        connectionListener = new ConnectionWorker(this, socket);
         connectionListener.start();
+        clientManager = new ClientManager(onMessageListener, new Client.OnDisconnectedListener() {
+            @Override
+            public void onDisconnected(Client client) {
+                Server.this.onDisconnected(client);
+            }
+        });
+        threadWorker = new ThreadWorker();
+        threadWorker.start();
     }
 
     public void stop() {
@@ -36,14 +47,38 @@ public class Server implements IncomingConnectionListener.ConnectionListener {
 
     @Override
     public void onNewConnection(Client client) {
-        this.client = client;
         client.sendData(new Envelope.Message("Welcome my friend. :)"));
+        clientManager.addClient(client);
+
+        clientStateUpdated.onClientConnected(client);
+
+        if (onConnectorsUpdated != null) {
+            onConnectorsUpdated.callback();
+        }
     }
 
-    public void broadcast(String broadcast) {
-        Logger.d("Broadcast: " + broadcast);
-        client.sendData(new Envelope.Message(broadcast));
+    private void onDisconnected(Client client) {
+        clientStateUpdated.onClientDisconnected(client);
+
+        if (onConnectorsUpdated != null) {
+            onConnectorsUpdated.callback();
+        }
     }
 
+    public int getConnectedClientsSize() {
+        return clientManager.getClientsSize();
+    }
 
+    public void setOnConnectorsUpdated(Callback onConnectorsUpdated) {
+        this.onConnectorsUpdated = onConnectorsUpdated;
+    }
+
+    public void sendData(final Envelope envelope) {
+        threadWorker.execute(new Runnable() {
+            @Override
+            public void run() {
+                clientManager.broadcast(envelope);
+            }
+        });
+    }
 }

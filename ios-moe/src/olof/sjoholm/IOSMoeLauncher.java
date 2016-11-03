@@ -3,7 +3,7 @@ package olof.sjoholm;
 import com.badlogic.gdx.backends.iosmoe.IOSApplication;
 import com.badlogic.gdx.backends.iosmoe.IOSApplicationConfiguration;
 import org.moe.natj.general.Pointer;
-import olof.sjoholm.GameWorld.GameManagers.MyGdxGame;
+import olof.sjoholm.GameWorld.Game.MyGdxGame;
 
 import ios.foundation.NSAutoreleasePool;
 import ios.uikit.c.UIKit;

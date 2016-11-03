@@ -1,4 +1,4 @@
-package olof.sjoholm.Net.Server;
+package olof.sjoholm.Net.Both;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
@@ -21,6 +21,8 @@ public class Client {
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream objectInputStream;
+    private OnMessageListener onMessageListener;
+    private OnDisconnectedListener onDisconnectedListener;
 
 
     public Client(Socket socket) {
@@ -37,7 +39,6 @@ public class Client {
                 new SocketHints()
         );
         initializeSockets();
-        read();
     }
 
     private void initializeSockets() {
@@ -57,7 +58,7 @@ public class Client {
         }
     }
 
-    public void read() {
+    public void startReading() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -68,14 +69,15 @@ public class Client {
                         try{
                             Envelope envelope = (Envelope) objectInputStream.readObject();
                             Logger.d("Read message " + envelope.toString());
+                            onMessageListener.onMessage(Client.this, envelope);
                         } catch (EOFException e) {
-                            e.printStackTrace();
                             isOpen = false;
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
                     }
                     objectInputStream.close();
+                    onDisconnectedListener.onDisconnected(Client.this);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -83,4 +85,19 @@ public class Client {
             }
         }).start();
     }
+
+    public void setOnMessageListener(OnMessageListener onMessageListener) {
+        this.onMessageListener = onMessageListener;
+    }
+
+    public void setOnDisconnectedListener(OnDisconnectedListener onDisconnectedListener) {
+        this.onDisconnectedListener = onDisconnectedListener;
+    }
+
+    public interface OnDisconnectedListener {
+
+        void onDisconnected(Client client);
+
+    }
+
 }

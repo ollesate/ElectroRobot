@@ -6,10 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.GameManagers.GameScreen;
+import olof.sjoholm.GameWorld.Server.Game.GameScreen;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.Direction;
-import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.ICardHand;
 import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.MovableToken;

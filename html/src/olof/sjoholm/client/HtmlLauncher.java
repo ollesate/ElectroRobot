@@ -5,7 +5,7 @@ import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 
 import olof.sjoholm.GameWorld.Utils.Constants;
-import olof.sjoholm.GameWorld.GameManagers.MyGdxGame;
+import olof.sjoholm.GameWorld.Game.MyGdxGame;
 
 public class HtmlLauncher extends GwtApplication {
 
