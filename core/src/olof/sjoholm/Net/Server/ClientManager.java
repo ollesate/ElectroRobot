@@ -14,7 +14,7 @@ import olof.sjoholm.Net.Envelope;
 
 class ClientManager {
     private final List<olof.sjoholm.Net.Both.Client> clients;
-    private Long counter;
+    private Long counter = 0L;
 
     ClientManager() {
         clients = new ArrayList<olof.sjoholm.Net.Both.Client>();

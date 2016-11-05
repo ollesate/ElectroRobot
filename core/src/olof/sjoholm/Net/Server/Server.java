@@ -10,6 +10,7 @@ import java.util.List;
 
 import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
 import olof.sjoholm.GameWorld.Net.ServerApi;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Envelope;
@@ -30,26 +31,19 @@ public class Server implements IncomingConnectionsWorker.ConnectionListener, Ser
 
         clients = new ClientManager();
 
-        initIncomingConnectionsWorker();
-        initMessageWorker();
-    }
-
-    public void start() {
         socket = Gdx.net.newServerSocket(
                 Net.Protocol.TCP,
                 host,
                 port,
                 new ServerSocketHints()
         );
-    }
 
-    private void initIncomingConnectionsWorker() {
         incomingConnectionsWorker = new IncomingConnectionsWorker(this, socket);
-        incomingConnectionsWorker.start();
+        messageThreadWorker = new MessageThreadWorker();
     }
 
-    private void initMessageWorker() {
-        messageThreadWorker = new MessageThreadWorker();
+    public void start() {
+        incomingConnectionsWorker.start();
         messageThreadWorker.start();
     }
 
@@ -60,7 +54,7 @@ public class Server implements IncomingConnectionsWorker.ConnectionListener, Ser
     @Override
     public void onNewConnection(Client client) {
         clients.addClientAndAssignId(client);
-        sendMessage(new Envelope.ClientConnection(client), client.getId());
+        onMessageReceived(new Envelope.ClientConnection(client), client.getId());
         // Send a welcome with its id
         client.sendData(new Envelope.Welcome(client.getId()));
         client.setOnMessageListener(new OnMessageListener() {

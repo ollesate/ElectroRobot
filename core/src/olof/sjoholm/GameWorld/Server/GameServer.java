@@ -1,9 +1,12 @@
 package olof.sjoholm.GameWorld.Server;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Stack;
 
 import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
 import olof.sjoholm.Interfaces.ICard;
@@ -44,7 +47,7 @@ public class GameServer implements PlayerManager {
         }
     }
 
-    private static class PlayerApi implements Player {
+    private static class PlayerApi extends PlayerCardManager {
         private Client client;
 
         PlayerApi(Client client) {
@@ -53,6 +56,7 @@ public class GameServer implements PlayerManager {
 
         @Override
         public void dealCards(List<ICard> cards) {
+            super.dealCards(cards);
             client.sendData(new Envelope.SendCards(cards));
         }
 
@@ -63,6 +67,7 @@ public class GameServer implements PlayerManager {
                 public void onResponse(Envelope envelope) {
                     if (envelope instanceof Envelope.SendCards) {
                         List<ICard> cards = envelope.getContents(List.class);
+                        PlayerApi.super.updateCards(cards);
                         onCardsReceivedListener.onCardsReceived(cards);
                     } else {
                         throw new IllegalStateException(
@@ -75,4 +80,31 @@ public class GameServer implements PlayerManager {
         }
     }
 
+    private abstract static class PlayerCardManager implements Player {
+        private Queue<ICard> cards;
+
+        {
+            cards = new ArrayDeque<ICard>();
+        }
+
+        @Override
+        public void dealCards(List<ICard> cards) {
+            updateCards(cards);
+        }
+
+        private void updateCards(List<ICard> cards) {
+            this.cards.clear();
+            this.cards.addAll(cards);
+        }
+
+        @Override
+        public boolean hasCards() {
+            return cards.size() > 0;
+        }
+
+        @Override
+        public ICard popTopCard() {
+            return cards.poll();
+        }
+    }
 }

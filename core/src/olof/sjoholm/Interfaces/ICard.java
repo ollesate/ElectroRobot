@@ -1,6 +1,8 @@
 package olof.sjoholm.Interfaces;
 
-public interface ICard {
+import java.io.Serializable;
+
+public interface ICard extends Serializable {
 
     // Used for making an action on server side
     void apply(MovableToken movableToken, Callback finishedCallback);

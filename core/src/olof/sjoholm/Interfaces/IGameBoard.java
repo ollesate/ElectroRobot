@@ -1,5 +1,6 @@
 package olof.sjoholm.Interfaces;
 
+import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Direction;
 
 /**
@@ -8,11 +9,11 @@ import olof.sjoholm.GameWorld.Utils.Direction;
 
 public interface IGameBoard {
 
-    MovableToken spawnToken(int site);
+    void spawnToken(Player owner);
 
-    ICardHand spawnCardHand(int site);
+    MovableToken getToken(Player owner);
 
-    int getMapTile(int x, int y);
+    int isTileAvailable(int x, int y);
 
     int getPossibleSteps(Direction direction, int x, int y);
 

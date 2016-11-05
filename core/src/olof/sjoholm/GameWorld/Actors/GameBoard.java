@@ -3,13 +3,12 @@ package olof.sjoholm.GameWorld.Actors;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import olof.sjoholm.GameWorld.Server.Screens.GameScreen;
+import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.Direction;
-import olof.sjoholm.Interfaces.ICardHand;
 import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.MovableToken;
 
@@ -18,8 +17,8 @@ import olof.sjoholm.Interfaces.MovableToken;
  */
 public class GameBoard extends Group implements IGameBoard {
     public static final int size = 30;
-    private List<PlayerToken> tokens;
     private Stage stage;
+    private Map<Player, MovableToken> playerTokens;
 
     private int[][] map = new int[][]{
             {0, 0, 0, 0, 0},
@@ -30,7 +29,7 @@ public class GameBoard extends Group implements IGameBoard {
     public GameBoard(Stage stage) {
         reset();
         this.stage = stage;
-        tokens = new ArrayList<PlayerToken>();
+        playerTokens = new HashMap<Player, MovableToken>();
         setPosition(200, 50);
 
         if (stage != null) {
@@ -41,12 +40,6 @@ public class GameBoard extends Group implements IGameBoard {
             }
         }
     }
-
-    public void addPlayerToken(PlayerToken playerToken) {
-        tokens.add(playerToken);
-        addActor(playerToken);
-    }
-
 
     public int getMapWidth() {
         return map[0].length;
@@ -61,9 +54,9 @@ public class GameBoard extends Group implements IGameBoard {
     }
 
     @Override
-    public MovableToken spawnToken(int site) {
+    public void spawnToken(Player owner) {
         PlayerToken playerToken = new PlayerToken(this);
-        if (site == 0) {
+        if (playerTokens.size() == 0) {
             playerToken.setBoardX(0);
             playerToken.setBoardY(0);
         } else {
@@ -71,20 +64,17 @@ public class GameBoard extends Group implements IGameBoard {
             playerToken.setBoardY(0);
         }
 
-        addPlayerToken(playerToken);
-        return playerToken;
+        playerTokens.put(owner, playerToken);
+        addActor(playerToken);
     }
 
     @Override
-    public ICardHand spawnCardHand(int site) {
-        CardHand cardHand = new CardHand();
-        cardHand.setPosition(GameScreen.handSites[site].x, GameScreen.handSites[site].y);
-        stage.addActor(cardHand);
-        return cardHand;
+    public MovableToken getToken(Player owner) {
+        return playerTokens.get(owner);
     }
 
     @Override
-    public int getMapTile(int x, int y) {
+    public int isTileAvailable(int x, int y) {
         if (outOfBorder(x, y)) {
             return -1;
         }
@@ -95,7 +85,7 @@ public class GameBoard extends Group implements IGameBoard {
     }
 
     private boolean playerInTile(int x, int y) {
-        for (MovableToken token : tokens) {
+        for (MovableToken token : playerTokens.values()) {
             if (token.getBoardX() == x && token.getBoardY() == y) {
                 return true;
             }
@@ -119,8 +109,8 @@ public class GameBoard extends Group implements IGameBoard {
 
         x += direction.x;
         y += direction.y;
-        while (getMapTile(x, y) != Constants.IMMOBILE &&
-                getMapTile(x, y) != Constants.OUT_OF_BOUNDS) {
+        while (isTileAvailable(x, y) != Constants.IMMOBILE &&
+                isTileAvailable(x, y) != Constants.OUT_OF_BOUNDS) {
             x += direction.x;
             y += direction.y;
             actualSteps++;

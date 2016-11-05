@@ -94,7 +94,7 @@ public class Client {
                     while (isOpen) {
                         try{
                             Envelope envelope = (Envelope) objectInputStream.readObject();
-                            if (envelope.getResponseId() == -1) {
+                            if (envelope.getResponseId() == -1L) {
                                 // Is not a response
                                 onMessage(envelope);
                             } else {

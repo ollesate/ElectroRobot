@@ -1,7 +1,11 @@
 package olof.sjoholm.GameWorld.Client;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
+import olof.sjoholm.GameWorld.Client.Screens.GameScreen;
+import olof.sjoholm.GameWorld.Client.Screens.IScreenManager;
+import olof.sjoholm.GameWorld.Client.Screens.LobbyScreen;
 import olof.sjoholm.GameWorld.Net.ClientConnection;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Net.Both.Protocol;
@@ -12,16 +16,19 @@ import olof.sjoholm.Net.Envelope;
  */
 
 public class ClientGameHandler {
-    private IScreenManager screenManager;
+    private Game game;
+    private final LobbyScreen lobbyScreen;
+    private final GameScreen gameScreen;
 
-    public ClientGameHandler(IScreenManager screenManager) {
-        this.screenManager = screenManager;
-
+    public ClientGameHandler(Game game) {
+        this.game = game;
+        lobbyScreen = new LobbyScreen();
+        gameScreen = new GameScreen();
         connectToServer();
     }
 
     private void connectToServer() {
-        screenManager.showGameLobby();
+        game.setScreen(lobbyScreen);
 
         // Setup connection
         ClientConnection.startClient();
@@ -51,15 +58,9 @@ public class ClientGameHandler {
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {
-                screenManager.showGameScreen();
+                game.setScreen(gameScreen);
             }
         });
-    }
-
-    public interface IClientGame {
-
-
-
     }
 
 }

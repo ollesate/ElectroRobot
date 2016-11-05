@@ -10,6 +10,7 @@ import olof.sjoholm.GameLogic.GameManager;
 import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Server.PlayerManager;
 import olof.sjoholm.GameWorld.Utils.Constants;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 
 /**
@@ -24,23 +25,22 @@ public class GameScreen extends ScreenAdapter {
 
     private Stage stage;
     private GameBoard gameBoard;
+    private PlayerManager playerManager;
+    private final Viewport viewport;
 
     public GameScreen(PlayerManager playerManager) {
-        Viewport viewport = new FitViewport(
-                Constants.WORLD_WIDTH * 0.75f,
-                Constants.WORLD_HEIGHT * 0.75f
-        );
+        this.playerManager = playerManager;
+        viewport = new FitViewport(Constants.WORLD_WIDTH * 0.75f, Constants.WORLD_HEIGHT * 0.75f);
+    }
 
+    @Override
+    public void show() {
+        Logger.d("show game screen");
         stage = new Stage(viewport);
 
         gameBoard = new GameBoard(stage);
         stage.addActor(gameBoard);
         new GameManager(gameBoard, playerManager);
-    }
-
-    @Override
-    public void show() {
-
     }
 
     @Override
