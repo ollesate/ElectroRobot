@@ -6,8 +6,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.GameWorld.Client.Screens.ScreenManager;
+import olof.sjoholm.GameWorld.Client.Screens.ClientScreenManager;
 import olof.sjoholm.GameWorld.Client.ClientGameHandler;
+import olof.sjoholm.GameWorld.Server.Screens.ServerScreenManager;
 import olof.sjoholm.GameWorld.Server.ServerGame;
 import olof.sjoholm.GameWorld.Utils.Logger;
 
@@ -38,12 +39,12 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 
 	@Override
 	public void onStartServer() {
-		new ServerGame(this);
+		new ServerGame(new ServerScreenManager(this));
 	}
 
 	@Override
 	public void onStartClient() {
-		new ClientGameHandler(new ScreenManager(this));
+		new ClientGameHandler(new ClientScreenManager(this));
 	}
 
     @Override

@@ -6,11 +6,11 @@ import olof.sjoholm.Interfaces.ICard;
 /**
  * Created by sjoholm on 27/09/16.
  */
-public class Player {
+public class ConcretePlayer {
     private olof.sjoholm.Interfaces.ICardHand cardHand;
     private MovableToken movableToken;
 
-    public Player(MovableToken movableToken, olof.sjoholm.Interfaces.ICardHand cardHand) {
+    public ConcretePlayer(MovableToken movableToken, olof.sjoholm.Interfaces.ICardHand cardHand) {
         this.cardHand = cardHand;
         this.movableToken = movableToken;
     }

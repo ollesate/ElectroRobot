@@ -8,10 +8,10 @@ import olof.sjoholm.GameWorld.Utils.Logger;
  * Created by sjoholm on 02/10/16.
  */
 
-public class ScreenManager implements IScreenManager {
+public class ClientScreenManager implements olof.sjoholm.GameWorld.Client.IScreenManager {
     private Game game;
 
-    public ScreenManager(Game game) {
+    public ClientScreenManager(Game game) {
         this.game = game;
     }
 

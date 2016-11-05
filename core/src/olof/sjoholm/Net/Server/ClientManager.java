@@ -14,36 +14,22 @@ import olof.sjoholm.Net.Envelope;
 
 class ClientManager {
     private final List<olof.sjoholm.Net.Both.Client> clients;
-    private OnMessageListener listener;
-    private Client.OnDisconnectedListener onDisconnectedListener;
+    private Long counter;
 
-    ClientManager(OnMessageListener listener, Client.OnDisconnectedListener onDisconnectedListener) {
-        this.listener = listener;
-        this.onDisconnectedListener = onDisconnectedListener;
+    ClientManager() {
         clients = new ArrayList<olof.sjoholm.Net.Both.Client>();
     }
 
-    void addClient(olof.sjoholm.Net.Both.Client client) {
+    void addClientAndAssignId(olof.sjoholm.Net.Both.Client client) {
+        client.setId(counter++);
+
         synchronized (clients) {
             clients.add(client);
-            client.setOnMessageListener(new OnMessageListener() {
-                @Override
-                public void onMessage(olof.sjoholm.Net.Both.Client client, Envelope envelope) {
-                    listener.onMessage(client, envelope);
-                }
-            });
-            client.setOnDisconnectedListener(new Client.OnDisconnectedListener() {
-                @Override
-                public void onDisconnected(Client client) {
-                    clients.remove(client);
-                    onDisconnectedListener.onDisconnected(client);
-                }
-            });
             client.startReading();
         }
     }
 
-    int getClientsSize() {
+    int getSize() {
         return clients.size();
     }
 
@@ -59,4 +45,7 @@ class ClientManager {
         }
     }
 
+    public List<Client> getClients() {
+        return clients;
+    }
 }

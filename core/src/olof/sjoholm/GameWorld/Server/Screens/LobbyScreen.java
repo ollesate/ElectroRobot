@@ -10,21 +10,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
+import olof.sjoholm.GameWorld.Server.Robo;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
-
-/**
- * Created by sjoholm on 02/10/16.
- */
+import olof.sjoholm.Net.Envelope;
 
 public class LobbyScreen extends ScreenAdapter {
     private Stage stage;
     private PlayersLabel playersLabel;
     private StartGameButton startGameButton;
-    private LobbyActions lobbyActions;
+    private OnStartGameListener onStartGameListener;
+    private int connectedPlayers;
 
-    public LobbyScreen(LobbyActions lobbyActions) {
-        this.lobbyActions = lobbyActions;
+    public LobbyScreen(OnStartGameListener listener) {
+        this.onStartGameListener = listener;
     }
 
     @Override
@@ -32,6 +32,19 @@ public class LobbyScreen extends ScreenAdapter {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         initLayout();
+
+        Robo.server.addOnMessageListener(new OnMessageReceivedListener() {
+            @Override
+            public void onMessage(Envelope envelope, Long clientId) {
+                if (envelope instanceof Envelope.ClientConnection) {
+                    connectedPlayers++;
+                    onPlayersUpdated(connectedPlayers);
+                } else if (envelope instanceof Envelope.ClientDisconnection) {
+                    connectedPlayers--;
+                    onPlayersUpdated(connectedPlayers);
+                }
+            }
+        });
     }
 
     private void initLayout() {
@@ -119,7 +132,7 @@ public class LobbyScreen extends ScreenAdapter {
                 public void changed (ChangeEvent event, Actor actor) {
                     if (players > 0) {
                         Logger.d("Start game");
-                        LobbyScreen.this.lobbyActions.onStartGame();
+                        LobbyScreen.this.onStartGameListener.onStartGame();
                     }
                 }
             });
@@ -130,10 +143,9 @@ public class LobbyScreen extends ScreenAdapter {
         }
     }
 
-    public interface LobbyActions {
+    public interface OnStartGameListener {
 
         void onStartGame();
-
     }
 
 }

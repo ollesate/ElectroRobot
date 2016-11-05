@@ -10,12 +10,12 @@ import olof.sjoholm.Net.Both.Client;
 /**
  * @author sjoholm
  */
-class ConnectionWorker {
+class IncomingConnectionsWorker {
     private ServerSocket serverSocket;
     private ConnectionListener listener;
     private boolean isRunning;
 
-    ConnectionWorker(ConnectionListener listener, ServerSocket serverSocket) {
+    IncomingConnectionsWorker(ConnectionListener listener, ServerSocket serverSocket) {
         this.listener = listener;
         this.serverSocket = serverSocket;
     }
@@ -45,6 +45,5 @@ class ConnectionWorker {
     interface ConnectionListener {
 
         void onNewConnection(Client client);
-
     }
 }

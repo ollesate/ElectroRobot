@@ -21,7 +21,7 @@ public abstract class BaseCard extends Group implements ICard {
         actionActor.setY(25f);
         addActor(actionActor);
 
-        priorityActor = new BaseActor(CardUtil.getNumberTexture(getCardPriority()));
+        priorityActor = new BaseActor(CardUtil.getNumberTexture(getPriority()));
         priorityActor.setY(-25f);
         addActor(priorityActor);
     }

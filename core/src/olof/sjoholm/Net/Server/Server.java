@@ -5,80 +5,115 @@ import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.ServerSocketHints;
 
-import olof.sjoholm.Interfaces.Callback;
-import olof.sjoholm.Net.Both.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
+import olof.sjoholm.GameWorld.Net.ServerApi;
+import olof.sjoholm.Net.Both.Client;
+import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Envelope;
 
-/**
- * Created by sjoholm on 02/10/16.
- */
+public class Server implements IncomingConnectionsWorker.ConnectionListener, ServerApi {
+    private final String host;
+    private final int port;
+    private IncomingConnectionsWorker incomingConnectionsWorker;
+    private ClientManager clients;
+    private MessageThreadWorker messageThreadWorker;
+    private ServerSocket socket;
+    private final List<OnMessageReceivedListener> onMessageReceivedListeners;
 
-public class Server implements ConnectionWorker.ConnectionListener {
-    private ConnectionWorker connectionListener;
-    private ClientManager clientManager;
-    private Callback onConnectorsUpdated;
-    private final ThreadWorker threadWorker;
-    private OnClientStateUpdated clientStateUpdated;
+    public Server(String host, int port) {
+        onMessageReceivedListeners = new ArrayList<OnMessageReceivedListener>();
+        this.host = host;
+        this.port = port;
 
-    public Server(String host, int port, final OnMessageListener onMessageListener,
-                  final OnClientStateUpdated clientStateUpdated) {
-        this.clientStateUpdated = clientStateUpdated;
-        ServerSocket socket = Gdx.net.newServerSocket(
+        clients = new ClientManager();
+
+        initIncomingConnectionsWorker();
+        initMessageWorker();
+    }
+
+    public void start() {
+        socket = Gdx.net.newServerSocket(
                 Net.Protocol.TCP,
                 host,
                 port,
                 new ServerSocketHints()
         );
-        connectionListener = new ConnectionWorker(this, socket);
-        connectionListener.start();
-        clientManager = new ClientManager(onMessageListener, new Client.OnDisconnectedListener() {
-            @Override
-            public void onDisconnected(Client client) {
-                Server.this.onDisconnected(client);
-            }
-        });
-        threadWorker = new ThreadWorker();
-        threadWorker.start();
+    }
+
+    private void initIncomingConnectionsWorker() {
+        incomingConnectionsWorker = new IncomingConnectionsWorker(this, socket);
+        incomingConnectionsWorker.start();
+    }
+
+    private void initMessageWorker() {
+        messageThreadWorker = new MessageThreadWorker();
+        messageThreadWorker.start();
     }
 
     public void stop() {
-        connectionListener.stop();
+        incomingConnectionsWorker.stop();
     }
 
     @Override
     public void onNewConnection(Client client) {
-        client.sendData(new Envelope.Message("Welcome my friend. :)"));
-        clientManager.addClient(client);
-
-        clientStateUpdated.onClientConnected(client);
-
-        if (onConnectorsUpdated != null) {
-            onConnectorsUpdated.callback();
-        }
+        clients.addClientAndAssignId(client);
+        sendMessage(new Envelope.ClientConnection(client), client.getId());
+        // Send a welcome with its id
+        client.sendData(new Envelope.Welcome(client.getId()));
+        client.setOnMessageListener(new OnMessageListener() {
+            @Override
+            public void onMessage(Client client, Envelope envelope) {
+                onMessageReceived(envelope, client.getId());
+            }
+        });
+        client.setOnDisconnectedListener(new Client.OnDisconnectedListener() {
+            @Override
+            public void onDisconnected(Client client) {
+                onClientDisconnected(client);
+            }
+        });
     }
 
-    private void onDisconnected(Client client) {
-        clientStateUpdated.onClientDisconnected(client);
+    private void onClientDisconnected(Client client) {
+        onMessageReceived(new Envelope.ClientDisconnection(client), client.getId());
+    }
 
-        if (onConnectorsUpdated != null) {
-            onConnectorsUpdated.callback();
+    private void onMessageReceived(Envelope envelope, Long id) {
+        synchronized (onMessageReceivedListeners) {
+            for (OnMessageReceivedListener listener : onMessageReceivedListeners) {
+                listener.onMessage(envelope, id);
+            }
         }
     }
 
     public int getConnectedClientsSize() {
-        return clientManager.getClientsSize();
+        return clients.getSize();
     }
 
-    public void setOnConnectorsUpdated(Callback onConnectorsUpdated) {
-        this.onConnectorsUpdated = onConnectorsUpdated;
-    }
-
-    public void sendData(final Envelope envelope) {
-        threadWorker.execute(new Runnable() {
+    @Override
+    public void broadcast(final Envelope envelope) {
+        messageThreadWorker.execute(new Runnable() {
             @Override
             public void run() {
-                clientManager.broadcast(envelope);
+                clients.broadcast(envelope);
             }
         });
+    }
+
+    @Override
+    public void sendMessage(Envelope envelope, Long clientId) {
+        // Todo implement this
+    }
+
+    @Override
+    public void addOnMessageListener(OnMessageReceivedListener listener) {
+        onMessageReceivedListeners.add(listener);
+    }
+
+    public List<Client> getConnectedClients() {
+        return clients.getClients();
     }
 }

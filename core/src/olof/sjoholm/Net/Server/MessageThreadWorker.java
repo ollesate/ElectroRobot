@@ -2,7 +2,7 @@ package olof.sjoholm.Net.Server;
 
 import java.util.LinkedList;
 
-class ThreadWorker {
+class MessageThreadWorker {
     private Buffer<Runnable> buffer = new Buffer<Runnable>();
     private Worker worker;
 

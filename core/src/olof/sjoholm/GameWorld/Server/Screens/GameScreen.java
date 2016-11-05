@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import olof.sjoholm.GameLogic.GameManager;
 import olof.sjoholm.GameWorld.Actors.GameBoard;
+import olof.sjoholm.GameWorld.Server.PlayerManager;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 
@@ -24,15 +25,17 @@ public class GameScreen extends ScreenAdapter {
     private Stage stage;
     private GameBoard gameBoard;
 
-    public GameScreen() {
-        Viewport viewport = new FitViewport(Constants.WORLD_WIDTH * 0.75f,
-                Constants.WORLD_HEIGHT * 0.75f);
+    public GameScreen(PlayerManager playerManager) {
+        Viewport viewport = new FitViewport(
+                Constants.WORLD_WIDTH * 0.75f,
+                Constants.WORLD_HEIGHT * 0.75f
+        );
 
         stage = new Stage(viewport);
 
         gameBoard = new GameBoard(stage);
         stage.addActor(gameBoard);
-        new GameManager(gameBoard);
+        new GameManager(gameBoard, playerManager);
     }
 
     @Override

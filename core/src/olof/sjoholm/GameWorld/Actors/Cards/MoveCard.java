@@ -1,53 +1,36 @@
 package olof.sjoholm.GameWorld.Actors.Cards;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-
-import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.ICard;
 import olof.sjoholm.Interfaces.MovableToken;
 
-/**
- * Created by sjoholm on 24/09/16.
- */
-public class MoveCard extends olof.sjoholm.GameWorld.Actors.Cards.BaseCard implements ICard {
-    private MovableToken movableToken;
+public class MoveCard implements ICard {
     private int steps;
     private Direction direction;
 
-    public MoveCard(MovableToken movableToken) {
-        this.movableToken = movableToken;
+    public MoveCard() {
         steps = (int)(Math.random() * 4 + 1);
         direction = Direction.random();
-        addActors();
     }
 
     @Override
-    public void playCard(final Callback callback) {
-        select();
+    public void apply(MovableToken movableToken, final Callback finishedCallback) {
         movableToken.move(steps, direction, new Callback() {
             @Override
             public void callback() {
-                unselect();
-                callback.callback();
+                finishedCallback.callback();
             }
         });
     }
 
     @Override
-    public int getCardPriority() {
+    public int getPriority() {
         return steps;
     }
 
     @Override
-    Texture getActionTexture() {
-        return CardUtil.getDirectionTexture(direction);
-    }
-
-    @Override
-    public void delete() {
-        addAction(Actions.removeActor());
+    public String getType() {
+        return MoveCard.class.getSimpleName();
     }
 }

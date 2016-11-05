@@ -1,14 +1,14 @@
 package olof.sjoholm.Interfaces;
 
-/**
- * Created by sjoholm on 27/09/16.
- */
 public interface ICard {
 
-    void playCard(Callback finishedCallback);
+    // Used for making an action on server side
+    void apply(MovableToken movableToken, Callback finishedCallback);
 
-    int getCardPriority();
+    // Used for drawing a number on client side and for sorting on server side
+    int getPriority();
 
-    void delete();
+    // What kind of card this is, use this for drawing on client side
+    String getType();
 
 }
