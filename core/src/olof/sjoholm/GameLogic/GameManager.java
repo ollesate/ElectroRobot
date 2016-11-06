@@ -40,6 +40,8 @@ public class GameManager {
     }
 
     private void startGame() {
+        playerManager.alertStartGame();
+
         Logger.d("startGame()");
         new Thread(new Runnable() {
             @Override
@@ -67,12 +69,15 @@ public class GameManager {
                 player.getCards(new Player.OnCardsReceivedListener() {
                     @Override
                     public void onCardsReceived(List<ICard> cards) {
+                        Logger.d("Received response!");
                         synchronized (readyList) {
                             readyList.add(player);
                         }
                         if (readyList.size() == players.size()) {
                             Logger.d("Everyone is ready, notify!");
-                            fetchingCardsMutex.notify();
+                            synchronized (fetchingCardsMutex) {
+                                fetchingCardsMutex.notify();
+                            }
                         }
                     }
                 });
@@ -94,7 +99,7 @@ public class GameManager {
         synchronized (fetchingCardsMutex) {
             try {
                 Logger.d("Start waiting for players...");
-                fetchingCardsMutex.wait(5000);
+                fetchingCardsMutex.wait(15000);
                 Logger.d("Finished waiting lets go!");
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -139,9 +144,9 @@ public class GameManager {
         }
 
         private void playTurn() {
-            Logger.d("playSetOfCards()");
             cardsToPlay = popTopCards();
             if (cardsToPlay.size() > 0) {
+                Logger.d("playSetOfCards() " + cardsToPlay.get(0).card.toString());
                 playCards();
             } else {
                 finishedCallback.callback();

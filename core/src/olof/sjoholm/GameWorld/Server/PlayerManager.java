@@ -6,6 +6,8 @@ public interface PlayerManager {
 
     List<Player> getPlayers();
 
+    void alertStartGame();
+
     interface OnPlayerDisconnected {
 
     }

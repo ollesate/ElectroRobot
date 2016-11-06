@@ -33,4 +33,13 @@ public class MoveCard implements ICard {
     public String getType() {
         return MoveCard.class.getSimpleName();
     }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", steps " + steps + ", direction " + direction;
+    }
 }

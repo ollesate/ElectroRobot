@@ -5,13 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Actors.Cards.BaseCard;
+import olof.sjoholm.GameLogic.ConcretePlayer;
 import olof.sjoholm.GameWorld.Actors.Cards.MoveCard;
 import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
-import olof.sjoholm.Interfaces.ICard;
-import olof.sjoholm.GameLogic.ConcretePlayer;
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.Interfaces.MovableToken;
+import olof.sjoholm.Interfaces.ICard;
 
 /**
  * Created by sjoholm on 26/09/16.

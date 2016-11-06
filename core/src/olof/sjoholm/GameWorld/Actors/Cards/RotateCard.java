@@ -17,6 +17,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.addAction;
 
 public class RotateCard implements ICard {
     private int priority;
+
     private Rotation rotation;
 
     public RotateCard() {
@@ -46,5 +47,14 @@ public class RotateCard implements ICard {
     @Override
     public String getType() {
         return RotateCard.class.getSimpleName();
+    }
+
+    public Rotation getRotation() {
+        return rotation;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", rotation " + rotation;
     }
 }

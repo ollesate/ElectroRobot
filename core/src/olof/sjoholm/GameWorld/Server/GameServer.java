@@ -9,15 +9,19 @@ import java.util.Queue;
 import java.util.Stack;
 
 import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.ICard;
 import olof.sjoholm.Net.Both.Client;
+import olof.sjoholm.Net.Both.Protocol;
 import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.Net.Server.Server;
 
 public class GameServer implements PlayerManager {
     private final Map<Long, Player> players;
+    private Server server;
 
     public GameServer(Server server) {
+        this.server = server;
         players = new HashMap<Long, Player>();
         List<Client> clients = server.getConnectedClients();
         for (Client client : clients) {
@@ -47,6 +51,11 @@ public class GameServer implements PlayerManager {
         }
     }
 
+    @Override
+    public void alertStartGame() {
+        server.broadcast(new Envelope.Message(Protocol.START_GAME));
+    }
+
     private static class PlayerApi extends PlayerCardManager {
         private Client client;
 
@@ -69,6 +78,10 @@ public class GameServer implements PlayerManager {
                         List<ICard> cards = envelope.getContents(List.class);
                         PlayerApi.super.updateCards(cards);
                         onCardsReceivedListener.onCardsReceived(cards);
+                        Logger.d("Received card from player");
+                        for (ICard card : cards) {
+                            Logger.d("Card->" + card.toString());
+                        }
                     } else {
                         throw new IllegalStateException(
                                 "getCards() did not receive response envelope of type " +

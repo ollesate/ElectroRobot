@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import olof.sjoholm.GameWorld.Server.Robo;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Net.Envelope;
 
@@ -77,7 +78,9 @@ public class Client {
     public void sendData(Envelope envelope, OnResponseCallback onResponseCallback) {
         try {
             envelope.tagWithResponseId();
-            waitingResponses.put(envelope.getResponseId(), onResponseCallback);
+            synchronized (waitingResponses) {
+                waitingResponses.put(envelope.getResponseId(), onResponseCallback);
+            }
             outputStream.writeObject(envelope);
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,13 +97,15 @@ public class Client {
                     while (isOpen) {
                         try{
                             Envelope envelope = (Envelope) objectInputStream.readObject();
-                            if (envelope.getResponseId() == -1L) {
+                            Logger.d("Received response " + envelope.getClass().getSimpleName());
+                            if (!Robo.isServer || envelope.getResponseId() == -1L) {
                                 // Is not a response
                                 onMessage(envelope);
                             } else {
                                 OnResponseCallback callback =
                                         waitingResponses.get(envelope.getResponseId());
                                 if (callback != null) {
+                                    Logger.d("Handled response ");
                                     callback.onResponse(envelope);
                                 } else {
                                     Logger.d("Warning: a response was not handled");

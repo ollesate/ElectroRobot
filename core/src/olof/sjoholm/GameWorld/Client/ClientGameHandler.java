@@ -3,13 +3,20 @@ package olof.sjoholm.GameWorld.Client;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import olof.sjoholm.GameWorld.Client.Screens.GameScreen;
-import olof.sjoholm.GameWorld.Client.Screens.IScreenManager;
 import olof.sjoholm.GameWorld.Client.Screens.LobbyScreen;
-import olof.sjoholm.GameWorld.Net.ClientConnection;
+import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
+import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Net.Both.Client;
+import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Both.Protocol;
 import olof.sjoholm.Net.Envelope;
+import olof.sjoholm.Net.ServerConstants;
 
 /**
  * Created by sjoholm on 09/10/16.
@@ -19,25 +26,59 @@ public class ClientGameHandler {
     private Game game;
     private final LobbyScreen lobbyScreen;
     private final GameScreen gameScreen;
+    private ClientHandler clientHandler;
 
     public ClientGameHandler(Game game) {
         this.game = game;
         lobbyScreen = new LobbyScreen();
-        gameScreen = new GameScreen();
+        game.setScreen(lobbyScreen);
         connectToServer();
+
+        PlayerHandler playerHandler = new PlayerHandler(clientHandler);
+        gameScreen = new GameScreen(playerHandler);
     }
 
     private void connectToServer() {
-        game.setScreen(lobbyScreen);
-
-        // Setup connection
-        ClientConnection.startClient();
-        ClientConnection.addServerMessageListener(new ClientConnection.OnServerMessageListener() {
+        Client serverConnection = new Client(
+                ServerConstants.HOST_NAME,
+                ServerConstants.CONNECTION_PORT
+        );
+        serverConnection.startReading();
+        clientHandler = new ClientHandler(serverConnection);
+        clientHandler.addOnMessageReceivedListener(new OnMessageReceivedListener() {
             @Override
-            public void onServerMessage(Envelope envelope) {
+            public void onMessage(Envelope envelope, Long clientId) {
                 onMessageReceived(envelope);
             }
         });
+    }
+
+    private static class ClientHandler {
+        private final List<OnMessageReceivedListener> listenerList;
+        private Client client;
+
+        public ClientHandler(Client client) {
+            this.client = client;
+            listenerList = new ArrayList<OnMessageReceivedListener>();
+            client.setOnMessageListener(new OnMessageListener() {
+                @Override
+                public void onMessage(Client client, Envelope envelope) {
+                    synchronized (listenerList) {
+                        for (OnMessageReceivedListener listener : listenerList) {
+                            listener.onMessage(envelope, client.getId());
+                        }
+                    }
+                }
+            });
+        }
+
+        public void addOnMessageReceivedListener(OnMessageReceivedListener listener) {
+            listenerList.add(listener);
+        }
+
+        public void send(Envelope.SendCards sendCards) {
+            client.sendData(sendCards);
+        }
     }
 
     private void onMessageReceived(Envelope envelope) {
@@ -63,4 +104,40 @@ public class ClientGameHandler {
         });
     }
 
+    public static class PlayerHandler {
+        private Player player;
+
+        public PlayerHandler(final ClientHandler clientHandler) {
+            clientHandler.addOnMessageReceivedListener(new OnMessageReceivedListener() {
+                @Override
+                public void onMessage(final Envelope envelope, Long clientId) {
+                    if (envelope instanceof Envelope.SendCards) {
+                        Logger.d("Server sent me cards");
+                        List<ICard> list = envelope.getContents(List.class);
+                        player.dealCards(list);
+                    } else if (envelope instanceof Envelope.RequestCards) {
+                        Logger.d("Server requests my cards");
+                        player.getCards(new Player.OnCardsReceivedListener() {
+                            @Override
+                            public void onCardsReceived(List<ICard> cards) {
+                                Envelope.SendCards sendCards = new Envelope.SendCards(cards);
+                                sendCards.tagWithResponseId(envelope.getResponseId());
+                                clientHandler.send(sendCards);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        public void setPlayer(Player player) {
+            this.player = player;
+        }
+
+    }
+
+    public interface ICardProvider {
+
+        void setPlayer(Player player);
+    }
 }

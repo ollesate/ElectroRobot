@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Client.ClientGameHandler;
+import olof.sjoholm.GameWorld.Server.Robo;
 import olof.sjoholm.GameWorld.Server.ServerGame;
 import olof.sjoholm.GameWorld.Utils.Logger;
 
@@ -37,11 +38,13 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 
 	@Override
 	public void onStartServer() {
+		Robo.isServer = true;
 		new ServerGame(this);
 	}
 
 	@Override
 	public void onStartClient() {
+		Robo.isServer = false;
 		new ClientGameHandler(this);
 	}
 

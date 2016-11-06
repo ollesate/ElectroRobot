@@ -12,27 +12,37 @@ import olof.sjoholm.Interfaces.ICard;
  * Created by sjoholm on 02/10/16.
  */
 
-public abstract class BaseCard extends Group implements ICard {
+public abstract class BaseCard extends Group {
     private BaseActor priorityActor;
     private BaseActor actionActor;
 
-    protected void addActors() {
+    private ICard card;
+
+    public BaseCard(ICard card) {
+        this.card = card;
+    }
+
+    protected void build() {
+        addActors();
+    }
+
+    private void addActors() {
         actionActor = new BaseActor(getActionTexture());
         actionActor.setY(25f);
         addActor(actionActor);
 
-        priorityActor = new BaseActor(CardUtil.getNumberTexture(getPriority()));
+        priorityActor = new BaseActor(CardUtil.getNumberTexture(card.getPriority()));
         priorityActor.setY(-25f);
         addActor(priorityActor);
     }
 
-    abstract Texture getActionTexture();
+    protected abstract Texture getActionTexture();
 
-    protected void select() {
+    public void select() {
         setColor(Color.BLUE);
     }
 
-    protected void unselect() {
+    public void unselect() {
         setColor(Color.WHITE);
     }
 

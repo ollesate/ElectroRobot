@@ -38,9 +38,13 @@ public class Envelope implements Serializable {
         responseId = idCounter.addAndGet(1);
     }
 
+    public void tagWithResponseId(Long responseId) {
+        this.responseId = responseId;
+    }
+
     @Override
     public String toString() {
-        return "Envelope-> Type: " + type + ", Content: " + contents.toString() + ", responseId " + responseId;
+        return "Envelope-> Type: " + type + ", Content: " + (contents != null ? contents.toString() : "null") + ", responseId " + responseId;
     }
 
     public static class Message extends Envelope {
