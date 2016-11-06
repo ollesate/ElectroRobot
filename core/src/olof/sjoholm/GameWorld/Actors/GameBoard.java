@@ -6,9 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import java.util.HashMap;
 import java.util.Map;
 
+import olof.sjoholm.GameWorld.Level;
 import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.Direction;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.MovableToken;
 
@@ -19,34 +21,31 @@ public class GameBoard extends Group implements IGameBoard {
     public static final int size = 30;
     private Stage stage;
     private Map<Player, MovableToken> playerTokens;
-
-    private int[][] map = new int[][]{
-            {0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0},
-    };
+    private Level level;
 
     public GameBoard(Stage stage) {
-        reset();
         this.stage = stage;
         playerTokens = new HashMap<Player, MovableToken>();
-        setPosition(200, 50);
+    }
+
+    public void loadMap(Level level) {
+        this.level = level;
+        reset();
+
+        // Make sure to set up level the first thing we do to
+        Level.setUpWorldSize(level);
+        setWidth(Constants.STEP_SIZE * level.getWidth());
+        setHeight(Constants.STEP_SIZE * level.getHeight());
 
         if (stage != null) {
-            for (int i = 0; i < getMapWidth(); i++) {
-                for (int j = 0; j < getMapHeight(); j++) {
+            for (int i = 0; i < level.getWidth(); i++) {
+                for (int j = 0; j < level.getHeight(); j++) {
                     addActor(new Tile(i, j));
                 }
             }
+        } else {
+            Logger.d("Could not creat map, stage is null");
         }
-    }
-
-    public int getMapWidth() {
-        return map[0].length;
-    }
-
-    public int getMapHeight() {
-        return map.length;
     }
 
     private void reset() {
@@ -75,33 +74,22 @@ public class GameBoard extends Group implements IGameBoard {
 
     @Override
     public int isTileAvailable(int x, int y) {
-        if (outOfBorder(x, y)) {
+        if (level.isOutsideLevel(x, y)) {
             return -1;
         }
-        if (playerInTile(x, y)) {
+        if (isOccupiedByPlayer(x, y)) {
             return -1;
         }
-        return map[y][x];
+        return level.get(x, y);
     }
 
-    private boolean playerInTile(int x, int y) {
+    private boolean isOccupiedByPlayer(int x, int y) {
         for (MovableToken token : playerTokens.values()) {
             if (token.getBoardX() == x && token.getBoardY() == y) {
                 return true;
             }
         }
         return false;
-    }
-
-    private boolean outOfBorder(int x, int y) {
-        return x < 0 ||
-                x >= getMapWidth() ||
-                y < 0 ||
-                y >= getMapHeight();
-    }
-
-    public void setMap(int[][] map) {
-        this.map = map;
     }
 
     public int getPossibleSteps(Direction direction, int x, int y) {

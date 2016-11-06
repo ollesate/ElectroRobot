@@ -34,9 +34,10 @@ public class TankAnimation implements Drawable {
     }
 
     private TextureRegion getFrame(int frame) {
-        int size = (int) Constants.STEP_SIZE;
-        int x = (int) (frame * Constants.STEP_SIZE);
-        int y = (int) (9 * Constants.STEP_SIZE);
+        int regionSize = 32;
+        int size = regionSize;
+        int x = (int) (frame * regionSize);
+        int y = (int) (9 * regionSize);
         return new TextureRegion(
                 Textures.spritesheet,
                 x,

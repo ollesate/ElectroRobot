@@ -5,6 +5,7 @@ import java.util.List;
 
 import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Server.PlayerManager;
+import olof.sjoholm.GameWorld.Server.Screens.GameScreen;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.Callback;
@@ -17,14 +18,17 @@ import olof.sjoholm.Interfaces.IGameBoard;
 public class GameManager {
     private IGameBoard gameBoard;
     private PlayerManager playerManager;
+    private GameScreen.CountDownManager countDownManager;
 
     private List<Player> players = new ArrayList<Player>();
     private final CardManager cardManager;
     private final Object fetchingCardsMutex = new Object();
 
-    public GameManager(IGameBoard gameBoard, PlayerManager playerManager) {
+    public GameManager(IGameBoard gameBoard, PlayerManager playerManager,
+                       GameScreen.CountDownManager countDownManager) {
         this.gameBoard = gameBoard;
         this.playerManager = playerManager;
+        this.countDownManager = countDownManager;
         cardManager = new CardManager(playerManager.getPlayers(), gameBoard);
 
         setupBoard();
@@ -87,8 +91,10 @@ public class GameManager {
 
     private void givePlayersTime() {
         Logger.d("Lets wait for players to make their turn");
+        long countDownTime = 10000L;
+        countDownManager.startCountDown(countDownTime);
         try {
-            Thread.sleep(10000);
+            Thread.sleep(countDownTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

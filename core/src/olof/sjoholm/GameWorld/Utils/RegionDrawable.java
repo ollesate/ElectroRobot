@@ -23,7 +23,7 @@ public class RegionDrawable implements Drawable {
     public void draw(Batch batch, float parentAlpha) {
         if (textureRegion != null) {
             batch.setColor(actor.getColor());
-            batch.draw(textureRegion, actor.getX(), actor.getY());
+            batch.draw(textureRegion, actor.getX(), actor.getY(), actor.getWidth(), actor.getHeight());
         }
     }
 }

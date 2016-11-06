@@ -15,6 +15,10 @@ public class GameBoardActor extends Actor implements IGameboardActor {
     private int boardY;
     private Drawable drawable;
 
+    {
+        setSize(Constants.STEP_SIZE, Constants.STEP_SIZE);
+    }
+
     @Override
     public int getBoardX() {
         return boardX;

@@ -29,7 +29,6 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
     {
         tankAnimation = new TankAnimation(this);
         setDrawable(tankAnimation);
-        setSize(Constants.STEP_SIZE, Constants.STEP_SIZE);
     }
 
     private final Action finishedAction = new Action() {
