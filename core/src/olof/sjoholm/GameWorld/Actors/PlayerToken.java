@@ -35,9 +35,12 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
     private final Action finishedAction = new Action() {
         @Override
         public boolean act(float delta) {
-            finishedCallback.callback();
             setColor(Color.WHITE);
-            setAnimating(false);
+            updateToBoardPosition();
+
+            if (finishedCallback != null) {
+                finishedCallback.callback();
+            }
             return true;
         }
     };
@@ -65,17 +68,12 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
     @Override
     public void move(int steps, Direction direction, Callback finishedCallback) {
         this.finishedCallback = finishedCallback;
-        setAnimating(true);
 
         int possibleSteps = gameBoard.getPossibleSteps(direction, getBoardX(), getBoardY());
 
         int actualSteps = (possibleSteps > steps) ? steps : possibleSteps;
 
         int waitSteps = steps - actualSteps;
-
-//        Logger.d("--");
-//        Logger.d("Position " + getBoardX() + ", " + getBoardY());
-//        Logger.d("Steps " + steps + ", actual " + actualSteps + ", wait " + waitSteps);
 
         setBoardX(getBoardX() + direction.x * actualSteps);
         setBoardY(getBoardY() + direction.y * actualSteps);
@@ -91,7 +89,6 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
     @Override
     public void rotate(Rotation rotation, Callback finishedCallback) {
         this.finishedCallback = finishedCallback;
-        setAnimating(true);
 
         SequenceAction sequence = Actions.sequence(
                 Actions.rotateBy(

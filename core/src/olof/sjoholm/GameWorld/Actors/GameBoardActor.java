@@ -14,15 +14,6 @@ public class GameBoardActor extends Actor implements IGameboardActor {
     private int boardX;
     private int boardY;
     private Drawable drawable;
-    private boolean isAnimating;
-
-    public boolean isAnimating() {
-        return isAnimating;
-    }
-
-    public void setAnimating(boolean animating) {
-        isAnimating = animating;
-    }
 
     @Override
     public int getBoardX() {
@@ -39,6 +30,11 @@ public class GameBoardActor extends Actor implements IGameboardActor {
         boardX = x;
     }
 
+    protected void updateToBoardPosition() {
+        setX(boardX * Constants.STEP_SIZE);
+        setY(boardY * Constants.STEP_SIZE);
+    }
+
     @Override
     public void setBoardY(int y) {
         boardY = y;
@@ -50,10 +46,6 @@ public class GameBoardActor extends Actor implements IGameboardActor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (!isAnimating) {
-            setX(boardX * Constants.STEP_SIZE);
-            setY(boardY * Constants.STEP_SIZE);
-        }
         if (drawable != null) {
             drawable.draw(batch, parentAlpha);
         }
