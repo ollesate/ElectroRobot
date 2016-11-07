@@ -7,9 +7,6 @@ import olof.sjoholm.GameWorld.Utils.Direction;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by sjoholm on 01/10/16.
- */
 public class GameScreenTest {
     private int[][] testLevel = new int[][]{
             {0, 0, 0, 0, 0},

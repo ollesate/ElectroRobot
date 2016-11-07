@@ -3,9 +3,6 @@ package olof.sjoholm.GameWorld;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.Logger;
 
-/**
- * Created by sjoholm on 06/11/16.
- */
 
 public class Level {
     private final int mapWidth;

@@ -3,9 +3,6 @@ package olof.sjoholm.Interfaces;
 import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Direction;
 
-/**
- * Created by sjoholm on 26/09/16.
- */
 
 public interface IGameBoard {
 

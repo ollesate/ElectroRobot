@@ -18,9 +18,6 @@ import olof.sjoholm.GameWorld.Server.PlayerManager;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 
-/**
- * Created by sjoholm on 24/09/16.
- */
 
 public class GameScreen extends ScreenAdapter {
     private Stage stage;

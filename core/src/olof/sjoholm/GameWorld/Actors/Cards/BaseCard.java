@@ -8,9 +8,6 @@ import olof.sjoholm.GameWorld.Actors.BaseActor;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.Interfaces.ICard;
 
-/**
- * Created by sjoholm on 02/10/16.
- */
 
 public abstract class BaseCard extends Group {
     private BaseActor priorityActor;

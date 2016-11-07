@@ -18,9 +18,6 @@ import olof.sjoholm.Net.Both.Protocol;
 import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.Net.ServerConstants;
 
-/**
- * Created by sjoholm on 09/10/16.
- */
 
 public class ClientGameHandler {
     private Game game;

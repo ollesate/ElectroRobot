@@ -1,8 +1,5 @@
 package olof.sjoholm.GameWorld.Utils;
 
-/**
- * Created by sjoholm on 24/09/16.
- */
 
 public class Constants {
     public static final int WORLD_WIDTH = 500;

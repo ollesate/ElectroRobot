@@ -3,9 +3,6 @@ package olof.sjoholm.GameLogic;
 import olof.sjoholm.Interfaces.*;
 import olof.sjoholm.Interfaces.ICard;
 
-/**
- * Created by sjoholm on 27/09/16.
- */
 public class ConcretePlayer {
     private olof.sjoholm.Interfaces.ICardHand cardHand;
     private MovableToken movableToken;

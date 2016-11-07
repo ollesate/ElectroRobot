@@ -14,9 +14,6 @@ import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.MovableToken;
 
-/**
- * Created by sjoholm on 01/10/16.
- */
 public class GameBoard extends Group implements IGameBoard {
     public static final int size = 30;
     private Stage stage;

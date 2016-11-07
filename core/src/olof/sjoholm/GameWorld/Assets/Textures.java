@@ -2,9 +2,6 @@ package olof.sjoholm.GameWorld.Assets;
 
 import com.badlogic.gdx.graphics.Texture;
 
-/**
- * Created by sjoholm on 24/09/16.
- */
 
 public class Textures {
     public static Texture origTexture;

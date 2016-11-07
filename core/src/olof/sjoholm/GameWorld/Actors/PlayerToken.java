@@ -15,9 +15,6 @@ import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.Interfaces.MovableToken;
 
-/**
- * Created by sjoholm on 25/09/16.
- */
 public class PlayerToken extends GameBoardActor implements MovableToken {
     private float stepSize = Constants.STEP_SIZE;
     private float stepDelay = .25f;

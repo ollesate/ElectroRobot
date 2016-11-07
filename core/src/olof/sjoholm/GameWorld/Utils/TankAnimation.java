@@ -9,9 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Interfaces.Drawable;
 
-/**
- * Created by sjoholm on 01/10/16.
- */
 
 public class TankAnimation implements Drawable {
     private static final float frameDuration = 0.1f;

@@ -11,9 +11,6 @@ import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Interfaces.ICard;
 
-/**
- * Created by sjoholm on 26/09/16.
- */
 
 public class CardUtil {
     

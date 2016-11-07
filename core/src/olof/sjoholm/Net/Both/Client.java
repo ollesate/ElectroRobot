@@ -18,9 +18,6 @@ import olof.sjoholm.Net.Envelope;
 
 import static javax.swing.UIManager.get;
 
-/**
- * Created by sjoholm on 02/10/16.
- */
 
 public class Client {
     private Socket socket;

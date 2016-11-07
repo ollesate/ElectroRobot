@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import olof.sjoholm.GameWorld.Utils.Constants;
 
-/**
- * Created by sjoholm on 01/10/16.
- */
 
 public class SpriteSheetRegion extends TextureRegion {
 

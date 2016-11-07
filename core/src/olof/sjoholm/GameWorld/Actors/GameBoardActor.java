@@ -6,9 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.Interfaces.Drawable;
 
-/**
- * Created by sjoholm on 01/10/16.
- */
 
 public class GameBoardActor extends Actor implements IGameboardActor {
     private int boardX;

@@ -8,9 +8,6 @@ import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.Interfaces.ICard;
 
-/**
- * Created by sjoholm on 06/11/16.
- */
 public class MoveCardActor extends BaseCard {
     private Texture texture;
 

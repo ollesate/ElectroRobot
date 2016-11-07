@@ -8,9 +8,6 @@ import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Utils.Rotation;
 import olof.sjoholm.Interfaces.ICard;
 
-/**
- * Created by sjoholm on 06/11/16.
- */
 public class RotateCardActor extends BaseCard {
     private Texture texture;
 

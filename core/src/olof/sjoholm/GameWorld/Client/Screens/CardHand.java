@@ -12,9 +12,6 @@ import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.ICard;
 
-/**
- * Created by sjoholm on 06/11/16.
- */
 class CardHand extends Group {
     private final List<BaseCard> cardActors;
     private List<ICard> cards;

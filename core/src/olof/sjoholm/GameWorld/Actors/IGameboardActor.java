@@ -1,8 +1,5 @@
 package olof.sjoholm.GameWorld.Actors;
 
-/**
- * Created by sjoholm on 01/10/16.
- */
 
 public interface IGameboardActor {
 

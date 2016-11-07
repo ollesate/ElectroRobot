@@ -4,9 +4,6 @@ import olof.sjoholm.GameWorld.Actors.IGameboardActor;
 import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.GameWorld.Utils.Rotation;
 
-/**
- * Created by sjoholm on 25/09/16.
- */
 
 public interface MovableToken extends IGameboardActor {
 

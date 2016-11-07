@@ -1,8 +1,5 @@
 package olof.sjoholm.GameWorld.Utils;
 
-/**
- * Created by sjoholm on 02/10/16.
- */
 
 public enum Rotation {
     LEFT(90f, 1),

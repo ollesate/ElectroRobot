@@ -8,9 +8,6 @@ import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Envelope;
 
-/**
- * Created by sjoholm on 02/10/16.
- */
 
 class ClientManager {
     private final List<olof.sjoholm.Net.Both.Client> clients;

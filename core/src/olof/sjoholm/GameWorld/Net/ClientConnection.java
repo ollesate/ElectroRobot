@@ -8,9 +8,6 @@ import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.Net.ServerConstants;
 
-/**
- * Created by sjoholm on 09/10/16.
- */
 
 public class ClientConnection {
     private static ClientConnection singleton;

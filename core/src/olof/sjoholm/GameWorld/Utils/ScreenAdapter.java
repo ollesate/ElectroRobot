@@ -6,9 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 
-/**
- * Created by sjoholm on 02/10/16.
- */
 
 public abstract class ScreenAdapter implements Screen {
     private static final Color COLOR_WHITE = new Color(1, 1, 1, 1);

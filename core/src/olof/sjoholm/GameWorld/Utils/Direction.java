@@ -1,8 +1,5 @@
 package olof.sjoholm.GameWorld.Utils;
 
-/**
- * Created by sjoholm on 26/09/16.
- */
 public enum Direction {
 
     UP(0, 1),

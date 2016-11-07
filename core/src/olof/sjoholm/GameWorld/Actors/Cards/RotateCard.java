@@ -11,9 +11,6 @@ import olof.sjoholm.Interfaces.MovableToken;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.addAction;
 
-/**
- * Created by sjoholm on 01/10/16.
- */
 
 public class RotateCard implements ICard {
     private int priority;

@@ -10,9 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 
-/**
- * Created by sjoholm on 02/10/16.
- */
 
 public class LoginScreen extends ScreenAdapter {
     private LoginActions connectActions;

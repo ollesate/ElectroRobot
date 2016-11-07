@@ -5,9 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 
-/**
- * Created by sjoholm on 09/10/16.
- */
 
 public class LobbyScreen extends ScreenAdapter {
     private Stage stage;
