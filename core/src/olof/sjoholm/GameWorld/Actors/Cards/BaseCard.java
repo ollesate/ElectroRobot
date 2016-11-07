@@ -25,12 +25,15 @@ public abstract class BaseCard extends Group {
 
     private void addActors() {
         actionActor = new BaseActor(getActionTexture());
-        actionActor.setY(25f);
+        actionActor.setY(50f);
         addActor(actionActor);
 
         priorityActor = new BaseActor(CardUtil.getNumberTexture(card.getPriority()));
-        priorityActor.setY(-25f);
+        priorityActor.setY(0f);
         addActor(priorityActor);
+
+        setWidth(actionActor.getWidth());
+        setHeight(50 + actionActor.getHeight());
     }
 
     protected abstract Texture getActionTexture();

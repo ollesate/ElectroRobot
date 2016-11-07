@@ -12,13 +12,14 @@ import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.ICard;
 
-class CardHand extends Group {
+public class CardHand extends Group {
     private final List<BaseCard> cardActors;
     private List<ICard> cards;
     private BaseCard selectedCard;
 
     public CardHand() {
         cardActors = new ArrayList<BaseCard>();
+        setDebug(true);
     }
 
     public void showCards(List<ICard> cards) {
@@ -40,12 +41,24 @@ class CardHand extends Group {
             } else {
                 Logger.d("Warning: card was not handled " + card.getClass().getSimpleName());
             }
+            cardActors.add(cardActor);
+        }
 
+        invalidatePlacement();
+    }
+
+    private void invalidatePlacement() {
+        for (int i = 0; i < cardActors.size(); i++) {
+            BaseCard cardActor = cardActors.get(i);
             if (cardActor != null) {
                 cardActor.setX(i * 75f);
-                cardActors.add(cardActor);
                 addActor(cardActor);
             }
+        }
+
+        if (cardActors.size() > 0) {
+            setWidth((cardActors.size() - 1) * 75f + cardActors.get(0).getWidth());
+            setHeight(cardActors.get(0).getHeight());
         }
     }
 
@@ -104,5 +117,10 @@ class CardHand extends Group {
 
     public List<ICard> getCards() {
         return cards;
+    }
+
+    public void addCard(BaseCard card) {
+        cardActors.add(card);
+        invalidatePlacement();
     }
 }
