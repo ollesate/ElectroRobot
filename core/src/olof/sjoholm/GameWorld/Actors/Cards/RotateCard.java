@@ -22,6 +22,11 @@ public class RotateCard implements ICard {
         rotation = getRandomRotation();
     }
 
+    public RotateCard(Rotation rotation) {
+        priority = (int) (Math.random() * 3 + 1);
+        this.rotation = rotation;
+    }
+
     private Rotation getRandomRotation() {
         return Rotation.values()[(int) (Math.random() * Rotation.values().length)];
     }

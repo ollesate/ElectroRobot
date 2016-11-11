@@ -23,6 +23,8 @@ public class Textures {
     public static Texture rotate_right;
     public static Texture rotate_uturn;
 
+    public static Texture background;
+
     Textures() {
 
     }
@@ -47,6 +49,8 @@ public class Textures {
         spritesheet = new Texture("spritesheet.png");
         
         TILE = new SpriteSheetRegion(spritesheet, 1, 0);;
+
+        background = new Texture("background.png");
     }
 
     public static void dispose() {
@@ -61,5 +65,6 @@ public class Textures {
         left.dispose();
         right.dispose();
         spritesheet.dispose();
+        background.dispose();
     }
 }

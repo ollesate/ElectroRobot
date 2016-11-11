@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 
 import olof.sjoholm.GameWorld.Actors.BaseActor;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
+import olof.sjoholm.GameWorld.Utils.Pixels;
 import olof.sjoholm.Interfaces.ICard;
 
 
