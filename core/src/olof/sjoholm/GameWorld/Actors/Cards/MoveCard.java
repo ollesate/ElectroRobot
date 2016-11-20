@@ -7,8 +7,8 @@ import olof.sjoholm.Interfaces.MovableToken;
 
 public class MoveCard implements ICard {
     private int steps;
-    private Direction direction;
 
+    private Direction direction;
     public MoveCard() {
         steps = (int)(Math.random() * 4 + 1);
         direction = Direction.random();
@@ -36,6 +36,10 @@ public class MoveCard implements ICard {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public int getSteps() {
+        return steps;
     }
 
     @Override
