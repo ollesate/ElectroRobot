@@ -1,14 +1,11 @@
-package olof.sjoholm.GameWorld.Game;
+package olof.sjoholm.Client;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
+import olof.sjoholm.GameWorld.Game.CardView;
 import olof.sjoholm.GameWorld.Utils.Constants;
 
 public class HandView extends Table {

@@ -1,4 +1,4 @@
-package olof.sjoholm.GameWorld.Game;
+package olof.sjoholm.Client;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -6,22 +6,20 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.ICard;
 
-public class MyCardHand extends HandView {
-    private final Array<SelectableCard> cards = new Array<SelectableCard>();
-    private SelectableCard selectedCard;
+public class MyCardHand extends olof.sjoholm.Client.HandView {
+    private final Array<olof.sjoholm.Client.SelectableCard> cards = new Array<olof.sjoholm.Client.SelectableCard>();
+    private olof.sjoholm.Client.SelectableCard selectedCard;
 
     public MyCardHand() {
         addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 point = new Vector2();
-                for (SelectableCard card : cards) {
+                for (olof.sjoholm.Client.SelectableCard card : cards) {
                     card.getView().parentToLocalCoordinates(point.set(x, y));
                     if (card.getView().hit(point.x, point.y, false) != null) {
                         onCardClicked(card);
@@ -34,7 +32,7 @@ public class MyCardHand extends HandView {
 
     }
 
-    private void onCardClicked(SelectableCard hitCard) {
+    private void onCardClicked(olof.sjoholm.Client.SelectableCard hitCard) {
         if (hitCard.isSelected()) {
             hitCard.unselect();
             selectedCard = null;
@@ -48,13 +46,13 @@ public class MyCardHand extends HandView {
         }
     }
 
-    private void swap(SelectableCard cardA, SelectableCard cardB) {
+    private void swap(olof.sjoholm.Client.SelectableCard cardA, olof.sjoholm.Client.SelectableCard cardB) {
         cards.swap(
                 cards.indexOf(cardA, false),
                 cards.indexOf(cardB, false)
         );
         clearCards();
-        for (SelectableCard card : cards) {
+        for (olof.sjoholm.Client.SelectableCard card : cards) {
             addCardView(card.getView());
         }
     }
@@ -64,7 +62,7 @@ public class MyCardHand extends HandView {
         return x >= 0 && x < getWidth() && y >= 0 && y < getHeight() ? this : null;
     }
 
-    public void addCard(SelectableCard card) {
+    public void addCard(olof.sjoholm.Client.SelectableCard card) {
         super.addCardView(card.getView());
         cards.add(card);
     }
