@@ -8,6 +8,7 @@ class SelectableCard {
     private static Color SELECTED_COLOR = Color.GREEN;
     private static Color UNSELECTED_COLOR = Color.WHITE;
     private CardView cardView;
+    private boolean isSelected;
 
     public SelectableCard() {
         cardView = new CardView();
@@ -15,12 +16,17 @@ class SelectableCard {
     }
 
     public void select() {
-        Logger.d("Select");
+        isSelected = true;
         cardView.setBackgroundColor(SELECTED_COLOR);
     }
 
     public void unselect() {
+        isSelected = false;
         cardView.setBackgroundColor(UNSELECTED_COLOR);
+    }
+
+    public boolean isSelected() {
+        return isSelected;
     }
 
     public CardView getView() {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Utils.Backgrounds;
+import olof.sjoholm.GameWorld.Utils.Logger;
 
 public class CardView extends Table {
     private static final float PADDING = 10f;
@@ -25,10 +27,10 @@ public class CardView extends Table {
         actionTexture = Textures.rotate_left;
 
         Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-        titleLabel = new Label("", skin);
+        titleLabel = new Label("Title", skin);
         titleLabel.setFontScale(3.5f);
 
-        powerLabel = new Label("", skin);
+        powerLabel = new Label("" + (int)(Math.random() * 5), skin);
         powerLabel.setFontScale(6f);
 
         pad(PADDING);

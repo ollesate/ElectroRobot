@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import olof.sjoholm.GameWorld.Utils.Constants;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 
 
@@ -48,6 +51,7 @@ public class LoginScreen extends ScreenAdapter {
         table.row();
         table.add(startServer).width(100);
         table.add(startClient).width(100);
+
 
         MyCardHand cardHand = new MyCardHand();
         cardHand.addCard(new SelectableCard());
