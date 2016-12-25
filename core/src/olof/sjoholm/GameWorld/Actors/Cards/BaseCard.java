@@ -6,17 +6,16 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 
 import olof.sjoholm.GameWorld.Actors.BaseActor;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
-import olof.sjoholm.GameWorld.Utils.Pixels;
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 
 
 public abstract class BaseCard extends Group {
     private BaseActor priorityActor;
     private BaseActor actionActor;
 
-    private ICard card;
+    private ActionCard card;
 
-    public BaseCard(ICard card) {
+    public BaseCard(ActionCard card) {
         this.card = card;
     }
 

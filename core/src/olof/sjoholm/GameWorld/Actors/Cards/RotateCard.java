@@ -1,34 +1,17 @@
 package olof.sjoholm.GameWorld.Actors.Cards;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-
-import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Utils.Rotation;
 import olof.sjoholm.Interfaces.Callback;
-import olof.sjoholm.Interfaces.ICard;
 import olof.sjoholm.Interfaces.MovableToken;
+import olof.sjoholm.common.Card;
+import olof.sjoholm.common.CardModel;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.addAction;
-
-
-public class RotateCard implements ICard {
-    private int priority;
-
+public class RotateCard extends Card {
     private Rotation rotation;
 
-    public RotateCard() {
-        priority = (int) (Math.random() * 3 + 1);
-        rotation = getRandomRotation();
-    }
-
-    public RotateCard(Rotation rotation) {
-        priority = (int) (Math.random() * 3 + 1);
+    public RotateCard(CardModel cardModel, Rotation rotation) {
+        super(cardModel);
         this.rotation = rotation;
-    }
-
-    private Rotation getRandomRotation() {
-        return Rotation.values()[(int) (Math.random() * Rotation.values().length)];
     }
 
     @Override
@@ -39,16 +22,6 @@ public class RotateCard implements ICard {
                 finishedCallback.callback();
             }
         });
-    }
-
-    @Override
-    public int getPriority() {
-        return priority;
-    }
-
-    @Override
-    public String getType() {
-        return RotateCard.class.getSimpleName();
     }
 
     public Rotation getRotation() {

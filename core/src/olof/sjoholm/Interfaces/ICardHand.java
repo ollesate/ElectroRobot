@@ -6,7 +6,7 @@ public interface ICardHand {
 
     int size();
 
-    ICard popTopCard();
+    ActionCard popTopCard();
 
     void clearAllCards();
 

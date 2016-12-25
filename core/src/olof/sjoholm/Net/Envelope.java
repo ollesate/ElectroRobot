@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 import olof.sjoholm.Net.Both.Client;
 
 public class Envelope implements Serializable {
@@ -82,7 +82,7 @@ public class Envelope implements Serializable {
     public static class SendCards extends Envelope {
         private static final String type = SendCards.class.getSimpleName();
 
-        public SendCards(List<ICard> cards) {
+        public SendCards(List<ActionCard> cards) {
             super(cards, type);
         }
     }

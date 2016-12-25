@@ -2,16 +2,18 @@ package olof.sjoholm.GameWorld.Actors.Cards;
 
 import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.Interfaces.Callback;
-import olof.sjoholm.Interfaces.ICard;
 import olof.sjoholm.Interfaces.MovableToken;
+import olof.sjoholm.common.Card;
+import olof.sjoholm.common.CardModel;
 
-public class MoveCard implements ICard {
-    private int steps;
+public class MoveCard extends Card {
+    private final Direction direction;
+    private final int steps;
 
-    private Direction direction;
-    public MoveCard() {
-        steps = (int)(Math.random() * 4 + 1);
-        direction = Direction.random();
+    public MoveCard(CardModel cardModel, Direction direction, int steps) {
+        super(cardModel);
+        this.direction = direction;
+        this.steps = steps;
     }
 
     @Override

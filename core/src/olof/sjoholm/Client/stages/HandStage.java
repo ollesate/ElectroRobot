@@ -4,10 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.List;
 
-import olof.sjoholm.Client.HandView;
 import olof.sjoholm.Client.MyCardHand;
 import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 
 /**
  * Created by sjoholm on 23/12/16.
@@ -30,7 +29,7 @@ public class HandStage extends Stage {
 
     }
 
-    public void dealCards(List<ICard> list) {
+    public void dealCards(List<ActionCard> list) {
 
     }
 

@@ -6,11 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Stack;
 
 import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
 import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Both.Protocol;
 import olof.sjoholm.Net.Envelope;
@@ -64,7 +63,7 @@ public class GameServer implements PlayerManager {
         }
 
         @Override
-        public void dealCards(List<ICard> cards) {
+        public void dealCards(List<ActionCard> cards) {
             super.dealCards(cards);
             client.sendData(new Envelope.SendCards(cards));
         }
@@ -75,11 +74,11 @@ public class GameServer implements PlayerManager {
                 @Override
                 public void onResponse(Envelope envelope) {
                     if (envelope instanceof Envelope.SendCards) {
-                        List<ICard> cards = envelope.getContents(List.class);
+                        List<ActionCard> cards = envelope.getContents(List.class);
                         PlayerApi.super.updateCards(cards);
                         onCardsReceivedListener.onCardsReceived(cards);
                         Logger.d("Received card from player");
-                        for (ICard card : cards) {
+                        for (ActionCard card : cards) {
                             Logger.d("Card->" + card.toString());
                         }
                     } else {
@@ -94,18 +93,18 @@ public class GameServer implements PlayerManager {
     }
 
     private abstract static class PlayerCardManager implements Player {
-        private Queue<ICard> cards;
+        private Queue<ActionCard> cards;
 
         {
-            cards = new ArrayDeque<ICard>();
+            cards = new ArrayDeque<ActionCard>();
         }
 
         @Override
-        public void dealCards(List<ICard> cards) {
+        public void dealCards(List<ActionCard> cards) {
             updateCards(cards);
         }
 
-        private void updateCards(List<ICard> cards) {
+        private void updateCards(List<ActionCard> cards) {
             this.cards.clear();
             this.cards.addAll(cards);
         }
@@ -116,7 +115,7 @@ public class GameServer implements PlayerManager {
         }
 
         @Override
-        public ICard popTopCard() {
+        public ActionCard popTopCard() {
             return cards.poll();
         }
     }

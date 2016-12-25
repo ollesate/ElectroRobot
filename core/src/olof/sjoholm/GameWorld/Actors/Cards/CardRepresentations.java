@@ -2,11 +2,11 @@ package olof.sjoholm.GameWorld.Actors.Cards;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Game.CardView;
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 
 public class CardRepresentations {
 
-    public static void fromICard(ICard card) {
+    public static void fromICard(ActionCard card) {
         CardView cardView = new CardView();
         if (card instanceof MoveCard) {
             MoveCard moveCard = ((MoveCard) card);

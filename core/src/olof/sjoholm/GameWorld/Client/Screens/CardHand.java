@@ -10,11 +10,11 @@ import olof.sjoholm.GameWorld.Actors.Cards.BaseCard;
 import olof.sjoholm.GameWorld.Actors.Cards.MoveCard;
 import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
 import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 
 public class CardHand extends Group {
     private final List<BaseCard> cardActors;
-    private List<ICard> cards;
+    private List<ActionCard> cards;
     private BaseCard selectedCard;
 
     public CardHand() {
@@ -22,7 +22,7 @@ public class CardHand extends Group {
         setDebug(true);
     }
 
-    public void showCards(List<ICard> cards) {
+    public void showCards(List<ActionCard> cards) {
         Logger.d("showCards()");
         this.cards = cards;
         for (BaseCard cardActor : cardActors) {
@@ -31,7 +31,7 @@ public class CardHand extends Group {
         cardActors.clear();
 
         for (int i = 0; i < cards.size(); i++) {
-            ICard card = cards.get(i);
+            ActionCard card = cards.get(i);
             BaseCard cardActor = null;
 
             if (card instanceof MoveCard) {
@@ -72,7 +72,7 @@ public class CardHand extends Group {
         cardActors.set(swap1, cardActors.get(swap2));
         cardActors.set(swap2, tempActor);
 
-        ICard tempCard = cards.get(swap1);
+        ActionCard tempCard = cards.get(swap1);
         cards.set(swap1, cards.get(swap2));
         cards.set(swap2, tempCard);
     }
@@ -111,11 +111,11 @@ public class CardHand extends Group {
         return super.hit(x, y, touchable);
     }
 
-    public ICard selectNextCard() {
+    public ActionCard selectNextCard() {
         return null;
     }
 
-    public List<ICard> getCards() {
+    public List<ActionCard> getCards() {
         return cards;
     }
 

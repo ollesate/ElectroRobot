@@ -6,12 +6,12 @@ import olof.sjoholm.GameWorld.Actors.Cards.BaseCard;
 import olof.sjoholm.GameWorld.Actors.Cards.MoveCard;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.GameWorld.Utils.Direction;
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 
 public class MoveCardActor extends BaseCard {
     private Texture texture;
 
-    public MoveCardActor(ICard card) {
+    public MoveCardActor(ActionCard card) {
         super(card);
         Direction direction = ((MoveCard) card).getDirection();
         texture = CardUtil.getDirectionTexture(direction);

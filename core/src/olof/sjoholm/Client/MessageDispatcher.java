@@ -3,7 +3,7 @@ package olof.sjoholm.Client;
 import java.util.List;
 
 import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.Interfaces.ICard;
+import olof.sjoholm.Interfaces.ActionCard;
 
 /**
  * Created by sjoholm on 23/12/16.
@@ -20,7 +20,7 @@ public class MessageDispatcher {
         playerGame.startGame();
     }
 
-    public void dealCards(List<ICard> list) {
+    public void dealCards(List<ActionCard> list) {
         playerGame.dealCards(list);
     }
 
