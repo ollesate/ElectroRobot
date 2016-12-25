@@ -1,10 +1,8 @@
 package olof.sjoholm.common;
 
-/**
- * Created by sjoholm on 23/12/16.
- */
+import java.io.Serializable;
 
-public class CardModel {
+public class CardModel implements Serializable {
 
     public CardModel(String type, int priority) {
         this.type = type;

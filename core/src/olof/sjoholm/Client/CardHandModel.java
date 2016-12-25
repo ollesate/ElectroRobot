@@ -1,0 +1,53 @@
+package olof.sjoholm.Client;
+
+import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import olof.sjoholm.common.CardModel;
+
+/**
+ * Created by sjoholm on 25/12/16.
+ */
+
+public class CardHandModel {
+    private final List<CardModel> models = new ArrayList<CardModel>();
+    private OnHandChangedListener onHandChangedListener;
+
+    public List<CardModel> getCardModels() {
+        return models;
+    }
+
+    public void setOnHandChangedListener(OnHandChangedListener onHandChangedListener) {
+        this.onHandChangedListener = onHandChangedListener;
+    }
+
+    public void swap(int indexA, int indexB) {
+        CardModel modelA = models.get(indexA);
+        models.set(indexA, models.get(indexB));
+        models.set(indexB, modelA);
+
+        if (onHandChangedListener != null) {
+            onHandChangedListener.onChanged();
+        }
+    }
+
+    public void addCardModels(List<CardModel> list) {
+        for (CardModel cardModel : list) {
+            models.add(cardModel);
+        }
+    }
+
+    public void clear() {
+        models.clear();
+        if (onHandChangedListener != null) {
+            onHandChangedListener.onChanged();
+        }
+    }
+
+    public interface OnHandChangedListener {
+
+        void onChanged();
+    }
+}

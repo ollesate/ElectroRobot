@@ -7,17 +7,14 @@ import java.util.List;
 
 import olof.sjoholm.Client.stages.HandStage;
 import olof.sjoholm.Client.stages.LobbyStage;
-import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.Interfaces.ActionCard;
-
-/**
- * Created by sjoholm on 23/12/16.
- */
+import olof.sjoholm.common.CardModel;
 
 public class PlayerGame extends ScreenAdapter {
+    private final HandStage handStage;
     private Stage currentStage;
 
     public PlayerGame() {
+        handStage = new HandStage();
         currentStage = new LobbyStage();
     }
 
@@ -30,14 +27,14 @@ public class PlayerGame extends ScreenAdapter {
     }
 
     public void startGame() {
-        currentStage = new HandStage();
+        currentStage = handStage;
     }
 
-    public void dealCards(List<ActionCard> list) {
-        ((HandStage) currentStage).dealCards(list);
+    public void dealCards(List<CardModel> list) {
+        handStage.dealCards(list);
     }
 
-    public void getCards(Player.OnCardsReceivedListener onCardsReceivedListener) {
-        ((HandStage) currentStage).getCards(onCardsReceivedListener);
+    public List<CardModel> getCards() {
+        return handStage.getCards();
     }
 }

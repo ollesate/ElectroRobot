@@ -11,8 +11,8 @@ public class SelectableCard {
     private CardView cardView;
     private boolean isSelected;
 
-    public SelectableCard() {
-        cardView = new CardView();
+    public SelectableCard(CardView cardView) {
+        this.cardView = cardView;
         cardView.setBackgroundColor(UNSELECTED_COLOR);
     }
 

@@ -2,12 +2,8 @@ package olof.sjoholm.Client;
 
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.common.CardModel;
 
-/**
- * Created by sjoholm on 23/12/16.
- */
 
 public class MessageDispatcher {
     private final PlayerGame playerGame;
@@ -20,11 +16,11 @@ public class MessageDispatcher {
         playerGame.startGame();
     }
 
-    public void dealCards(List<ActionCard> list) {
+    public void dealCards(List<CardModel> list) {
         playerGame.dealCards(list);
     }
 
-    public void getCards(Player.OnCardsReceivedListener onCardsReceivedListener) {
-        playerGame.getCards(onCardsReceivedListener);
+    public List<CardModel> getCards() {
+        return playerGame.getCards();
     }
 }

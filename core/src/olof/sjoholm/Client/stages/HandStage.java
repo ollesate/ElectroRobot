@@ -4,36 +4,39 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.List;
 
-import olof.sjoholm.Client.MyCardHand;
-import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Client.CardHandModel;
+import olof.sjoholm.common.CardModel;
 
-/**
- * Created by sjoholm on 23/12/16.
- */
 
 public class HandStage extends Stage {
+    private final CardHandTable cardHandTable;
+    private final CardHandModel cardHandModel;
 
     public HandStage() {
-        MyCardHand cardHand = new MyCardHand();
-        addActor(cardHand);
+        cardHandModel = new CardHandModel();
+        cardHandTable = new CardHandTable(cardHandModel);
+        addActor(cardHandTable);
     }
 
-    @Override
-    public void act(float delta) {
+    public void dealCards(List<CardModel> list) {
+        cardHandModel.clear();
+        cardHandModel.addCardModels(list);
+    }
+
+    public List<CardModel> getCards() {
+        return cardHandModel.getCardModels();
+    }
+
+    private static class CardHandController {
+
+        public CardHandController() {
+
+        }
+
+        public void addCard(CardModel cardModel) {
+
+        }
 
     }
 
-    @Override
-    public void draw() {
-
-    }
-
-    public void dealCards(List<ActionCard> list) {
-
-    }
-
-    public void getCards(Player.OnCardsReceivedListener onCardsReceivedListener) {
-
-    }
 }

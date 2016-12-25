@@ -11,8 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import olof.sjoholm.Client.MyCardHand;
-import olof.sjoholm.Client.SelectableCard;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 

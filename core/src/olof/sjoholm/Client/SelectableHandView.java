@@ -10,11 +10,11 @@ import java.util.List;
 
 import olof.sjoholm.Interfaces.ActionCard;
 
-public class MyCardHand extends olof.sjoholm.Client.HandView {
+public class SelectableHandView extends olof.sjoholm.Client.HandView {
     private final Array<olof.sjoholm.Client.SelectableCard> cards = new Array<olof.sjoholm.Client.SelectableCard>();
     private olof.sjoholm.Client.SelectableCard selectedCard;
 
-    public MyCardHand() {
+    public SelectableHandView() {
         addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

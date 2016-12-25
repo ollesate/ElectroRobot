@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import olof.sjoholm.Interfaces.ActionCard;
 import olof.sjoholm.Net.Both.Client;
+import olof.sjoholm.common.CardModel;
 
 public class Envelope implements Serializable {
     private static final AtomicLong idCounter = new AtomicLong(0);
@@ -82,7 +83,7 @@ public class Envelope implements Serializable {
     public static class SendCards extends Envelope {
         private static final String type = SendCards.class.getSimpleName();
 
-        public SendCards(List<ActionCard> cards) {
+        public SendCards(List<CardModel> cards) {
             super(cards, type);
         }
     }
