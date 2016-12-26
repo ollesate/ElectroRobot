@@ -5,11 +5,11 @@ import com.badlogic.gdx.math.MathUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Actors.Cards.MoveCard;
-import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
+import olof.sjoholm.GameWorld.Actors.Cards.MoveAction;
+import olof.sjoholm.GameWorld.Actors.Cards.RotateAction;
 import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.GameWorld.Utils.Rotation;
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Interfaces.Action;
 
 public class CardFactory {
     private List<FactoryWeightPair> factories = new ArrayList<FactoryWeightPair>();
@@ -33,7 +33,7 @@ public class CardFactory {
         factories.add(new FactoryWeightPair(abstractFactory, weight));
     }
 
-    public ActionCard createRandom() {
+    public Action createRandom() {
         int rand = MathUtils.random(weightSum - 1);
         int sum = 0;
         for (FactoryWeightPair factoryWeightPair : factories) {
@@ -49,10 +49,10 @@ public class CardFactory {
     private static class MoveCardFactory implements AbstractFactory {
 
         @Override
-        public ActionCard create() {
-            return new MoveCard(
+        public Action create() {
+            return new MoveAction(
                     new CardModel(
-                            RotateCard.class.getSimpleName(),
+                            RotateAction.class.getSimpleName(),
                             getRandomPriority()
                     ),
                     getRandomDirection(),
@@ -76,10 +76,10 @@ public class CardFactory {
     private static class RotateCardFactory implements AbstractFactory {
 
         @Override
-        public ActionCard create() {
-            return new RotateCard(
+        public Action create() {
+            return new RotateAction(
                     new CardModel(
-                            RotateCard.class.getSimpleName(),
+                            RotateAction.class.getSimpleName(),
                             getRandomPriority()
                     ),
                     getRandomRotation()
@@ -97,7 +97,7 @@ public class CardFactory {
 
     interface AbstractFactory {
 
-        ActionCard create();
+        Action create();
     }
 
     private static class FactoryWeightPair {

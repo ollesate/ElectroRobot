@@ -3,9 +3,7 @@ package olof.sjoholm.Client;
 import java.util.List;
 
 import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
-import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.Interfaces.ActionCard;
 import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.common.CardModel;
 

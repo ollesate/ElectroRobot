@@ -1,17 +1,15 @@
 package olof.sjoholm.GameWorld.Actors.Cards;
 
 import olof.sjoholm.GameWorld.Utils.Direction;
+import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.MovableToken;
-import olof.sjoholm.common.Card;
-import olof.sjoholm.common.CardModel;
 
-public class MoveCard extends Card {
+public class MoveAction implements Action {
     private final Direction direction;
     private final int steps;
 
-    public MoveCard(CardModel cardModel, Direction direction, int steps) {
-        super(cardModel);
+    public MoveAction(Direction direction, int steps) {
         this.direction = direction;
         this.steps = steps;
     }
@@ -26,22 +24,8 @@ public class MoveCard extends Card {
         });
     }
 
-    @Override
-    public int getPriority() {
-        return steps;
-    }
-
-    @Override
-    public String getType() {
-        return MoveCard.class.getSimpleName();
-    }
-
     public Direction getDirection() {
         return direction;
-    }
-
-    public int getSteps() {
-        return steps;
     }
 
     @Override

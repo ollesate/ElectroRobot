@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import olof.sjoholm.Interfaces.ActionCard;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.common.CardModel;
 

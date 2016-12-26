@@ -2,20 +2,20 @@ package olof.sjoholm.GameWorld.Server;
 
 import java.util.List;
 
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Interfaces.Action;
 
 public interface Player {
 
-    void dealCards(List<ActionCard> cards);
+    void dealCards(List<Action> cards);
 
     void getCards(OnCardsReceivedListener onCardsReceivedListener);
 
     boolean hasCards();
 
-    ActionCard popTopCard();
+    Action popTopCard();
 
     interface OnCardsReceivedListener {
 
-        void onCardsReceived(List<ActionCard> cards);
+        void onCardsReceived(List<Action> cards);
     }
 }

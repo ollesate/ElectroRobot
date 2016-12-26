@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.List;
 
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Interfaces.Action;
 
 public class SelectableHandView extends olof.sjoholm.Client.HandView {
     private final Array<olof.sjoholm.Client.SelectableCard> cards = new Array<olof.sjoholm.Client.SelectableCard>();
@@ -67,7 +67,7 @@ public class SelectableHandView extends olof.sjoholm.Client.HandView {
         cards.add(card);
     }
 
-    public List<ActionCard> getCards() {
+    public List<Action> getCards() {
         return null;
     }
 }

@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import olof.sjoholm.Client.CardHandModel;
 import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
 import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Both.Protocol;
 import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.Net.Server.Server;
+import olof.sjoholm.common.CardModel;
 
 public class GameServer implements PlayerManager {
     private final Map<Long, Player> players;
@@ -63,7 +65,7 @@ public class GameServer implements PlayerManager {
         }
 
         @Override
-        public void dealCards(List<ActionCard> cards) {
+        public void dealCards(List<Action> cards) {
             super.dealCards(cards);
             client.sendData(new Envelope.SendCards(cards));
         }
@@ -74,11 +76,11 @@ public class GameServer implements PlayerManager {
                 @Override
                 public void onResponse(Envelope envelope) {
                     if (envelope instanceof Envelope.SendCards) {
-                        List<ActionCard> cards = envelope.getContents(List.class);
+                        List<Action> cards = envelope.getContents(List.class);
                         PlayerApi.super.updateCards(cards);
                         onCardsReceivedListener.onCardsReceived(cards);
                         Logger.d("Received card from player");
-                        for (ActionCard card : cards) {
+                        for (Action card : cards) {
                             Logger.d("Card->" + card.toString());
                         }
                     } else {
@@ -93,18 +95,18 @@ public class GameServer implements PlayerManager {
     }
 
     private abstract static class PlayerCardManager implements Player {
-        private Queue<ActionCard> cards;
+        private Queue<Action> cards;
 
         {
-            cards = new ArrayDeque<ActionCard>();
+            cards = new ArrayDeque<Action>();
         }
 
         @Override
-        public void dealCards(List<ActionCard> cards) {
+        public void dealCards(List<Action> cards) {
             updateCards(cards);
         }
 
-        private void updateCards(List<ActionCard> cards) {
+        private void updateCards(List<Action> cards) {
             this.cards.clear();
             this.cards.addAll(cards);
         }
@@ -115,8 +117,44 @@ public class GameServer implements PlayerManager {
         }
 
         @Override
-        public ActionCard popTopCard() {
+        public Action popTopCard() {
             return cards.poll();
         }
     }
+
+    private static class PlayerApi2 {
+
+        public void dealCards(List<CardModel> cards) {
+
+        }
+
+        public void getCards(Player.OnCardsReceivedListener onCardsReceivedListener) {
+
+        }
+    }
+
+    private static class PlayerController {
+        private final CardHandModel cardHandModel;
+
+        public PlayerController(PlayerApi playerApi, CardHandModel cardHandModel) {
+            this.cardHandModel = cardHandModel;
+        }
+
+        public void dealCards(List<CardHandModel> cards) {
+
+        }
+
+        public void getCards(Player.OnCardsReceivedListener onCardsReceivedListener) {
+
+        }
+
+        public boolean hasCards() {
+            return false;
+        }
+
+        public Action popTopCard() {
+            return null;
+        }
+    }
+
 }

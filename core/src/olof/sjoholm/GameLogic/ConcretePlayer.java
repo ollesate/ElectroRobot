@@ -1,7 +1,7 @@
 package olof.sjoholm.GameLogic;
 
 import olof.sjoholm.Interfaces.*;
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Interfaces.Action;
 
 public class ConcretePlayer {
     private olof.sjoholm.Interfaces.ICardHand cardHand;
@@ -23,7 +23,7 @@ public class ConcretePlayer {
         return cardHand.size() > 0;
     }
 
-    public ActionCard popTopCard() {
+    public Action popTopCard() {
         return cardHand.popTopCard();
     }
 

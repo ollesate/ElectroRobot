@@ -1,10 +1,6 @@
 package olof.sjoholm.Interfaces;
 
-public interface ActionCard {
+public interface Action {
 
     void apply(MovableToken movableToken, Callback finishedCallback);
-
-    int getPriority();
-
-    String getType();
 }

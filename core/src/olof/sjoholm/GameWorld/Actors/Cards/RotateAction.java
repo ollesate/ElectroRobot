@@ -1,16 +1,14 @@
 package olof.sjoholm.GameWorld.Actors.Cards;
 
 import olof.sjoholm.GameWorld.Utils.Rotation;
+import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.MovableToken;
-import olof.sjoholm.common.Card;
-import olof.sjoholm.common.CardModel;
 
-public class RotateCard extends Card {
+public class RotateAction implements Action {
     private Rotation rotation;
 
-    public RotateCard(CardModel cardModel, Rotation rotation) {
-        super(cardModel);
+    public RotateAction(Rotation rotation) {
         this.rotation = rotation;
     }
 
@@ -22,10 +20,6 @@ public class RotateCard extends Card {
                 finishedCallback.callback();
             }
         });
-    }
-
-    public Rotation getRotation() {
-        return rotation;
     }
 
     @Override

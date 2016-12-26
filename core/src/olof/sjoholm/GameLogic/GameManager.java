@@ -9,7 +9,7 @@ import olof.sjoholm.GameWorld.Server.Screens.GameScreen;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.Callback;
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Interfaces.IGameBoard;
 
 /**
@@ -72,7 +72,7 @@ public class GameManager {
             for (final Player player : players) {
                 player.getCards(new Player.OnCardsReceivedListener() {
                     @Override
-                    public void onCardsReceived(List<ActionCard> cards) {
+                    public void onCardsReceived(List<Action> cards) {
                         Logger.d("Received response!");
                         synchronized (readyList) {
                             readyList.add(player);
@@ -162,7 +162,7 @@ public class GameManager {
         private void playCards() {
             if (cardsToPlay.size() > 0) {
                 final PlayerCardPair pair = cardsToPlay.get(0);
-                final ActionCard card = pair.card;
+                final Action card = pair.card;
                 card.apply(gameBoard.getToken(pair.player), new Callback() {
                     @Override
                     public void callback() {
@@ -188,9 +188,9 @@ public class GameManager {
 
     private static class PlayerCardPair {
         public Player player;
-        public ActionCard card;
+        public Action card;
 
-        public PlayerCardPair(Player player, ActionCard card) {
+        public PlayerCardPair(Player player, Action card) {
             this.player = player;
             this.card = card;
         }

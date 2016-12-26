@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.GameLogic.ConcretePlayer;
-import olof.sjoholm.GameWorld.Actors.Cards.MoveCard;
-import olof.sjoholm.GameWorld.Actors.Cards.RotateCard;
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.Interfaces.ActionCard;
+import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.common.CardFactory;
 
 
@@ -46,8 +44,8 @@ public class CardUtil {
         return null;
     }
 
-    public static List<ActionCard> popTopCards(List<ConcretePlayer> players) {
-        List<ActionCard> cards = new ArrayList<ActionCard>();
+    public static List<Action> popTopCards(List<ConcretePlayer> players) {
+        List<Action> cards = new ArrayList<Action>();
         for (ConcretePlayer player : players) {
             if (player.hasCard()) {
                 cards.add(player.popTopCard());
@@ -56,15 +54,15 @@ public class CardUtil {
         return cards;
     }
 
-    public static List<ActionCard> createRandomCards(int count) {
-        List<ActionCard> cards = new ArrayList<ActionCard>();
+    public static List<Action> createRandomCards(int count) {
+        List<Action> cards = new ArrayList<Action>();
         for (int i = 0; i < count; i++) {
             cards.add(createRandomCard());
         }
         return cards;
     }
 
-    private static ActionCard createRandomCard() {
+    private static Action createRandomCard() {
         return CardFactory.getInstance().createRandom();
     }
 
