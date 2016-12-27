@@ -29,7 +29,6 @@ public class ServerGameController {
             }
         });
         game.setScreen(gameScreen);
-        gameScreen.showGameStage();
 
         gameManager = new GameManager(gameScreen.getGameStage());
     }
