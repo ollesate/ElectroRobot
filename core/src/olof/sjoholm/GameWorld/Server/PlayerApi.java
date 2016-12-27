@@ -8,7 +8,7 @@ import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.common.CardModel;
 
-public class PlayerApi {
+public class PlayerApi implements IPlayerApi{
     private Client client;
 
     public PlayerApi(Client client) {

@@ -25,8 +25,14 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
     private TankAnimation tankAnimation;
 
     {
+        setOrigin(getWidth() / 2, getHeight() / 2);
         tankAnimation = new TankAnimation(this);
         setDrawable(tankAnimation);
+    }
+
+    @Override
+    protected void positionChanged() {
+        setOrigin(getWidth() / 2, getHeight() / 2);
     }
 
     private final Action finishedAction = new Action() {
