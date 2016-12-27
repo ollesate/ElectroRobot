@@ -36,4 +36,9 @@ public class PlayerController {
     public boolean hasCards() {
         return cardHandModel.getCardModels().size() > 0;
     }
+
+    public void receivedCards(List<CardModel> cards) {
+        cardHandModel.clear();
+        cardHandModel.addCardModels(cards);
+    }
 }

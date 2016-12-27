@@ -6,6 +6,7 @@ import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Envelope;
+import olof.sjoholm.common.CardModel;
 
 public class PlayerApi {
     private Client client;
@@ -30,10 +31,10 @@ public class PlayerApi {
     private void onGetCardsResponse(Envelope envelope,
                                     OnCardsReceivedListener onCardsReceivedListener) {
         if (isProperResponse(envelope)) {
-            List<Action> cards = envelope.getContents(List.class);
+            List<CardModel> cards = envelope.getContents(List.class);
             onCardsReceivedListener.onCardsReceived(cards);
             Logger.d("Received action from player");
-            for (Action card : cards) {
+            for (CardModel card : cards) {
                 Logger.d("Card->" + card.toString());
             }
         } else {

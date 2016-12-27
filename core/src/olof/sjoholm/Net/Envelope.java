@@ -94,4 +94,13 @@ public class Envelope implements Serializable {
             super(null, type);
         }
     }
+
+    public static class StartGame extends Envelope {
+        private static final String type = StartGame.class.getSimpleName();
+
+        public StartGame() {
+            super(null, type);
+        }
+    }
+
 }

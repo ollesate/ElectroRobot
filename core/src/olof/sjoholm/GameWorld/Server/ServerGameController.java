@@ -30,7 +30,7 @@ public class ServerGameController {
         });
         game.setScreen(gameScreen);
 
-        gameManager = new GameManager(gameScreen.getGameStage());
+        gameManager = new GameManager(gameScreen.getGameStage(), new GameApi(gameServer));
     }
 
     private void initServer() {

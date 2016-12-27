@@ -5,6 +5,7 @@ import java.util.List;
 
 import olof.sjoholm.GameWorld.Game.PlayerController;
 import olof.sjoholm.GameWorld.IGameStage;
+import olof.sjoholm.GameWorld.Server.GameApi;
 import olof.sjoholm.GameWorld.Server.OnCardsReceivedListener;
 import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
@@ -12,22 +13,25 @@ import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Interfaces.IGameBoard;
+import olof.sjoholm.common.CardModel;
 
 /**
  * @author sjoholm
  */
 public class GameManager {
     private IGameBoard gameBoard;
+    private GameApi gameApi;
 
     private IGameStage gameStage;
     private List<PlayerController> players;
     private final CardManager cardManager;
     private final Object fetchingCardsMutex = new Object();
 
-    public GameManager(IGameStage gameStage) {
+    public GameManager(IGameStage gameStage, GameApi gameApi) {
         this.gameStage = gameStage;
         this.gameBoard = gameStage.getGameBoard();
-        cardManager = new CardManager(players, gameBoard);
+        this.gameApi = gameApi;
+        cardManager = new CardManager(gameBoard);
     }
 
     private void setupTokens() {
@@ -37,7 +41,9 @@ public class GameManager {
     }
 
     public void startGame(List<PlayerController> players) {
+        gameApi.startGame();
         this.players = players;
+        cardManager.setPlayers(players);
         Logger.d("startGame() with " + players.size() + " players");
         setupTokens();
         new Thread(new Runnable() {
@@ -65,7 +71,8 @@ public class GameManager {
             for (final PlayerController player : players) {
                 player.getCards(new OnCardsReceivedListener() {
                     @Override
-                    public void onCardsReceived(List<Action> cards) {
+                    public void onCardsReceived(List<CardModel> cards) {
+                        player.receivedCards(cards);
                         Logger.d("Received response!");
                         synchronized (readyList) {
                             readyList.add(player);
@@ -131,9 +138,12 @@ public class GameManager {
         private List<PlayerCardPair> cardsToPlay;
         private Callback finishedCallback;
 
-        public CardManager(List<PlayerController> players, IGameBoard gameBoard) {
-            this.players = players;
+        public CardManager(IGameBoard gameBoard) {
             this.gameBoard = gameBoard;
+        }
+
+        public void setPlayers(List<PlayerController> players) {
+            this.players = players;
         }
 
         public void playRound(Callback finishedCallback) {

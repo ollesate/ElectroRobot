@@ -32,6 +32,8 @@ public class MessageHandler implements OnMessageReceivedListener {
             Envelope.SendCards sendCards = new Envelope.SendCards(cards);
             sendCards.tagWithResponseId(envelope.getResponseId());
             serverConnection.send(sendCards);
+        } else if (envelope instanceof Envelope.StartGame) {
+            dispatcher.startGame();
         }
     }
 
