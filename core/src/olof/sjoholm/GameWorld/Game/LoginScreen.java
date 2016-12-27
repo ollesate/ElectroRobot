@@ -59,11 +59,6 @@ public class LoginScreen extends ScreenAdapter {
     }
 
     @Override
-    public void hide() {
-        Gdx.input.setInputProcessor(null);
-    }
-
-    @Override
     public void render(float delta) {
         stage.act(delta);
         stage.draw();

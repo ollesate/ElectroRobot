@@ -28,8 +28,6 @@ public class GameManager {
         this.gameStage = gameStage;
         this.gameBoard = gameStage.getGameBoard();
         cardManager = new CardManager(players, gameBoard);
-
-        setupTokens();
     }
 
     private void setupTokens() {
@@ -41,6 +39,7 @@ public class GameManager {
     public void startGame(List<PlayerController> players) {
         this.players = players;
         Logger.d("startGame() with " + players.size() + " players");
+        setupTokens();
         new Thread(new Runnable() {
             @Override
             public void run() {
