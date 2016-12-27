@@ -71,8 +71,7 @@ public class GameBoard extends Group implements IGameBoard {
         for (Actor actor : getChildren()) {
             if (actor instanceof GameBoardActor) {
                 GameBoardActor gameBoardActor = ((GameBoardActor) actor);
-                gameBoardActor.setSize(tileSize, tileSize);
-                gameBoardActor.updateToBoardPosition();
+                gameBoardActor.updateStepSize(tileSize);
             }
         }
     }
@@ -80,7 +79,7 @@ public class GameBoard extends Group implements IGameBoard {
     private void addGameBoardActor(GameBoardActor actor) {
         actor.setWidth(tileSize);
         actor.setHeight(tileSize);
-        actor.updateToBoardPosition();
+        actor.updateStepSize(tileSize);
         addActor(actor);
     }
 

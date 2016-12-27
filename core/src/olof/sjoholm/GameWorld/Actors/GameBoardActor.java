@@ -8,6 +8,7 @@ import olof.sjoholm.Interfaces.Drawable;
 
 
 public class GameBoardActor extends Actor implements IGameboardActor {
+    protected int stepSize;
     private int boardX;
     private int boardY;
     private Drawable drawable;
@@ -31,14 +32,20 @@ public class GameBoardActor extends Actor implements IGameboardActor {
         boardX = x;
     }
 
-    protected void updateToBoardPosition() {
-        setX(boardX * getWidth());
-        setY(boardY * getHeight());
-    }
-
     @Override
     public void setBoardY(int y) {
         boardY = y;
+    }
+
+    public void updateStepSize(int stepSize) {
+        this.stepSize = stepSize;
+        setSize(stepSize, stepSize);
+        updateToBoardPosition();
+    }
+
+    protected void updateToBoardPosition() {
+        setX(boardX * stepSize);
+        setY(boardY * stepSize);
     }
 
     public void setDrawable(Drawable drawable) {
