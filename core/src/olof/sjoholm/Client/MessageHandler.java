@@ -33,6 +33,7 @@ public class MessageHandler implements OnMessageReceivedListener {
             sendCards.tagWithResponseId(envelope.getResponseId());
             serverConnection.send(sendCards);
         } else if (envelope instanceof Envelope.StartGame) {
+            Logger.d("Server started the game");
             dispatcher.startGame();
         }
     }

@@ -1,5 +1,6 @@
 package olof.sjoholm.Client.stages;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -10,6 +11,7 @@ import olof.sjoholm.Client.CardHandModel;
 import olof.sjoholm.Client.CardViewParser;
 import olof.sjoholm.Client.SelectableCard;
 import olof.sjoholm.GameWorld.Game.CardView;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.common.CardModel;
 
 class CardHandTable extends Table implements CardHandModel.OnHandChangedListener {
@@ -67,9 +69,18 @@ class CardHandTable extends Table implements CardHandModel.OnHandChangedListener
 
     @Override
     public void onChanged() {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                addCards();
+            }
+        });
+    }
+
+    @Override
+    public void onClear() {
         clearChildren();
         cards.clear();
-        addCards();
     }
 
     public void addCards() {

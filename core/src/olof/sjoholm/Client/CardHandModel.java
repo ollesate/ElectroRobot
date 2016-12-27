@@ -21,10 +21,6 @@ public class CardHandModel {
         CardModel modelA = models.get(indexA);
         models.set(indexA, models.get(indexB));
         models.set(indexB, modelA);
-
-        if (onHandChangedListener != null) {
-            onHandChangedListener.onChanged();
-        }
     }
 
     public void addCardModels(List<CardModel> list) {
@@ -39,7 +35,7 @@ public class CardHandModel {
     public void clear() {
         models.clear();
         if (onHandChangedListener != null) {
-            onHandChangedListener.onChanged();
+            onHandChangedListener.onClear();
         }
     }
 
@@ -52,5 +48,7 @@ public class CardHandModel {
     public interface OnHandChangedListener {
 
         void onChanged();
+
+        void onClear();
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import olof.sjoholm.Client.CardHandModel;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.GameWorld.Utils.Constants;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.common.CardModel;
 
 
@@ -33,6 +34,7 @@ public class HandStage extends Stage {
     }
 
     public void dealCards(List<CardModel> list) {
+        Logger.d("Deal cards " + list.size());
         cardHandModel.clear();
         cardHandModel.addCardModels(list);
     }
