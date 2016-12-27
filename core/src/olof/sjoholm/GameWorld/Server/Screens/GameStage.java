@@ -2,6 +2,8 @@ package olof.sjoholm.GameWorld.Server.Screens;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -30,7 +32,8 @@ public class GameStage extends Stage implements IGameStage {
     private CountDownText countDownText;
 
     public GameStage() {
-        viewport = new FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+        Camera camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+        viewport = new FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
         init();
     }
 
