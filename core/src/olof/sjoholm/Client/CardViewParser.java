@@ -7,6 +7,7 @@ import java.util.Map;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Game.CardView;
+import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.GameWorld.Utils.Rotation;
 import olof.sjoholm.common.CardModel;
 import olof.sjoholm.common.MoveModel;
@@ -47,9 +48,23 @@ public class CardViewParser {
         public CardView toCard(MoveModel model) {
             CardView cardView = new CardView();
             cardView.setTitle("Move");
-            cardView.setActionTexture(Textures.up);
+            cardView.setActionTexture(getTexture(model.direction));
             cardView.setPowerText(String.valueOf(model.steps));
             return cardView;
+        }
+
+        private Texture getTexture(Direction direction) {
+            switch (direction) {
+                case UP:
+                    return Textures.up;
+                case LEFT:
+                    return Textures.left;
+                case RIGHT:
+                    return Textures.right;
+                case DOWN:
+                    return Textures.down;
+            }
+            throw new IllegalArgumentException("No texture for " + direction);
         }
     }
 

@@ -31,6 +31,9 @@ public class CardHandModel {
         for (CardModel cardModel : list) {
             models.add(cardModel);
         }
+        if (onHandChangedListener != null) {
+            onHandChangedListener.onChanged();
+        }
     }
 
     public void clear() {

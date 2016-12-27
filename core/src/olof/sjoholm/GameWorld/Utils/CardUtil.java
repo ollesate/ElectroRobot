@@ -62,7 +62,7 @@ public class CardUtil {
         return cards;
     }
 
-    private static olof.sjoholm.common.CardModel createRandomCard() {
+    public static olof.sjoholm.common.CardModel createRandomCard() {
         return CardModelFactory.getInstance().createRandom();
     }
 

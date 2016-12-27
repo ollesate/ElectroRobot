@@ -46,6 +46,12 @@ public class CardView extends Table {
         background = Backgrounds.create(Color.WHITE);
     }
 
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        // Ignore regular hit matching having to do with children, only focus on bounds
+        return x >= 0 && x < getWidth() && y >= 0 && y < getHeight() ? this : null;
+    }
+
     public void setTitle(String title) {
         titleLabel.setText(title);
     }

@@ -14,7 +14,7 @@ public class CardModelFactory {
     private static CardModelFactory cardFactory;
 
     private CardModelFactory() {
-        addFactory(new MoveCardFactory(), 3);
+        addFactory(new MoveCardFactory(), 2);
         addFactory(new RotateCardFactory(), 1);
     }
 
@@ -50,7 +50,7 @@ public class CardModelFactory {
             MoveModel model = new MoveModel();
             model.type = MoveModel.class.getName();
             model.steps = MathUtils.random(1, 4);
-            model.direction = Direction.random();
+            model.direction = Direction.UP;
             return model;
         }
     }

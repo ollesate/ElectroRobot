@@ -67,7 +67,7 @@ class CardHandTable extends Table implements CardHandModel.OnHandChangedListener
 
     @Override
     public void onChanged() {
-        clear();
+        clearChildren();
         cards.clear();
         addCards();
     }
