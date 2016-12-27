@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.GameWorld.Utils.Rotation;
 import olof.sjoholm.GameWorld.Utils.TankAnimation;
 import olof.sjoholm.Interfaces.Callback;
@@ -65,12 +66,6 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
     public void move(int steps, Direction direction, Callback finishedCallback) {
         this.finishedCallback = finishedCallback;
 
-        int possibleSteps = gameBoard.getPossibleSteps(direction, getBoardX(), getBoardY());
-
-        int actualSteps = (possibleSteps > steps) ? steps : possibleSteps;
-
-        int waitSteps = steps - actualSteps;
-
         Vector2 currentDir = new Vector2(
                 MathUtils.cos(getRotation()),
                 MathUtils.sin(getRotation())
@@ -92,12 +87,20 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
             default:
                 throw new IllegalArgumentException("Illegal direction " + direction);
         }
+
+        Logger.d("Current direction " + currentDir + " -> " + direction + " -> " + newDirection);
+
+        int possibleSteps = gameBoard.getPossibleSteps(newDirection, getBoardX(), getBoardY());
+
+        int actualSteps = (possibleSteps > steps) ? steps : possibleSteps;
+
+        int waitSteps = steps - actualSteps;
         
         setBoardX(getBoardX() + (int) newDirection.x * actualSteps);
         setBoardY(getBoardY() + (int) newDirection.y * actualSteps);
 
         SequenceAction moveSequence = Actions.sequence(
-                getMovementSequence(actualSteps, direction),
+                getMovementSequence(actualSteps, newDirection),
                 getWaitSequence(waitSteps),
                 finishedAction
         );
@@ -120,7 +123,7 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
         addAction(sequence);
     }
 
-    private Action getMovementSequence(int steps, Direction direction) {
+    private Action getMovementSequence(int steps, Vector2 direction) {
         if (steps == 0) {
             return Actions.delay(0f);
         }

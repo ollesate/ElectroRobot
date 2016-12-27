@@ -1,5 +1,7 @@
 package olof.sjoholm.Interfaces;
 
+import com.badlogic.gdx.math.Vector2;
+
 import olof.sjoholm.GameWorld.Game.PlayerController;
 import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Direction;
@@ -13,6 +15,6 @@ public interface IGameBoard {
 
     int isTileAvailable(int x, int y);
 
-    int getPossibleSteps(Direction direction, int x, int y);
+    int getPossibleSteps(Vector2 direction, int x, int y);
 
 }

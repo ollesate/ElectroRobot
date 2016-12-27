@@ -1,5 +1,6 @@
 package olof.sjoholm.GameWorld.Actors;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -10,7 +11,6 @@ import java.util.Map;
 import olof.sjoholm.GameWorld.Game.PlayerController;
 import olof.sjoholm.GameWorld.Level;
 import olof.sjoholm.GameWorld.Utils.Constants;
-import olof.sjoholm.GameWorld.Utils.Direction;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.MovableToken;
@@ -127,7 +127,7 @@ public class GameBoard extends Group implements IGameBoard {
         return false;
     }
 
-    public int getPossibleSteps(Direction direction, int x, int y) {
+    public int getPossibleSteps(Vector2 direction, int x, int y) {
         int actualSteps = 0;
 
         x += direction.x;
