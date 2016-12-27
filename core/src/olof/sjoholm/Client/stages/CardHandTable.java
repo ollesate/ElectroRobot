@@ -83,6 +83,13 @@ class CardHandTable extends Table implements CardHandModel.OnHandChangedListener
         cards.clear();
     }
 
+    @Override
+    public void onSwap() {
+        clearChildren();
+        cards.clear();
+        addCards();
+    }
+
     public void addCards() {
         for (CardModel cardModel : cardHandModel.getCardModels()) {
             CardView cardView = CardViewParser.getInstance().modelToView(cardModel);

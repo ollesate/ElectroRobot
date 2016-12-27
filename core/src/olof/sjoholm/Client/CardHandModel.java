@@ -21,6 +21,10 @@ public class CardHandModel {
         CardModel modelA = models.get(indexA);
         models.set(indexA, models.get(indexB));
         models.set(indexB, modelA);
+
+        if (onHandChangedListener != null) {
+            onHandChangedListener.onSwap();
+        }
     }
 
     public void addCardModels(List<CardModel> list) {
@@ -50,5 +54,7 @@ public class CardHandModel {
         void onChanged();
 
         void onClear();
+
+        void onSwap();
     }
 }

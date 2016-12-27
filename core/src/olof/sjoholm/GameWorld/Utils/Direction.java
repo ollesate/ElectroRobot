@@ -1,5 +1,7 @@
 package olof.sjoholm.GameWorld.Utils;
 
+import com.badlogic.gdx.math.MathUtils;
+
 public enum Direction {
 
     UP(0, 1),

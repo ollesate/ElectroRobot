@@ -18,6 +18,7 @@ public class Actions {
 
     private Actions() {
         addParser(MoveModel.class, new MoveParser());
+        addParser(RotateModel.class, new RotateParser());
     }
 
     private static Actions getInstance() {

@@ -2,6 +2,7 @@ package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -70,8 +71,30 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
 
         int waitSteps = steps - actualSteps;
 
-        setBoardX(getBoardX() + direction.x * actualSteps);
-        setBoardY(getBoardY() + direction.y * actualSteps);
+        Vector2 currentDir = new Vector2(
+                MathUtils.cos(getRotation()),
+                MathUtils.sin(getRotation())
+        );
+        Vector2 newDirection;
+        switch (direction) {
+            case UP:
+                newDirection = new Vector2(currentDir);
+                break;
+            case LEFT:
+                newDirection = new Vector2(currentDir).rotate90(1);
+                break;
+            case RIGHT:
+                newDirection = new Vector2(currentDir).rotate90(-1);
+                break;
+            case DOWN:
+                newDirection = new Vector2(currentDir).scl(-1);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal direction " + direction);
+        }
+        
+        setBoardX(getBoardX() + (int) newDirection.x * actualSteps);
+        setBoardY(getBoardY() + (int) newDirection.y * actualSteps);
 
         SequenceAction moveSequence = Actions.sequence(
                 getMovementSequence(actualSteps, direction),
