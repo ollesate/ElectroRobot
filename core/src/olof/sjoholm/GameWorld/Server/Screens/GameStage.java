@@ -33,13 +33,14 @@ public class GameStage extends Stage implements IGameStage {
 
     public GameStage() {
         Camera camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+        camera.position.set(Constants.WORLD_WIDTH / 2, Constants.WORLD_HEIGHT / 2, 0);
         viewport = new FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
         init();
     }
 
     private void init() {
         setViewport(viewport);
-        gameBoard = new GameBoard(this);
+        gameBoard = new GameBoard();
         gameBoard.loadMap(Levels.Level1());
 
         getRoot().setWidth(Constants.WORLD_WIDTH);
@@ -50,7 +51,7 @@ public class GameStage extends Stage implements IGameStage {
         Table table = new Table();
         table.top();
         table.setFillParent(true);
-        table.add(gameBoard);
+        table.add(gameBoard).grow().center().pad(100);
         table.row();
         table.addActor(countDownText);
 

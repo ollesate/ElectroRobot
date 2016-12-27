@@ -14,7 +14,7 @@ public class GameScreenTest {
             {0, 0, 0, 0, 0},
     };
     private Level map = new Level(testLevel);
-    private olof.sjoholm.GameWorld.Actors.GameBoard gameBoard = new olof.sjoholm.GameWorld.Actors.GameBoard(null);
+    private olof.sjoholm.GameWorld.Actors.GameBoard gameBoard = new olof.sjoholm.GameWorld.Actors.GameBoard();
 
     @Test
     public void upFromBottomLeft() {

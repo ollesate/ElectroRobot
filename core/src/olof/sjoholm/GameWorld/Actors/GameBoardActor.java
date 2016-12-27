@@ -32,8 +32,8 @@ public class GameBoardActor extends Actor implements IGameboardActor {
     }
 
     protected void updateToBoardPosition() {
-        setX(boardX * Constants.STEP_SIZE);
-        setY(boardY * Constants.STEP_SIZE);
+        setX(boardX * getWidth());
+        setY(boardY * getHeight());
     }
 
     @Override
