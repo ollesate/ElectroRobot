@@ -14,8 +14,4 @@ public interface Player {
 
     Action popTopCard();
 
-    interface OnCardsReceivedListener {
-
-        void onCardsReceived(List<Action> cards);
-    }
 }

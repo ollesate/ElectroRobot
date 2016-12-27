@@ -9,52 +9,62 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.util.List;
 import java.util.Locale;
 
 import olof.sjoholm.GameLogic.GameManager;
 import olof.sjoholm.GameWorld.Actors.GameBoard;
+import olof.sjoholm.GameWorld.Game.PlayerController;
+import olof.sjoholm.GameWorld.IGameStage;
 import olof.sjoholm.GameWorld.Levels;
+import olof.sjoholm.GameWorld.Server.PlayerApi;
 import olof.sjoholm.GameWorld.Server.PlayerManager;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
+import olof.sjoholm.Interfaces.IGameBoard;
 
 
-public class GameScreen extends ScreenAdapter {
-    private Stage stage;
+public class GameStage extends Stage implements IGameStage {
     private GameBoard gameBoard;
-    private PlayerManager playerManager;
     private final Viewport viewport;
-    private Table table;
+    private CountDownText countDownText;
 
-    public GameScreen(PlayerManager playerManager) {
-        this.playerManager = playerManager;
+    public GameStage() {
         viewport = new FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+        init();
     }
 
-    @Override
-    public void show() {
-        stage = new Stage(viewport);
-        gameBoard = new GameBoard(stage);
+    private void init() {
+        setViewport(viewport);
+        gameBoard = new GameBoard(this);
         gameBoard.loadMap(Levels.Level1());
 
-        stage.getRoot().setWidth(Constants.WORLD_WIDTH);
-        stage.getRoot().setHeight(Constants.WORLD_HEIGHT);
+        getRoot().setWidth(Constants.WORLD_WIDTH);
+        getRoot().setHeight(Constants.WORLD_HEIGHT);
 
-        CountDownText countDownText = new CountDownText();
+        countDownText = new CountDownText();
 
-        table = new Table();
+        Table table = new Table();
         table.top();
         table.setFillParent(true);
         table.add(gameBoard);
         table.row();
         table.addActor(countDownText);
 
-        stage.addActor(table);
-
-        new GameManager(gameBoard, playerManager, countDownText);
+        addActor(table);
     }
 
-    private static class CountDownText extends Table implements CountDownManager {
+    @Override
+    public IGameBoard getGameBoard() {
+        return gameBoard;
+    }
+
+    @Override
+    public void startCountdown(float timeSec) {
+        countDownText.startCountDown(timeSec);
+    }
+
+    private static class CountDownText extends Table {
         private final TextField textField;
         private float countdown;
         private boolean isCounting;
@@ -84,25 +94,8 @@ public class GameScreen extends ScreenAdapter {
             }
         }
 
-        @Override
-        public void startCountDown(long millis) {
-            countdown = millis / 1000;
+        public void startCountDown(float seconds) {
+            countdown = seconds;
         }
-    }
-
-    public interface CountDownManager {
-
-        void startCountDown(long millis);
-    }
-
-    @Override
-    public void render(float delta) {
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 }

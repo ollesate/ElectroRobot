@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 
 import olof.sjoholm.Client.CardHandModel;
-import olof.sjoholm.Client.CardViewFactory;
+import olof.sjoholm.Client.CardViewParser;
 import olof.sjoholm.Client.SelectableCard;
 import olof.sjoholm.GameWorld.Game.CardView;
 import olof.sjoholm.common.CardModel;
@@ -74,7 +74,7 @@ class CardHandTable extends Table implements CardHandModel.OnHandChangedListener
 
     public void addCards() {
         for (CardModel cardModel : cardHandModel.getCardModels()) {
-            CardView cardView = CardViewFactory.getInstance().modelToView(cardModel);
+            CardView cardView = CardViewParser.getInstance().modelToView(cardModel);
             SelectableCard selectableCard = new SelectableCard(cardView);
             cards.add(selectableCard);
             add(cardView).width(300f).height(600f).padLeft(20).top();

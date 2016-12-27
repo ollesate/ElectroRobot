@@ -15,12 +15,12 @@ public enum Direction {
         this.y = y;
     }
 
+    public int x;
+
+    public int y;
+
     public static Direction random() {
         int rand = (int)(Math.random() * Direction.values().length);
         return Direction.values()[rand];
     }
-
-    public int x;
-
-    public int y;
 }

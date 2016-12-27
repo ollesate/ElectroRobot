@@ -3,9 +3,10 @@ package olof.sjoholm.GameLogic;
 import java.util.ArrayList;
 import java.util.List;
 
+import olof.sjoholm.GameWorld.Game.PlayerController;
+import olof.sjoholm.GameWorld.IGameStage;
+import olof.sjoholm.GameWorld.Server.OnCardsReceivedListener;
 import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.GameWorld.Server.PlayerManager;
-import olof.sjoholm.GameWorld.Server.Screens.GameScreen;
 import olof.sjoholm.GameWorld.Utils.CardUtil;
 import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.Callback;
@@ -17,36 +18,29 @@ import olof.sjoholm.Interfaces.IGameBoard;
  */
 public class GameManager {
     private IGameBoard gameBoard;
-    private PlayerManager playerManager;
-    private GameScreen.CountDownManager countDownManager;
 
-    private List<Player> players = new ArrayList<Player>();
+    private IGameStage gameStage;
+    private List<PlayerController> players;
     private final CardManager cardManager;
     private final Object fetchingCardsMutex = new Object();
 
-    public GameManager(IGameBoard gameBoard, PlayerManager playerManager,
-                       GameScreen.CountDownManager countDownManager) {
-        this.gameBoard = gameBoard;
-        this.playerManager = playerManager;
-        this.countDownManager = countDownManager;
-        cardManager = new CardManager(playerManager.getPlayers(), gameBoard);
+    public GameManager(IGameStage gameStage) {
+        this.gameStage = gameStage;
+        this.gameBoard = gameStage.getGameBoard();
+        cardManager = new CardManager(players, gameBoard);
 
-        setupBoard();
-        startGame();
+        setupTokens();
     }
 
-    private void setupBoard() {
-        players.clear();
-        for (Player player : playerManager.getPlayers()) {
+    private void setupTokens() {
+        for (PlayerController player : players) {
             gameBoard.spawnToken(player);
-            players.add(player);
         }
     }
 
-    private void startGame() {
-        playerManager.alertStartGame();
-
-        Logger.d("startGame()");
+    public void startGame(List<PlayerController> players) {
+        this.players = players;
+        Logger.d("startGame() with " + players.size() + " players");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -68,9 +62,9 @@ public class GameManager {
         Logger.d("fetchCardsFromPlayers()");
         synchronized (fetchingCardsMutex) {
 
-            final List<Player> readyList = new ArrayList<Player>();
-            for (final Player player : players) {
-                player.getCards(new Player.OnCardsReceivedListener() {
+            final List<PlayerController> readyList = new ArrayList<PlayerController>();
+            for (final PlayerController player : players) {
+                player.getCards(new OnCardsReceivedListener() {
                     @Override
                     public void onCardsReceived(List<Action> cards) {
                         Logger.d("Received response!");
@@ -91,10 +85,10 @@ public class GameManager {
 
     private void givePlayersTime() {
         Logger.d("Lets wait for players to make their turn");
-        long countDownTime = 10000L;
-        countDownManager.startCountDown(countDownTime);
+        float countDownTime = 10f;
+        gameStage.startCountdown(countDownTime);
         try {
-            Thread.sleep(countDownTime);
+            Thread.sleep((long)(countDownTime * 1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -114,7 +108,7 @@ public class GameManager {
     }
 
     private void dealCards() {
-        for (Player player : players) {
+        for (PlayerController player : players) {
             player.dealCards(CardUtil.createRandomCards(5));
         }
     }
@@ -133,12 +127,12 @@ public class GameManager {
     }
 
     private static class CardManager {
-        private List<Player> players;
+        private List<PlayerController> players;
         private IGameBoard gameBoard;
         private List<PlayerCardPair> cardsToPlay;
         private Callback finishedCallback;
 
-        public CardManager(List<Player> players, IGameBoard gameBoard) {
+        public CardManager(List<PlayerController> players, IGameBoard gameBoard) {
             this.players = players;
             this.gameBoard = gameBoard;
         }
@@ -152,7 +146,7 @@ public class GameManager {
         private void playTurn() {
             cardsToPlay = popTopCards();
             if (cardsToPlay.size() > 0) {
-                Logger.d("playSetOfCards() " + cardsToPlay.get(0).card.toString());
+                Logger.d("playSetOfCards() " + cardsToPlay.get(0).action.toString());
                 playCards();
             } else {
                 finishedCallback.callback();
@@ -162,7 +156,7 @@ public class GameManager {
         private void playCards() {
             if (cardsToPlay.size() > 0) {
                 final PlayerCardPair pair = cardsToPlay.get(0);
-                final Action card = pair.card;
+                final Action card = pair.action;
                 card.apply(gameBoard.getToken(pair.player), new Callback() {
                     @Override
                     public void callback() {
@@ -177,9 +171,9 @@ public class GameManager {
 
         private List<PlayerCardPair> popTopCards() {
             List<PlayerCardPair> cards = new ArrayList<PlayerCardPair>();
-            for (Player player : players) {
+            for (PlayerController player : players) {
                 if (player.hasCards()) {
-                    cards.add(new PlayerCardPair(player, player.popTopCard()));
+                    cards.add(new PlayerCardPair(player, player.drawAction()));
                 }
             }
             return cards;
@@ -187,12 +181,12 @@ public class GameManager {
     }
 
     private static class PlayerCardPair {
-        public Player player;
-        public Action card;
+        public PlayerController player;
+        public Action action;
 
-        public PlayerCardPair(Player player, Action card) {
+        public PlayerCardPair(PlayerController player, Action action) {
             this.player = player;
-            this.card = card;
+            this.action = action;
         }
     }
 }

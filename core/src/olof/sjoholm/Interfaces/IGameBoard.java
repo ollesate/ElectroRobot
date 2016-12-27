@@ -1,14 +1,15 @@
 package olof.sjoholm.Interfaces;
 
+import olof.sjoholm.GameWorld.Game.PlayerController;
 import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Direction;
 
 
 public interface IGameBoard {
 
-    void spawnToken(Player owner);
+    void spawnToken(PlayerController owner);
 
-    MovableToken getToken(Player owner);
+    MovableToken getToken(PlayerController owner);
 
     int isTileAvailable(int x, int y);
 

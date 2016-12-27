@@ -13,24 +13,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
 import olof.sjoholm.GameWorld.Server.Robo;
 import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.GameWorld.Utils.ScreenAdapter;
 import olof.sjoholm.Net.Envelope;
 
-public class LobbyScreen extends ScreenAdapter {
-    private Stage stage;
+public class LobbyStage extends Stage {
     private PlayersLabel playersLabel;
     private StartGameButton startGameButton;
     private OnStartGameListener onStartGameListener;
     private int connectedPlayers;
 
-    public LobbyScreen(OnStartGameListener listener) {
+    public LobbyStage(OnStartGameListener listener) {
         this.onStartGameListener = listener;
+        init();
     }
 
-    @Override
-    public void show() {
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
+    private void init() {
+        Gdx.input.setInputProcessor(this);
         initLayout();
 
         Robo.server.addOnMessageListener(new OnMessageReceivedListener() {
@@ -62,18 +59,7 @@ public class LobbyScreen extends ScreenAdapter {
         table.row();
         table.add(startGameButton).width(100);
 
-        stage.addActor(table);
-    }
-
-    @Override
-    public void render(float delta) {
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void dispose() {
-
+        addActor(table);
     }
 
     public void onPlayersUpdated(int connectedPlayers) {
@@ -132,7 +118,7 @@ public class LobbyScreen extends ScreenAdapter {
                 public void changed (ChangeEvent event, Actor actor) {
                     if (players > 0) {
                         Logger.d("Start game");
-                        LobbyScreen.this.onStartGameListener.onStartGame();
+                        LobbyStage.this.onStartGameListener.onStartClicked();
                     }
                 }
             });
@@ -145,7 +131,7 @@ public class LobbyScreen extends ScreenAdapter {
 
     public interface OnStartGameListener {
 
-        void onStartGame();
+        void onStartClicked();
     }
 
 }

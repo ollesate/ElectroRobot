@@ -8,7 +8,7 @@ import java.util.List;
 import olof.sjoholm.GameLogic.ConcretePlayer;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Interfaces.Action;
-import olof.sjoholm.common.CardFactory;
+import olof.sjoholm.common.CardModelFactory;
 
 
 public class CardUtil {
@@ -54,16 +54,16 @@ public class CardUtil {
         return cards;
     }
 
-    public static List<Action> createRandomCards(int count) {
-        List<Action> cards = new ArrayList<Action>();
+    public static List<olof.sjoholm.common.CardModel> createRandomCards(int count) {
+        List<olof.sjoholm.common.CardModel> cards = new ArrayList<olof.sjoholm.common.CardModel>();
         for (int i = 0; i < count; i++) {
             cards.add(createRandomCard());
         }
         return cards;
     }
 
-    private static Action createRandomCard() {
-        return CardFactory.getInstance().createRandom();
+    private static olof.sjoholm.common.CardModel createRandomCard() {
+        return CardModelFactory.getInstance().createRandom();
     }
 
 }

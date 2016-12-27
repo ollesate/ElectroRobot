@@ -1,15 +1,9 @@
 package olof.sjoholm.Client;
 
-import com.badlogic.gdx.utils.Array;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.common.CardModel;
-
-/**
- * Created by sjoholm on 25/12/16.
- */
 
 public class CardHandModel {
     private final List<CardModel> models = new ArrayList<CardModel>();
@@ -44,6 +38,12 @@ public class CardHandModel {
         if (onHandChangedListener != null) {
             onHandChangedListener.onChanged();
         }
+    }
+
+    public CardModel popTop() {
+        CardModel cardModel = models.get(0);
+        models.remove(0);
+        return cardModel;
     }
 
     public interface OnHandChangedListener {

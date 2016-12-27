@@ -12,18 +12,18 @@ import olof.sjoholm.common.CardModel;
 import olof.sjoholm.common.MoveModel;
 import olof.sjoholm.common.RotateModel;
 
-public class CardViewFactory {
+public class CardViewParser {
     private final Map<String, CardParser> cardParsers = new HashMap<String, CardParser>();
-    private static CardViewFactory instance;
+    private static CardViewParser instance;
 
-    private CardViewFactory() {
+    private CardViewParser() {
         addParser(new MoveCardParser(), MoveModel.class.getName());
         addParser(new RotateCardParser(), RotateModel.class.getName());
     }
 
-    public static CardViewFactory getInstance() {
+    public static CardViewParser getInstance() {
         if (instance == null) {
-            instance = new CardViewFactory();
+            instance = new CardViewParser();
         }
         return instance;
     }

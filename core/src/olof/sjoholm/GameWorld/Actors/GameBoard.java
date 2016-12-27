@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import java.util.HashMap;
 import java.util.Map;
 
+import olof.sjoholm.GameWorld.Game.PlayerController;
 import olof.sjoholm.GameWorld.Level;
 import olof.sjoholm.GameWorld.Server.Player;
 import olof.sjoholm.GameWorld.Utils.Constants;
@@ -17,12 +18,12 @@ import olof.sjoholm.Interfaces.MovableToken;
 public class GameBoard extends Group implements IGameBoard {
     public static final int size = 30;
     private Stage stage;
-    private Map<Player, MovableToken> playerTokens;
+    private Map<PlayerController, MovableToken> playerTokens;
     private Level level;
 
     public GameBoard(Stage stage) {
         this.stage = stage;
-        playerTokens = new HashMap<Player, MovableToken>();
+        playerTokens = new HashMap<PlayerController, MovableToken>();
     }
 
     public void loadMap(Level level) {
@@ -50,7 +51,7 @@ public class GameBoard extends Group implements IGameBoard {
     }
 
     @Override
-    public void spawnToken(Player owner) {
+    public void spawnToken(PlayerController owner) {
         PlayerToken playerToken = new PlayerToken(this);
         if (playerTokens.size() == 0) {
             playerToken.setBoardX(0);
@@ -65,7 +66,7 @@ public class GameBoard extends Group implements IGameBoard {
     }
 
     @Override
-    public MovableToken getToken(Player owner) {
+    public MovableToken getToken(PlayerController owner) {
         return playerTokens.get(owner);
     }
 
