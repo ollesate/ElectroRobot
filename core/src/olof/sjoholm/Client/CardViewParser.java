@@ -46,11 +46,11 @@ public class CardViewParser {
 
         @Override
         public CardView toCard(MoveModel model) {
-            CardView cardView = new CardView();
-            cardView.setTitle("Move");
-            cardView.setActionTexture(getTexture(model.direction));
-            cardView.setPowerText(String.valueOf(model.steps));
-            return cardView;
+            CardView.Resource resource = new CardView.Resource();
+            resource.texture = getTexture(model.direction);
+            resource.powerText = String.valueOf(model.steps);
+            resource.title = "Move";
+            return new CardView(resource);
         }
 
         private Texture getTexture(Direction direction) {
@@ -72,11 +72,11 @@ public class CardViewParser {
 
         @Override
         public CardView toCard(RotateModel model) {
-            CardView cardView = new CardView();
-            cardView.setTitle("Rotate");
-            cardView.setActionTexture(getTexture(model.rotation));
-            cardView.setPowerText("100");
-            return cardView;
+            CardView.Resource resource = new CardView.Resource();
+            resource.texture = getTexture(model.rotation);
+            resource.powerText = "100";
+            resource.title = "Rotate";
+            return new CardView(resource);
         }
 
         private Texture getTexture(Rotation rotation) {
