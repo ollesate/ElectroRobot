@@ -12,8 +12,8 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import olof.sjoholm.GameWorld.Server.Robo;
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Utils.Robo;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Net.Envelope;
 
 import static javax.swing.UIManager.get;

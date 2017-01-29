@@ -10,9 +10,8 @@ import com.badlogic.gdx.utils.Array;
 import olof.sjoholm.Client.CardHandModel;
 import olof.sjoholm.Client.CardViewParser;
 import olof.sjoholm.Client.SelectableCard;
-import olof.sjoholm.GameWorld.Game.CardView;
-import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.GameWorld.Actors.CardView;
+import olof.sjoholm.Models.CardModel;
 
 class CardHandTable extends Table implements CardHandModel.OnHandChangedListener {
     private static final int WIDTH = 300;

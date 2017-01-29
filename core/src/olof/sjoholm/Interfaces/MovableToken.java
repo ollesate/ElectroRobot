@@ -1,8 +1,8 @@
 package olof.sjoholm.Interfaces;
 
 import olof.sjoholm.GameWorld.Actors.IGameboardActor;
-import olof.sjoholm.GameWorld.Utils.Direction;
-import olof.sjoholm.GameWorld.Utils.Rotation;
+import olof.sjoholm.Utils.Direction;
+import olof.sjoholm.Utils.Rotation;
 
 
 public interface MovableToken extends IGameboardActor {

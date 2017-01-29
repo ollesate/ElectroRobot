@@ -3,7 +3,7 @@ package olof.sjoholm.Client;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.Models.CardModel;
 
 public class CardHandModel {
     private final List<CardModel> models = new ArrayList<CardModel>();

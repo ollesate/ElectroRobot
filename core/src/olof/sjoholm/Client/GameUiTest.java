@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.GameLogic.GameManager;
-import olof.sjoholm.GameWorld.Game.PlayerController;
-import olof.sjoholm.GameWorld.Server.GameApi;
-import olof.sjoholm.GameWorld.Server.GameScreen;
-import olof.sjoholm.GameWorld.Server.IPlayerApi;
-import olof.sjoholm.GameWorld.Server.OnCardsReceivedListener;
-import olof.sjoholm.GameWorld.Utils.Direction;
-import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.common.CardModel;
-import olof.sjoholm.common.MoveModel;
+import olof.sjoholm.GameLogic.PlayerController;
+import olof.sjoholm.Net.Game.GameApi;
+import olof.sjoholm.Views.GameScreen;
+import olof.sjoholm.Interfaces.IPlayerApi;
+import olof.sjoholm.Interfaces.OnCardsReceivedListener;
+import olof.sjoholm.Utils.Direction;
+import olof.sjoholm.Models.CardModel;
+import olof.sjoholm.Models.MoveModel;
 
 public class GameUiTest {
     private final GameScreen gameScreen;

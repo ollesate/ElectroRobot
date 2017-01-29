@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import olof.sjoholm.Net.Both.Client;
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.Models.CardModel;
 
 public class Envelope implements Serializable {
     private static final AtomicLong idCounter = new AtomicLong(0);

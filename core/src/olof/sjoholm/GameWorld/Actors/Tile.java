@@ -1,7 +1,7 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.GameWorld.Utils.RegionDrawable;
+import olof.sjoholm.GameWorld.Assets.RegionDrawable;
 
 public class Tile extends GameBoardActor {
 

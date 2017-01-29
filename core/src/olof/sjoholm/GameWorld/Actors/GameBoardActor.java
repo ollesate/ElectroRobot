@@ -3,7 +3,7 @@ package olof.sjoholm.GameWorld.Actors;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import olof.sjoholm.GameWorld.Utils.Constants;
+import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Interfaces.Drawable;
 
 

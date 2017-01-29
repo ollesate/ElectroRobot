@@ -2,8 +2,7 @@ package olof.sjoholm.Client;
 
 import com.badlogic.gdx.graphics.Color;
 
-import olof.sjoholm.GameWorld.Game.CardView;
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.GameWorld.Actors.CardView;
 
 public class SelectableCard {
     private static Color SELECTED_COLOR = Color.GREEN;

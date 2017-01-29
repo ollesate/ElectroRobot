@@ -3,7 +3,7 @@ package olof.sjoholm.Client;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
+import olof.sjoholm.Interfaces.OnMessageReceivedListener;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Envelope;

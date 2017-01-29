@@ -7,7 +7,7 @@ import java.util.List;
 
 import olof.sjoholm.Client.stages.HandStage;
 import olof.sjoholm.Client.stages.LobbyStage;
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.Models.CardModel;
 
 public class PlayerGame extends ScreenAdapter {
     private final HandStage handStage;

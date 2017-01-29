@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.GameWorld.Game.CardView;
-import olof.sjoholm.GameWorld.Utils.Direction;
-import olof.sjoholm.GameWorld.Utils.Rotation;
-import olof.sjoholm.common.CardModel;
-import olof.sjoholm.common.MoveModel;
-import olof.sjoholm.common.RotateModel;
+import olof.sjoholm.GameWorld.Actors.CardView;
+import olof.sjoholm.Utils.Direction;
+import olof.sjoholm.Utils.Rotation;
+import olof.sjoholm.Models.CardModel;
+import olof.sjoholm.Models.MoveModel;
+import olof.sjoholm.Models.RotateModel;
 
 public class CardViewParser {
     private final Map<String, CardParser> cardParsers = new HashMap<String, CardParser>();

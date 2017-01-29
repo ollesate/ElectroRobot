@@ -2,10 +2,10 @@ package olof.sjoholm.Client;
 
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Interfaces.OnMessageReceivedListener;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Net.Envelope;
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.Models.CardModel;
 
 /**
  * Created by sjoholm on 23/12/16.

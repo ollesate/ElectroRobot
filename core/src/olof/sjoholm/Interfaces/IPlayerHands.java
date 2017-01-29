@@ -2,7 +2,7 @@ package olof.sjoholm.Interfaces;
 
 import java.util.List;
 
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.Models.CardModel;
 
 public interface IPlayerHands {
 

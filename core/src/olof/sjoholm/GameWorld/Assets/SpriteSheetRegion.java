@@ -3,7 +3,7 @@ package olof.sjoholm.GameWorld.Assets;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import olof.sjoholm.GameWorld.Utils.Constants;
+import olof.sjoholm.Utils.Constants;
 
 
 public class SpriteSheetRegion extends TextureRegion {

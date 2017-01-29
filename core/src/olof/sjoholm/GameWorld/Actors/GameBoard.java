@@ -8,10 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import java.util.HashMap;
 import java.util.Map;
 
-import olof.sjoholm.GameWorld.Game.PlayerController;
+import olof.sjoholm.GameLogic.PlayerController;
 import olof.sjoholm.GameWorld.Level;
-import olof.sjoholm.GameWorld.Utils.Constants;
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Utils.Constants;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.MovableToken;
 

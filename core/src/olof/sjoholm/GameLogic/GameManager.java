@@ -3,18 +3,16 @@ package olof.sjoholm.GameLogic;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Game.PlayerController;
-import olof.sjoholm.GameWorld.IGameStage;
-import olof.sjoholm.GameWorld.Server.GameApi;
-import olof.sjoholm.GameWorld.Server.OnCardsReceivedListener;
-import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.GameWorld.Utils.CardUtil;
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Interfaces.IGameStage;
+import olof.sjoholm.Interfaces.OnCardsReceivedListener;
+import olof.sjoholm.Net.Game.GameApi;
+import olof.sjoholm.Utils.CardUtil;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.IPlayerHands;
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.Models.CardModel;
 
 /**
  * @author sjoholm

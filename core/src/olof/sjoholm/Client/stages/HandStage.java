@@ -6,14 +6,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.Client.CardHandModel;
-import olof.sjoholm.GameWorld.Utils.CardUtil;
-import olof.sjoholm.GameWorld.Utils.Constants;
-import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.common.CardModel;
+import olof.sjoholm.Utils.Constants;
+import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Models.CardModel;
 
 
 public class HandStage extends Stage {

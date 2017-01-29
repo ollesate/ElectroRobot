@@ -8,13 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import olof.sjoholm.GameWorld.Utils.Logger;
-import olof.sjoholm.GameWorld.Utils.Rotation;
-import olof.sjoholm.GameWorld.Utils.TankAnimation;
+import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Utils.Rotation;
+import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.IGameBoard;
-import olof.sjoholm.GameWorld.Utils.Constants;
-import olof.sjoholm.GameWorld.Utils.Direction;
+import olof.sjoholm.Utils.Direction;
 import olof.sjoholm.Interfaces.MovableToken;
 
 public class PlayerToken extends GameBoardActor implements MovableToken {

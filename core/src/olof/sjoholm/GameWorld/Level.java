@@ -1,7 +1,6 @@
 package olof.sjoholm.GameWorld;
 
-import olof.sjoholm.GameWorld.Utils.Constants;
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Utils.Constants;
 
 
 public class Level {

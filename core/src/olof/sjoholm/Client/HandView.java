@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.GameWorld.Game.CardView;
-import olof.sjoholm.GameWorld.Utils.Constants;
+import olof.sjoholm.GameWorld.Actors.CardView;
+import olof.sjoholm.Utils.Constants;
 
 public class HandView extends Table {
     private static final float HORIZONTAL_SPACING = 45f;

@@ -3,9 +3,8 @@ package olof.sjoholm.Net.Server;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Net.Both.Client;
-import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Envelope;
 
 

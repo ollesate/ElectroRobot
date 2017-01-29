@@ -2,9 +2,7 @@ package olof.sjoholm.Interfaces;
 
 import com.badlogic.gdx.math.Vector2;
 
-import olof.sjoholm.GameWorld.Game.PlayerController;
-import olof.sjoholm.GameWorld.Server.Player;
-import olof.sjoholm.GameWorld.Utils.Direction;
+import olof.sjoholm.GameLogic.PlayerController;
 
 
 public interface IGameBoard {

@@ -4,7 +4,7 @@ import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Net.Both.Client;
 
 /**

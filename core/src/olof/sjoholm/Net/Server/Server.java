@@ -8,9 +8,8 @@ import com.badlogic.gdx.net.ServerSocketHints;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.GameWorld.Net.OnMessageReceivedListener;
-import olof.sjoholm.GameWorld.Net.ServerApi;
-import olof.sjoholm.GameWorld.Utils.Logger;
+import olof.sjoholm.Interfaces.OnMessageReceivedListener;
+import olof.sjoholm.Interfaces.ServerApi;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Both.OnMessageListener;
 import olof.sjoholm.Net.Envelope;

@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import org.junit.Test;
 
 import olof.sjoholm.GameWorld.Level;
-import olof.sjoholm.GameWorld.Utils.Direction;
+import olof.sjoholm.Utils.Direction;
 
 import static org.junit.Assert.*;
 
