@@ -29,6 +29,7 @@ public class GameServer {
                 } else if (envelope instanceof Envelope.ClientDisconnection) {
                     players.remove(clientId);
                 }
+                Robo.broadcast(envelope, clientId);
             }
         });
     }

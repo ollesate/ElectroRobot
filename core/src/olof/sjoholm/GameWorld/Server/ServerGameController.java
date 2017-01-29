@@ -35,7 +35,7 @@ public class ServerGameController {
 
     private void initServer() {
         Logger.d("Starting game server");
-        Robo.server = server = new Server(ServerConstants.HOST_NAME, ServerConstants.CONNECTION_PORT);
+        server = new Server(ServerConstants.HOST_NAME, ServerConstants.CONNECTION_PORT);
         gameServer = new GameServer(server);
         server.start();
     }

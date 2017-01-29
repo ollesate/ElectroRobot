@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
+import olof.sjoholm.Client.GameUiTest;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Client.ClientController;
 import olof.sjoholm.GameWorld.Server.Robo;
@@ -12,11 +13,17 @@ import olof.sjoholm.GameWorld.Server.ServerGameController;
 import olof.sjoholm.GameWorld.Utils.Logger;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
+	public boolean debug = true;
+	public String debugPath = "playerDeckUi";
 
 	@Override
 	public void create () {
 		Textures.initialize();
-        setScreen(new LoginScreen(this));
+		if (debug) {
+			new GameUiTest(this);
+		} else {
+			setScreen(new LoginScreen(this));
+		}
 	}
 	
 	@Override

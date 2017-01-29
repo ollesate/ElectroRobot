@@ -7,7 +7,7 @@ import olof.sjoholm.GameWorld.IGameStage;
 import olof.sjoholm.GameWorld.Server.Screens.GameStage;
 import olof.sjoholm.GameWorld.Server.Screens.LobbyStage;
 
-class GameScreen extends ScreenAdapter {
+public class GameScreen extends ScreenAdapter {
     private Stage currentStage;
     private final LobbyStage lobbyStage;
     private final GameStage gameStage;

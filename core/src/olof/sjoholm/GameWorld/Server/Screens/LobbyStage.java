@@ -30,7 +30,7 @@ public class LobbyStage extends Stage {
         Gdx.input.setInputProcessor(this);
         initLayout();
 
-        Robo.server.addOnMessageListener(new OnMessageReceivedListener() {
+        Robo.subscribeServerMessage(new OnMessageReceivedListener() {
             @Override
             public void onMessage(Envelope envelope, Long clientId) {
                 if (envelope instanceof Envelope.ClientConnection) {
