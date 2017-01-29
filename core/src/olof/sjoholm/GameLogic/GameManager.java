@@ -13,6 +13,7 @@ import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.Callback;
 import olof.sjoholm.Interfaces.Action;
 import olof.sjoholm.Interfaces.IGameBoard;
+import olof.sjoholm.Interfaces.IPlayerHands;
 import olof.sjoholm.common.CardModel;
 
 /**
@@ -20,6 +21,7 @@ import olof.sjoholm.common.CardModel;
  */
 public class GameManager {
     private IGameBoard gameBoard;
+    private IPlayerHands playerHands;
     private GameApi gameApi;
 
     private IGameStage gameStage;
@@ -30,6 +32,7 @@ public class GameManager {
     public GameManager(IGameStage gameStage, GameApi gameApi) {
         this.gameStage = gameStage;
         this.gameBoard = gameStage.getGameBoard();
+        playerHands = gameStage.getPlayerHands();
         this.gameApi = gameApi;
         cardManager = new CardManager(gameBoard);
     }
@@ -72,6 +75,7 @@ public class GameManager {
                 player.getCards(new OnCardsReceivedListener() {
                     @Override
                     public void onCardsReceived(List<CardModel> cards) {
+                        playerHands.setCards(player.getPlayerId(), cards);
                         player.receivedCards(cards);
                         Logger.d("Received response!");
                         synchronized (readyList) {
@@ -91,7 +95,7 @@ public class GameManager {
 
     private void givePlayersTime() {
         Logger.d("Lets wait for players to make their turn");
-        float countDownTime = 10f;
+        float countDownTime = 2f;
         gameStage.startCountdown(countDownTime);
         try {
             Thread.sleep((long)(countDownTime * 1000));
@@ -105,7 +109,7 @@ public class GameManager {
         synchronized (fetchingCardsMutex) {
             try {
                 Logger.d("Start waiting for players...");
-                fetchingCardsMutex.wait(15000);
+                fetchingCardsMutex.wait(3000);
                 Logger.d("Finished waiting lets go!");
             } catch (InterruptedException e) {
                 e.printStackTrace();

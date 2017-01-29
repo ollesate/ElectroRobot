@@ -12,8 +12,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import olof.sjoholm.Client.CardViewParser;
 import olof.sjoholm.Client.SelectableCard;
@@ -23,17 +26,20 @@ import olof.sjoholm.GameWorld.IGameStage;
 import olof.sjoholm.GameWorld.Levels;
 import olof.sjoholm.GameWorld.Utils.Constants;
 import olof.sjoholm.GameWorld.Utils.Direction;
+import olof.sjoholm.GameWorld.Utils.Logger;
 import olof.sjoholm.Interfaces.IGameBoard;
+import olof.sjoholm.Interfaces.IPlayerHands;
 import olof.sjoholm.common.CardModel;
 import olof.sjoholm.common.MoveModel;
 
 
-public class GameStage extends Stage implements IGameStage {
+public class GameStage extends Stage implements IGameStage, IPlayerHands {
     private GameBoard gameBoard;
     private final Viewport viewport;
     private CountDownText countDownText;
     private PlayerHand playerHand1;
     private PlayerHand playerHand2;
+    private Map<Integer, PlayerHand> playerHands = new HashMap<Integer, PlayerHand>();
 
     public GameStage() {
         Camera camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
@@ -69,11 +75,12 @@ public class GameStage extends Stage implements IGameStage {
     private void initPlayerHands() {
         playerHand1 = new PlayerHand();
         playerHand2 = new PlayerHand();
+        playerHands.put(0, playerHand1);
+        playerHands.put(1, playerHand2);
     }
 
     private Table getUpperTable() {
         Table table = new Table();
-        table.setDebug(true);
         table.center();
         table.left();
         table.add(playerHand1).expandX().padBottom(10f).padTop(10f).bottom();
@@ -88,8 +95,18 @@ public class GameStage extends Stage implements IGameStage {
     }
 
     @Override
+    public IPlayerHands getPlayerHands() {
+        return this;
+    }
+
+    @Override
     public void startCountdown(float timeSec) {
         countDownText.startCountDown(timeSec);
+    }
+
+    @Override
+    public void setCards(int playerId, List<CardModel> cards) {
+        playerHands.get(playerId).setCards(cards);
     }
 
     private static class CountDownText extends Table {
@@ -127,19 +144,6 @@ public class GameStage extends Stage implements IGameStage {
         }
     }
 
-    public void addPlayerHand() {
-        playerHand1.setCards(new ArrayList<CardModel>(){{
-            add(new MoveModel(Direction.LEFT, 3));
-            add(new MoveModel(Direction.LEFT, 3));
-            add(new MoveModel(Direction.LEFT, 3));
-        }});
-        playerHand2.setCards(new ArrayList<CardModel>(){{
-            add(new MoveModel(Direction.LEFT, 3));
-            add(new MoveModel(Direction.LEFT, 3));
-            add(new MoveModel(Direction.LEFT, 3));
-        }});
-    }
-
     private static class PlayerHand extends Table {
         private List<SelectableCard> cards = new ArrayList<SelectableCard>();
         private static final float height = 125f;
@@ -149,15 +153,21 @@ public class GameStage extends Stage implements IGameStage {
             top();
         }
 
-        public void setCards(List<CardModel> cardModels) {
-            for (CardModel cardModel : cardModels) {
-                CardView cardView = CardViewParser.getInstance().modelToView(cardModel);
-                SelectableCard selectableCard = new SelectableCard(cardView);
-                cards.add(selectableCard);
-                cardView.setPadding(0f);
-                cardView.setMinSize(70f, height, 1f);
-                add(cardView).space(10f).top();
-            }
+        public void setCards(final List<CardModel> cardModels) {
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    for (CardModel cardModel : cardModels) {
+                        Logger.d("Card " + cardModel.getClass().getName());
+                        CardView cardView = CardViewParser.getInstance().modelToView(cardModel);
+                        SelectableCard selectableCard = new SelectableCard(cardView);
+                        cards.add(selectableCard);
+                        cardView.setPadding(0f);
+                        cardView.setMinSize(70f, height, 1f);
+                        add(cardView).space(10f).top();
+                    }
+                }
+            });
         }
 
         public void select(int i) {

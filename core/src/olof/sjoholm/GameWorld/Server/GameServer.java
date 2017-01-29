@@ -11,7 +11,7 @@ import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.Net.Server.Server;
 
 public class GameServer {
-    private final Map<Long, PlayerApi> players = new ConcurrentHashMap<Long, PlayerApi>();
+    private final Map<Long, IPlayerApi> players = new ConcurrentHashMap<Long, IPlayerApi>();
     private Server server;
 
     public GameServer(Server server) {
@@ -34,9 +34,9 @@ public class GameServer {
         });
     }
 
-    public List<PlayerApi> getConnectedPlayers() {
+    public List<IPlayerApi> getConnectedPlayers() {
         synchronized (players) {
-            return new ArrayList<PlayerApi>(players.values());
+            return new ArrayList<IPlayerApi>(players.values());
         }
     }
 

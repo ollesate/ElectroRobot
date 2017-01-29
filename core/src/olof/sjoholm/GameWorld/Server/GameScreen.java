@@ -15,7 +15,6 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen(LobbyStage.OnStartGameListener onStartGameListener) {
         lobbyStage = new LobbyStage(onStartGameListener);
         gameStage = new GameStage();
-        gameStage.addPlayerHand();
         currentStage = lobbyStage;
     }
 
