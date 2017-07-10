@@ -14,34 +14,29 @@ import olof.sjoholm.GameLogic.ServerGameController;
 import olof.sjoholm.Utils.Logger;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
-	public boolean debug = true;
-	public String debugPath = "playerDeckUi";
+	public static final boolean isDebug = false;
 
 	@Override
 	public void create () {
 		Textures.initialize();
-		if (debug) {
+		if (isDebug) {
 			new GameUiTest(this);
 		} else {
 			setScreen(new LoginScreen(this));
 		}
 	}
-	
+
+	@Override
+	public void render() {
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		super.render();
+	}
+
 	@Override
 	public void dispose () {
 		super.dispose();
 		Textures.dispose();
-	}
-
-	@Override
-	public void render() {
-		clearWhite();
-		super.render();
-	}
-
-	private void clearWhite() {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	@Override

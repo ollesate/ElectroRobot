@@ -9,9 +9,10 @@ import olof.sjoholm.Interfaces.*;
 import olof.sjoholm.Net.Both.Client;
 import olof.sjoholm.Net.Envelope;
 import olof.sjoholm.Net.Server.Server;
+import olof.sjoholm.Utils.Robo;
 
 public class GameServer {
-    private final Map<Long, olof.sjoholm.Interfaces.IPlayerApi> players = new ConcurrentHashMap<Long, olof.sjoholm.Interfaces.IPlayerApi>();
+    private final Map<Long, IPlayerApi> players = new ConcurrentHashMap<Long, IPlayerApi>();
     private Server server;
 
     public GameServer(Server server) {
@@ -29,14 +30,14 @@ public class GameServer {
                 } else if (envelope instanceof Envelope.ClientDisconnection) {
                     players.remove(clientId);
                 }
-                olof.sjoholm.Utils.Robo.broadcast(envelope, clientId);
+                Robo.broadcast(envelope, clientId);
             }
         });
     }
 
     public List<olof.sjoholm.Interfaces.IPlayerApi> getConnectedPlayers() {
         synchronized (players) {
-            return new ArrayList<olof.sjoholm.Interfaces.IPlayerApi>(players.values());
+            return new ArrayList<IPlayerApi>(players.values());
         }
     }
 
