@@ -1,6 +1,5 @@
 package olof.sjoholm.Net.Game;
 
-import olof.sjoholm.Net.Game.GameServer;
 import olof.sjoholm.Net.Envelope;
 
 public class GameApi {
