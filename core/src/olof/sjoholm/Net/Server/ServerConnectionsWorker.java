@@ -44,8 +44,8 @@ class ServerConnectionsWorker implements Runnable {
                 Socket socketConnection = serverSocket.accept(null);
                 Logger.d("New connection!");
                 listener.onNewConnection(socketConnection);
-            } catch (GdxRuntimeException e) {
-                Logger.e(e.getMessage());
+            } catch (GdxRuntimeException ignored) {
+                // Seems to be only be caused by socket time outs here
             }
         }
     }

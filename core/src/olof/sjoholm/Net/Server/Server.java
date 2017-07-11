@@ -6,6 +6,7 @@ import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.ServerSocketHints;
 import com.badlogic.gdx.net.Socket;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,20 +57,25 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
     @Override
     public void onNewConnection(Socket socketConnection) {
         clientCounter++;
-        ConnectionMessageWorker connection = new ConnectionMessageWorker(socketConnection, clientCounter);
-        connectionMessageWorkers.add(connection);
+        Logger.d("onNewConnection " + clientCounter);
+        ConnectionMessageWorker connection;
+        try {
+            connection = ConnectionMessageWorker.connect(socketConnection, clientCounter);
+            connectionMessageWorkers.add(connection);
 
-        // Notify all we have a new connection
-        dispatchMessage(new Envelope.ClientConnection(connection));
-        // Send a welcome with its id
-        connection.sendData(new Envelope.Welcome(connection.getId()));
-        connection.setOnMessageListener(this);
-        connection.setOnDisconnectedListener(new ConnectionMessageWorker.OnDisconnectedListener() {
-            @Override
-            public void onDisconnected(ConnectionMessageWorker connectionMessageWorker) {
-                dispatchMessage(new Envelope.ClientDisconnection(connectionMessageWorker));
-            }
-        });
+            // Notify all we have a new connection
+            dispatchMessage(new Envelope.ClientConnection(connection));
+            // Send a welcome with its id
+            connection.setOnMessageListener(this);
+            connection.setOnDisconnectedListener(new ConnectionMessageWorker.OnDisconnectedListener() {
+                @Override
+                public void onDisconnected(ConnectionMessageWorker connectionMessageWorker) {
+                    dispatchMessage(new Envelope.ClientDisconnection(connectionMessageWorker));
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void dispatchMessage(Envelope envelope) {

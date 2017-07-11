@@ -16,7 +16,7 @@ import olof.sjoholm.Utils.Logger;
 
 public class ConnectionMessageWorker {
     private final Map<Long, OnResponseCallback> waitingResponses = new HashMap<Long, OnResponseCallback>();
-    private ObjectOutputStream outputStream;
+    private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
     private OnMessageListener onMessageListener;
     private OnDisconnectedListener onDisconnectedListener;
@@ -39,23 +39,35 @@ public class ConnectionMessageWorker {
         Envelope onRequest(Request request);
     }
 
-    public ConnectionMessageWorker(Socket socket, int id) {
+    public ConnectionMessageWorker(int id, ObjectInputStream inputStream, ObjectOutputStream outputStream) {
         this.id = id;
-        initializeStreams(socket);
+        objectInputStream = inputStream;
+        objectOutputStream = outputStream;
     }
 
-    private void initializeStreams(Socket socket) {
-        try {
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    /**
+     * Initiate a handshake, sending the id to the other side.
+     */
+    public static ConnectionMessageWorker connect(Socket socket, int id) throws IOException {
+        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+        outputStream.writeObject(id);
+        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+        return new ConnectionMessageWorker(id, inputStream, outputStream);
+    }
+
+    /**
+     * Respond to a handshake, receiving an id.
+     */
+    public static ConnectionMessageWorker accept(Socket socket) throws IOException, ClassNotFoundException {
+        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+        int id = ((Integer) inputStream.readObject());
+        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+        return new ConnectionMessageWorker(id, inputStream, outputStream);
     }
 
     public void sendData(Envelope envelope) {
         try {
-            outputStream.writeObject(envelope);
+            objectOutputStream.writeObject(envelope);
         } catch (IOException e) {
             Logger.e(e.getMessage());
         }
@@ -64,7 +76,7 @@ public class ConnectionMessageWorker {
     public void sendRequest(Request request, OnResponseCallback onResponseCallback) {
         synchronized (waitingResponses) {
             try {
-                outputStream.writeObject(request);
+                objectOutputStream.writeObject(request);
                 waitingResponses.put(request.id, onResponseCallback);
             } catch (IOException e) {
                 Logger.e(e.getMessage());
@@ -101,7 +113,7 @@ public class ConnectionMessageWorker {
                 objectInputStream.close();
                 onDisconnectedListener.onDisconnected(ConnectionMessageWorker.this);
             } catch (IOException e) {
-                Logger.e(e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -126,7 +138,7 @@ public class ConnectionMessageWorker {
         Envelope envelope = onMessageListener.onRequest(request);
         Response response = new Response(envelope, request);
         try {
-            outputStream.writeObject(response);
+            objectOutputStream.writeObject(response);
         } catch (IOException e) {
             Logger.e(e.getMessage());
         }
