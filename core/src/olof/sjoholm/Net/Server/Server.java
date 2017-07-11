@@ -4,109 +4,100 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.ServerSocketHints;
+import com.badlogic.gdx.net.Socket;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import olof.sjoholm.Api.Request;
 import olof.sjoholm.Interfaces.OnMessageReceivedListener;
-import olof.sjoholm.Interfaces.ServerApi;
-import olof.sjoholm.Net.Both.Client;
-import olof.sjoholm.Net.Both.OnMessageListener;
-import olof.sjoholm.Net.Envelope;
+import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.Envelope;
+import olof.sjoholm.Utils.Logger;
 
-public class Server implements IncomingConnectionsWorker.ConnectionListener, ServerApi {
-    private final String host;
-    private final int port;
-    private IncomingConnectionsWorker incomingConnectionsWorker;
-    private ClientManager clients;
-    private MessageThreadWorker messageThreadWorker;
-    private ServerSocket socket;
-    private final List<OnMessageReceivedListener> onMessageReceivedListeners;
+public class Server implements ServerConnectionsWorker.ConnectionListener, ConnectionMessageWorker.OnMessageListener {
+    private final List<OnMessageReceivedListener> messageReceivedListeners = new ArrayList<OnMessageReceivedListener>();
+    private final List<ConnectionMessageWorker> connectionMessageWorkers = new ArrayList<ConnectionMessageWorker>();
+    private final OnClientMessageReceived onClientMessageReceived;
+    private final ServerConnectionsWorker incomingConnectionsWorker;
+    private final ThreadWorker threadWorker;
+    private final ServerSocket serverSocket;
+    private int clientCounter = 0;
 
-    public Server(String host, int port) {
-        onMessageReceivedListeners = new ArrayList<OnMessageReceivedListener>();
-        this.host = host;
-        this.port = port;
+    public interface OnClientMessageReceived {
 
-        clients = new ClientManager();
+        void onMessageReceived(Envelope envelope);
+    }
 
-        socket = Gdx.net.newServerSocket(
+    public Server(String host, int port, OnClientMessageReceived listener) {
+        onClientMessageReceived = listener;
+        serverSocket = Gdx.net.newServerSocket(
                 Net.Protocol.TCP,
                 host,
                 port,
                 new ServerSocketHints()
         );
 
-        incomingConnectionsWorker = new IncomingConnectionsWorker(this, socket);
-        messageThreadWorker = new MessageThreadWorker();
+        incomingConnectionsWorker = new ServerConnectionsWorker(this, serverSocket);
+        threadWorker = new ThreadWorker();
     }
 
     public void start() {
         incomingConnectionsWorker.start();
-        messageThreadWorker.start();
+        threadWorker.start();
     }
 
     public void stop() {
         incomingConnectionsWorker.stop();
+        threadWorker.stop();
+        serverSocket.dispose();
     }
 
     @Override
-    public void onNewConnection(Client client) {
-        clients.addClientAndAssignId(client);
-        onMessageReceived(new Envelope.ClientConnection(client), client.getId());
+    public void onNewConnection(Socket socketConnection) {
+        clientCounter++;
+        ConnectionMessageWorker connection = new ConnectionMessageWorker(socketConnection, clientCounter);
+        connectionMessageWorkers.add(connection);
+
+        // Notify all we have a new connection
+        dispatchMessage(new Envelope.ClientConnection(connection));
         // Send a welcome with its id
-        client.sendData(new Envelope.Welcome(client.getId()));
-        client.setOnMessageListener(new OnMessageListener() {
+        connection.sendData(new Envelope.Welcome(connection.getId()));
+        connection.setOnMessageListener(this);
+        connection.setOnDisconnectedListener(new ConnectionMessageWorker.OnDisconnectedListener() {
             @Override
-            public void onMessage(Client client, Envelope envelope) {
-                onMessageReceived(envelope, client.getId());
-            }
-        });
-        client.setOnDisconnectedListener(new Client.OnDisconnectedListener() {
-            @Override
-            public void onDisconnected(Client client) {
-                onClientDisconnected(client);
+            public void onDisconnected(ConnectionMessageWorker connectionMessageWorker) {
+                dispatchMessage(new Envelope.ClientDisconnection(connectionMessageWorker));
             }
         });
     }
 
-    private void onClientDisconnected(Client client) {
-        onMessageReceived(new Envelope.ClientDisconnection(client), client.getId());
-    }
-
-    private void onMessageReceived(Envelope envelope, Long id) {
-        synchronized (onMessageReceivedListeners) {
-            for (OnMessageReceivedListener listener : onMessageReceivedListeners) {
-                listener.onMessage(envelope, id);
-            }
+    private void dispatchMessage(Envelope envelope) {
+        synchronized (onClientMessageReceived) {
+            onClientMessageReceived.onMessageReceived(envelope);
         }
     }
 
-    public int getConnectedClientsSize() {
-        return clients.getSize();
-    }
-
-    @Override
     public void broadcast(final Envelope envelope) {
-        messageThreadWorker.execute(new Runnable() {
+        Logger.d("broadcast");
+        threadWorker.execute(new Runnable() {
             @Override
             public void run() {
-                clients.broadcast(envelope);
+                for (ConnectionMessageWorker connectionMessageWorker : connectionMessageWorkers) {
+                    connectionMessageWorker.sendData(envelope);
+                }
             }
         });
     }
 
     @Override
-    public void sendMessage(Envelope envelope, Long clientId) {
-        // Todo implement this
+    public void onMessage(Envelope envelope) {
+        dispatchMessage(envelope);
     }
 
     @Override
-    public void addOnMessageListener(OnMessageReceivedListener listener) {
-        onMessageReceivedListeners.add(listener);
-    }
-
-    public List<Client> getConnectedClients() {
-        return clients.getClients();
+    public Envelope onRequest(Request request) {
+        // TODO: Missing implementation. Who's responsibility is this?
+        return null;
     }
 }

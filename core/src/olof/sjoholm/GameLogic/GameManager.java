@@ -3,16 +3,15 @@ package olof.sjoholm.GameLogic;
 import java.util.ArrayList;
 import java.util.List;
 
+import olof.sjoholm.Interfaces.Action;
+import olof.sjoholm.Interfaces.Callback;
+import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Interfaces.IGameStage;
+import olof.sjoholm.Interfaces.IPlayerHands;
 import olof.sjoholm.Interfaces.OnCardsReceivedListener;
-import olof.sjoholm.Net.Game.GameApi;
+import olof.sjoholm.Models.CardModel;
 import olof.sjoholm.Utils.CardUtil;
 import olof.sjoholm.Utils.Logger;
-import olof.sjoholm.Interfaces.Callback;
-import olof.sjoholm.Interfaces.Action;
-import olof.sjoholm.Interfaces.IGameBoard;
-import olof.sjoholm.Interfaces.IPlayerHands;
-import olof.sjoholm.Models.CardModel;
 
 /**
  * @author sjoholm
@@ -20,18 +19,16 @@ import olof.sjoholm.Models.CardModel;
 public class GameManager {
     private IGameBoard gameBoard;
     private IPlayerHands playerHands;
-    private GameApi gameApi;
 
     private IGameStage gameStage;
     private List<PlayerController> players;
     private final CardManager cardManager;
     private final Object fetchingCardsMutex = new Object();
 
-    public GameManager(IGameStage gameStage, GameApi gameApi) {
+    public GameManager(IGameStage gameStage) {
         this.gameStage = gameStage;
         this.gameBoard = gameStage.getGameBoard();
         playerHands = gameStage.getPlayerHands();
-        this.gameApi = gameApi;
         cardManager = new CardManager(gameBoard);
     }
 
@@ -42,7 +39,6 @@ public class GameManager {
     }
 
     public void startGame(List<PlayerController> players) {
-        gameApi.startGame();
         this.players = players;
         cardManager.setPlayers(players);
         Logger.d("startGame() with " + players.size() + " players");

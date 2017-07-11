@@ -7,13 +7,12 @@ import java.util.List;
 
 import olof.sjoholm.GameLogic.GameManager;
 import olof.sjoholm.GameLogic.PlayerController;
-import olof.sjoholm.Net.Game.GameApi;
-import olof.sjoholm.Views.GameScreen;
 import olof.sjoholm.Interfaces.IPlayerApi;
 import olof.sjoholm.Interfaces.OnCardsReceivedListener;
-import olof.sjoholm.Utils.Direction;
 import olof.sjoholm.Models.CardModel;
 import olof.sjoholm.Models.MoveModel;
+import olof.sjoholm.Utils.Direction;
+import olof.sjoholm.Views.GameScreen;
 
 public class GameUiTest {
     private final GameScreen gameScreen;
@@ -32,12 +31,7 @@ public class GameUiTest {
             controllers.add(new PlayerController(playerId++, playerApi, new CardHandModel()));
         }
         gameScreen.showGameStage();
-        GameManager gameManager = new GameManager(gameScreen.getGameStage(), new GameApi(null){
-            @Override
-            public void startGame() {
-                // Do nothing
-            }
-        });
+        GameManager gameManager = new GameManager(gameScreen.getGameStage());
         gameManager.startGame(controllers);
     }
 

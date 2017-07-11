@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import olof.sjoholm.Interfaces.OnMessageReceivedListener;
 import olof.sjoholm.Utils.Robo;
 import olof.sjoholm.Utils.Logger;
-import olof.sjoholm.Net.Envelope;
+import olof.sjoholm.Net.Both.Envelope;
 
 public class LobbyStage extends Stage {
     private PlayersLabel playersLabel;
@@ -32,7 +32,7 @@ public class LobbyStage extends Stage {
 
         Robo.subscribeServerMessage(new OnMessageReceivedListener() {
             @Override
-            public void onMessage(Envelope envelope, Long clientId) {
+            public void onMessage(Envelope envelope, int clientId) {
                 if (envelope instanceof Envelope.ClientConnection) {
                     connectedPlayers++;
                     onPlayersUpdated(connectedPlayers);

@@ -2,25 +2,28 @@ package olof.sjoholm.Net.Game;
 
 import java.util.List;
 
+import olof.sjoholm.Api.Request;
+import olof.sjoholm.Interfaces.IPlayerApi;
 import olof.sjoholm.Interfaces.OnCardsReceivedListener;
+import olof.sjoholm.Net.Both.ConnectionMessageWorker;
 import olof.sjoholm.Utils.Logger;
-import olof.sjoholm.Net.Both.Client;
-import olof.sjoholm.Net.Envelope;
+import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Models.CardModel;
 
-public class PlayerApi implements olof.sjoholm.Interfaces.IPlayerApi {
-    private Client client;
+public class PlayerApi implements IPlayerApi {
+    private ConnectionMessageWorker connectionMessageWorker;
 
-    public PlayerApi(Client client) {
-        this.client = client;
+    public PlayerApi(ConnectionMessageWorker connectionMessageWorker) {
+        this.connectionMessageWorker = connectionMessageWorker;
     }
 
     public void sendCards(List<CardModel> cards) {
-        client.sendData(new Envelope.SendCards(cards));
+        connectionMessageWorker.sendData(new Envelope.SendCards(cards));
     }
 
-    public void getCards(final olof.sjoholm.Interfaces.OnCardsReceivedListener onCardsReceivedListener) {
-        client.sendData(new Envelope.RequestCards(), new Client.OnResponseCallback() {
+    public void getCards(final OnCardsReceivedListener onCardsReceivedListener) {
+        Request request = new Request(new Envelope.RequestCards());
+        connectionMessageWorker.sendRequest(request, new ConnectionMessageWorker.OnResponseCallback() {
             @Override
             public void onResponse(Envelope envelope) {
                 onGetCardsResponse(envelope, onCardsReceivedListener);
@@ -28,9 +31,8 @@ public class PlayerApi implements olof.sjoholm.Interfaces.IPlayerApi {
         });
     }
 
-    private void onGetCardsResponse(Envelope envelope,
-                                    OnCardsReceivedListener onCardsReceivedListener) {
-        if (isProperResponse(envelope)) {
+    private void onGetCardsResponse(Envelope envelope, OnCardsReceivedListener onCardsReceivedListener) {
+        if (envelope instanceof Envelope.SendCards) {
             List<CardModel> cards = envelope.getContents(List.class);
             onCardsReceivedListener.onCardsReceived(cards);
             Logger.d("Received action from player");
@@ -43,9 +45,5 @@ public class PlayerApi implements olof.sjoholm.Interfaces.IPlayerApi {
                             Envelope.SendCards.class.getSimpleName()
             );
         }
-    }
-
-    private boolean isProperResponse(Envelope envelope) {
-        return envelope instanceof Envelope.SendCards;
     }
 }

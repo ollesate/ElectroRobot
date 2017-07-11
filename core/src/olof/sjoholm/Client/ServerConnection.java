@@ -1,40 +1,40 @@
 package olof.sjoholm.Client;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.net.Socket;
+import com.badlogic.gdx.net.SocketHints;
 
-import olof.sjoholm.Interfaces.OnMessageReceivedListener;
-import olof.sjoholm.Net.Both.Client;
-import olof.sjoholm.Net.Both.OnMessageListener;
-import olof.sjoholm.Net.Envelope;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
-/**
- * Created by sjoholm on 23/12/16.
- */
+import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.Envelope;
+
 class ServerConnection {
-    private final List<OnMessageReceivedListener> listeners = new ArrayList<OnMessageReceivedListener>();
-    private Client serverClient;
+    private ConnectionMessageWorker serverMessageWorker;
 
-    public ServerConnection(String host, int port) {
-        serverClient = new Client(host, port);
-        serverClient.startReading();
-        serverClient.setOnMessageListener(new OnMessageListener() {
-            @Override
-            public void onMessage(Client client, Envelope envelope) {
-                synchronized (listeners) {
-                    for (OnMessageReceivedListener listener : listeners) {
-                        listener.onMessage(envelope, client.getId());
-                    }
-                }
-            }
-        });
-    }
+    public ServerConnection(String host, int port, ConnectionMessageWorker.OnMessageListener messageListener)
+            throws IOException, ClassNotFoundException {
+        Socket connectionToServer = Gdx.net.newClientSocket(
+                Net.Protocol.TCP,
+                host,
+                port,
+                new SocketHints()
+        );
+        Object welcomeObject = new ObjectInputStream(connectionToServer.getInputStream()).readObject();
+        Envelope.Welcome welcome = (Envelope.Welcome) welcomeObject;
 
-    public void addOnMessageReceivedListener(OnMessageReceivedListener listener) {
-        listeners.add(listener);
+        serverMessageWorker = new ConnectionMessageWorker(connectionToServer, welcome.id);
+        serverMessageWorker.startReading();
+        serverMessageWorker.setOnMessageListener(messageListener);
     }
 
     public void send(Envelope.SendCards sendCards) {
-        serverClient.sendData(sendCards);
+        serverMessageWorker.sendData(sendCards);
+    }
+
+    public void dispose() {
+        serverMessageWorker.dispose();
     }
 }

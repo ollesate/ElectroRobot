@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.Interfaces.OnMessageReceivedListener;
-import olof.sjoholm.Net.Envelope;
+import olof.sjoholm.Net.Both.Envelope;
 
 public class Robo {
     public static boolean isServer;
@@ -18,7 +18,7 @@ public class Robo {
         }
     }
 
-    public static void broadcast(Envelope envelope, long clientId) {
+    public static void broadcast(Envelope envelope, int clientId) {
         synchronized (subscribeList) {
             for (OnMessageReceivedListener onMessageReceivedListener : subscribeList) {
                 onMessageReceivedListener.onMessage(envelope, clientId);

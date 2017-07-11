@@ -2,7 +2,7 @@ package olof.sjoholm.Interfaces;
 
 import java.util.List;
 
-import olof.sjoholm.Net.Envelope;
+import olof.sjoholm.Net.Both.Envelope;
 
 public interface IServer {
 
