@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import olof.sjoholm.Client.CardHandModel;
 import olof.sjoholm.Interfaces.IPlayerApi;
-import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.NetClient;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Game.PlayerApi;
 import olof.sjoholm.Net.Server.Server;
@@ -58,7 +58,7 @@ public class ServerGameController implements Server.OnClientMessageReceived {
     @Override
     public void onMessageReceived(Envelope envelope) {
         if (envelope instanceof Envelope.ClientConnection) {
-            PlayerApi playerApi = new PlayerApi(envelope.getContents(ConnectionMessageWorker.class));
+            PlayerApi playerApi = new PlayerApi(envelope.getContents(NetClient.class));
             players.put(envelope.getOwnerId(), playerApi);
         } else if (envelope instanceof Envelope.ClientDisconnection) {
             players.remove(envelope.getOwnerId());

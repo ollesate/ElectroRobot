@@ -6,18 +6,17 @@ import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
-import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.NetClient;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Utils.Logger;
 
 class ServerConnection {
-    private final ConnectionMessageWorker.OnMessageListener messageListener;
-    private ConnectionMessageWorker serverMessageWorker;
+    private final NetClient.OnMessageListener messageListener;
+    private NetClient serverMessageWorker;
 
     public ServerConnection(String host, int port,
-                            ConnectionMessageWorker.OnMessageListener messageListener)
+                            NetClient.OnMessageListener messageListener)
             throws IOException, ClassNotFoundException {
         this.messageListener = messageListener;
         new ConnectThread(host, port).start();
@@ -51,7 +50,7 @@ class ServerConnection {
             );
             Logger.d("Connecting connected, waiting for id");
             try {
-                serverMessageWorker = ConnectionMessageWorker.accept(connectionToServer);
+                serverMessageWorker = NetClient.accept(connectionToServer);
                 serverMessageWorker.startReading();
                 serverMessageWorker.setOnMessageListener(messageListener);
                 Logger.d("Received id");

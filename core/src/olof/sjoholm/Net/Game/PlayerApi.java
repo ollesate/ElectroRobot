@@ -5,25 +5,25 @@ import java.util.List;
 import olof.sjoholm.Api.Request;
 import olof.sjoholm.Interfaces.IPlayerApi;
 import olof.sjoholm.Interfaces.OnCardsReceivedListener;
-import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.NetClient;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Models.CardModel;
 
 public class PlayerApi implements IPlayerApi {
-    private ConnectionMessageWorker connectionMessageWorker;
+    private NetClient netClient;
 
-    public PlayerApi(ConnectionMessageWorker connectionMessageWorker) {
-        this.connectionMessageWorker = connectionMessageWorker;
+    public PlayerApi(NetClient netClient) {
+        this.netClient = netClient;
     }
 
     public void sendCards(List<CardModel> cards) {
-        connectionMessageWorker.sendData(new Envelope.SendCards(cards));
+        netClient.sendData(new Envelope.SendCards(cards));
     }
 
     public void getCards(final OnCardsReceivedListener onCardsReceivedListener) {
         Request request = new Request(new Envelope.RequestCards());
-        connectionMessageWorker.sendRequest(request, new ConnectionMessageWorker.OnResponseCallback() {
+        netClient.sendRequest(request, new NetClient.OnResponseCallback() {
             @Override
             public void onResponse(Envelope envelope) {
                 onGetCardsResponse(envelope, onCardsReceivedListener);

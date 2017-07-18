@@ -1,12 +1,12 @@
 package olof.sjoholm.Net.Server;
 
-import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.NetClient;
 
 
 public interface OnClientStateUpdated {
 
-    void onClientConnected(ConnectionMessageWorker connectionMessageWorker);
+    void onClientConnected(NetClient netClient);
 
-    void onClientDisconnected(ConnectionMessageWorker connectionMessageWorker);
+    void onClientDisconnected(NetClient netClient);
 
 }

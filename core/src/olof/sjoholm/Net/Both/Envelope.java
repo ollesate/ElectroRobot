@@ -1,7 +1,5 @@
 package olof.sjoholm.Net.Both;
 
-import com.badlogic.gdx.scenes.scene2d.Event;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -60,15 +58,15 @@ public class Envelope implements Serializable {
 
     public static class ClientConnection extends Envelope {
 
-        public ClientConnection(ConnectionMessageWorker connectionMessageWorker) {
-            super(connectionMessageWorker);
+        public ClientConnection(NetClient netClient) {
+            super(netClient);
         }
     }
 
     public static class ClientDisconnection extends Envelope {
 
-        public ClientDisconnection(ConnectionMessageWorker connectionMessageWorker) {
-            super(connectionMessageWorker);
+        public ClientDisconnection(NetClient netClient) {
+            super(netClient);
         }
     }
 

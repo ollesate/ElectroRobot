@@ -7,13 +7,13 @@ import java.util.List;
 
 import olof.sjoholm.Api.Request;
 import olof.sjoholm.Models.CardModel;
-import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.NetClient;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.ServerConstants;
 import olof.sjoholm.Utils.Logger;
 
 
-public class ClientController implements ConnectionMessageWorker.OnMessageListener {
+public class ClientController implements NetClient.OnMessageListener {
     private ServerConnection serverConnection;
     private final PlayerGame playerGame;
 

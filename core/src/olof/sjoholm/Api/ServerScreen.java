@@ -1,16 +1,12 @@
 package olof.sjoholm.Api;
 
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Server;
 
-public abstract class ServerScreen extends Stage {
-    private final Server server;
-
-    public ServerScreen(Server server) {
-        this.server = server;
-    }
+public abstract class ServerScreen implements Screen {
 
     @Override
     public void show() {

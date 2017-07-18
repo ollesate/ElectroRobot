@@ -11,13 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.Api.Request;
-import olof.sjoholm.Interfaces.OnMessageReceivedListener;
-import olof.sjoholm.Net.Both.ConnectionMessageWorker;
+import olof.sjoholm.Net.Both.NetClient;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Utils.Logger;
 
-public class Server implements ServerConnectionsWorker.ConnectionListener, ConnectionMessageWorker.OnMessageListener, ConnectionMessageWorker.OnDisconnectedListener {
-    private final List<ConnectionMessageWorker> connectionMessageWorkers = new ArrayList<ConnectionMessageWorker>();
+public class Server implements ServerConnectionsWorker.ConnectionListener, NetClient.OnMessageListener, NetClient.OnDisconnectedListener {
+    private final List<NetClient> netClients = new ArrayList<NetClient>();
     private final ServerConnectionsWorker incomingConnectionsWorker;
     private final ThreadWorker threadWorker;
     private final ServerSocket serverSocket;
@@ -61,10 +60,10 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
     public void onNewConnection(Socket socketConnection) {
         clientCounter++;
         Logger.d("onNewConnection " + clientCounter);
-        ConnectionMessageWorker connection;
+        NetClient connection;
         try {
-            connection = ConnectionMessageWorker.connect(socketConnection, clientCounter);
-            connectionMessageWorkers.add(connection);
+            connection = NetClient.open(socketConnection, clientCounter);
+            netClients.add(connection);
 
             // Notify all we have a new connection
             dispatchMessage(new Envelope.ClientConnection(connection));
@@ -77,9 +76,9 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
     }
 
     @Override
-    public void onDisconnected(ConnectionMessageWorker connectionMessageWorker) {
-        connectionMessageWorkers.remove(connectionMessageWorker);
-        dispatchMessage(new Envelope.ClientDisconnection(connectionMessageWorker));
+    public void onDisconnected(NetClient netClient) {
+        netClients.remove(netClient);
+        dispatchMessage(new Envelope.ClientDisconnection(netClient));
     }
 
     @Override
@@ -98,8 +97,8 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
         threadWorker.execute(new Runnable() {
             @Override
             public void run() {
-                for (ConnectionMessageWorker connectionMessageWorker : connectionMessageWorkers) {
-                    connectionMessageWorker.sendData(envelope);
+                for (NetClient netClient : netClients) {
+                    netClient.sendData(envelope);
                 }
             }
         });
