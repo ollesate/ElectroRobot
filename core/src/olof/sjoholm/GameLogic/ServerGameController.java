@@ -40,7 +40,7 @@ public class ServerGameController implements Server.OnClientMessageReceived {
 
     private void initServer() {
         Logger.d("Starting game server");
-        server = new Server(ServerConstants.HOST_NAME, ServerConstants.CONNECTION_PORT, this);
+        server = new Server(ServerConstants.HOST_NAME, ServerConstants.CONNECTION_PORT);
         server.start();
     }
 

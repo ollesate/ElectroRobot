@@ -3,6 +3,8 @@ package olof.sjoholm.Views;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -40,6 +42,12 @@ public class LobbyStage extends Stage {
                     connectedPlayers--;
                     onPlayersUpdated(connectedPlayers);
                 }
+            }
+        });
+        addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                return false;
             }
         });
     }

@@ -1,5 +1,7 @@
 package olof.sjoholm.Net.Both;
 
+import com.badlogic.gdx.scenes.scene2d.Event;
+
 import java.io.Serializable;
 import java.util.List;
 

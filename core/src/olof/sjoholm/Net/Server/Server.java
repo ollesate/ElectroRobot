@@ -16,13 +16,13 @@ import olof.sjoholm.Net.Both.ConnectionMessageWorker;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Utils.Logger;
 
-public class Server implements ServerConnectionsWorker.ConnectionListener, ConnectionMessageWorker.OnMessageListener {
-    private final List<OnMessageReceivedListener> messageReceivedListeners = new ArrayList<OnMessageReceivedListener>();
+public class Server implements ServerConnectionsWorker.ConnectionListener, ConnectionMessageWorker.OnMessageListener, ConnectionMessageWorker.OnDisconnectedListener {
     private final List<ConnectionMessageWorker> connectionMessageWorkers = new ArrayList<ConnectionMessageWorker>();
-    private final OnClientMessageReceived onClientMessageReceived;
     private final ServerConnectionsWorker incomingConnectionsWorker;
     private final ThreadWorker threadWorker;
     private final ServerSocket serverSocket;
+
+    private OnClientMessageReceived onClientMessageReceived;
     private int clientCounter = 0;
 
     public interface OnClientMessageReceived {
@@ -30,8 +30,7 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
         void onMessageReceived(Envelope envelope);
     }
 
-    public Server(String host, int port, OnClientMessageReceived listener) {
-        onClientMessageReceived = listener;
+    public Server(String host, int port) {
         serverSocket = Gdx.net.newServerSocket(
                 Net.Protocol.TCP,
                 host,
@@ -41,6 +40,10 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
 
         incomingConnectionsWorker = new ServerConnectionsWorker(this, serverSocket);
         threadWorker = new ThreadWorker();
+    }
+
+    public void setOnClientMessageReceivedListener(OnClientMessageReceived listener) {
+        onClientMessageReceived = listener;
     }
 
     public void start() {
@@ -67,15 +70,21 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
             dispatchMessage(new Envelope.ClientConnection(connection));
             // Send a welcome with its id
             connection.setOnMessageListener(this);
-            connection.setOnDisconnectedListener(new ConnectionMessageWorker.OnDisconnectedListener() {
-                @Override
-                public void onDisconnected(ConnectionMessageWorker connectionMessageWorker) {
-                    dispatchMessage(new Envelope.ClientDisconnection(connectionMessageWorker));
-                }
-            });
+            connection.setOnDisconnectedListener(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onDisconnected(ConnectionMessageWorker connectionMessageWorker) {
+        connectionMessageWorkers.remove(connectionMessageWorker);
+        dispatchMessage(new Envelope.ClientDisconnection(connectionMessageWorker));
+    }
+
+    @Override
+    public void onMessage(Envelope envelope) {
+        dispatchMessage(envelope);
     }
 
     private void dispatchMessage(Envelope envelope) {
@@ -94,11 +103,6 @@ public class Server implements ServerConnectionsWorker.ConnectionListener, Conne
                 }
             }
         });
-    }
-
-    @Override
-    public void onMessage(Envelope envelope) {
-        dispatchMessage(envelope);
     }
 
     @Override
