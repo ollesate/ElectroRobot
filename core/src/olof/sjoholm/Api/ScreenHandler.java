@@ -1,25 +1,29 @@
 package olof.sjoholm.Api;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 
-import olof.sjoholm.Net.Server.Server;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScreenHandler {
+    private final Map<String, Screen> screens = new HashMap<String, Screen>();
     private final Game game;
-    private final ServerLobbyScreen serverLobbyScreen;
-    private final ServerGameScreen serverGameScreen;
 
-    public ScreenHandler(Game game, Server server) {
+    public ScreenHandler(Game game) {
         this.game = game;
-        serverLobbyScreen = new ServerLobbyScreen(server, this);
-        serverGameScreen = new ServerGameScreen(server, this);
     }
 
-    public void showLobbyScreen() {
-        game.setScreen(serverLobbyScreen);
+    public void addScreen(String name, Screen screen) {
+        screens.put(name, screen);
     }
 
-    public void showGameScreen() {
-        game.setScreen(serverGameScreen);
+    public void showScreen(String name) {
+        Screen screen = screens.get(name);
+        if (screen == null) {
+            throw new IllegalStateException("No screen named " + name);
+        }
+        game.setScreen(screen);
     }
 }

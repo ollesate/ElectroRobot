@@ -1,29 +1,32 @@
 package olof.sjoholm.Api;
 
-import olof.sjoholm.GameLogic.GameManager;
+import com.badlogic.gdx.Gdx;
+
 import olof.sjoholm.Net.Both.Envelope;
-import olof.sjoholm.Net.Server.Server;
-import olof.sjoholm.Views.GameScreen;
-import olof.sjoholm.Views.LobbyStage;
+import olof.sjoholm.Net.Server.Player;
+import olof.sjoholm.Views.GameStage;
 
 public class ServerGameScreen extends ServerScreen {
+    private final GameStage gameStage;
 
-    public ServerGameScreen(Server server, ScreenHandler screenHandler) {
-        gameScreen = new GameScreen(new LobbyStage.OnStartGameListener() {
-            @Override
-            public void onStartClicked() {
-                startGame();
-            }
-        });
-        game.setScreen(gameScreen);
-
-        gameManager = new GameManager(gameScreen.getGameStage());
-
-        super(server);
+    public ServerGameScreen(ServerScreenHandler serverScreenHandler) {
+        gameStage = new GameStage();
     }
 
     @Override
-    public void onMessage(Envelope envelope) {
+    public void show() {
+        super.show();
+        Gdx.input.setInputProcessor(gameStage);
+    }
+
+    @Override
+    public void render(float delta) {
+        gameStage.act(delta);
+        gameStage.draw();
+    }
+
+    @Override
+    public void onMessage(Player player, Envelope envelope) {
 
     }
 
@@ -34,11 +37,6 @@ public class ServerGameScreen extends ServerScreen {
 
     @Override
     public void onPlayerDisconnected(Player player) {
-
-    }
-
-    @Override
-    public void render(float delta) {
 
     }
 }

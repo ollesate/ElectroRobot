@@ -29,7 +29,6 @@ public class LobbyStage extends Stage {
     }
 
     private void init() {
-        Gdx.input.setInputProcessor(this);
         initLayout();
 
         Robo.subscribeServerMessage(new OnMessageReceivedListener() {

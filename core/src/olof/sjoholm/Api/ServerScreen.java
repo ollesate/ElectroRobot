@@ -1,43 +1,56 @@
 package olof.sjoholm.Api;
 
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import olof.sjoholm.Net.Both.Envelope;
-import olof.sjoholm.Net.Server.Server;
+import olof.sjoholm.Net.Server.ServerConnection;
+import olof.sjoholm.Net.Server.Player;
 
-public abstract class ServerScreen implements Screen {
+public abstract class ServerScreen implements Screen, ServerConnection.OnMessageListener,
+        ServerConnection.OnPlayerConnectedListener, ServerConnection.OnPlayerDisconnectedListener {
+    private final ServerConnection serverConnection;
+
+    public ServerScreen() {
+        serverConnection = ServerConnection.getInstance();
+    }
 
     @Override
     public void show() {
-        server.setOnClientMessageReceivedListener(this);
+
     }
 
     @Override
     public void hide() {
-        server.setOnClientMessageReceivedListener(null);
-        // TODO: maybe stop connection to server here?
+
     }
 
     @Override
     public void dispose() {
-        server.stop();
+
+    }
+
+    public void startServer() {
+        serverConnection.openConnection();
+        serverConnection.setOnMessageListener(this);
+        serverConnection.setOnPlayerConnectedListener(this);
+        serverConnection.setOnPlayerDisconnectedListener(this);
+    }
+
+    public void disconnect() {
+        serverConnection.disconnect();
+        serverConnection.openConnection();
+        serverConnection.setOnMessageListener(null);
+        serverConnection.setOnPlayerConnectedListener(null);
+        serverConnection.setOnPlayerDisconnectedListener(null);
     }
 
     public void broadcast(Envelope envelope) {
-        server.broadcast(envelope);
+        serverConnection.broadcast(envelope);
     }
 
-    @Override
-    public void onMessageReceived(Envelope envelope) {
-        onMessage(envelope);
+    public void send(Player player, Envelope envelope) {
+        serverConnection.send(player, envelope);
     }
-
-    public abstract void onMessage(Envelope envelope);
-
-    public abstract void onPlayerConnected(Player player);
-
-    public abstract void onPlayerDisconnected(Player player);
 
     @Override
     public void pause() {}

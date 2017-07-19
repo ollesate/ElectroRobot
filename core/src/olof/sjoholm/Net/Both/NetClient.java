@@ -112,7 +112,7 @@ public class NetClient {
 
     }
     public void disconnect() {
-
+        //TODO: implement, use a stoppable thread for reader thread
     }
 
     public int getId() {

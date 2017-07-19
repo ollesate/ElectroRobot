@@ -9,18 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import olof.sjoholm.Client.CardHandModel;
 import olof.sjoholm.Interfaces.IPlayerApi;
-import olof.sjoholm.Net.Both.NetClient;
 import olof.sjoholm.Net.Both.Envelope;
-import olof.sjoholm.Net.Game.PlayerApi;
-import olof.sjoholm.Net.Server.Server;
-import olof.sjoholm.Net.ServerConstants;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.GameScreen;
 import olof.sjoholm.Views.LobbyStage;
 
-public class ServerGameController implements Server.OnClientMessageReceived {
+public class ServerGameController  {
     private final Map<Integer, IPlayerApi> players = new ConcurrentHashMap<Integer, IPlayerApi>();
-    private Server server;
     private final GameScreen gameScreen;
     private final GameManager gameManager;
 
@@ -40,8 +35,6 @@ public class ServerGameController implements Server.OnClientMessageReceived {
 
     private void initServer() {
         Logger.d("Starting game server");
-        server = new Server(ServerConstants.HOST_NAME, ServerConstants.CONNECTION_PORT);
-        server.start();
     }
 
     private void startGame() {
@@ -52,14 +45,13 @@ public class ServerGameController implements Server.OnClientMessageReceived {
         }
         gameScreen.showGameStage();
         gameManager.startGame(controllers);
-        server.broadcast(new Envelope.StartGame());
+//        server.broadcast(new Envelope.StartGame());
     }
 
-    @Override
     public void onMessageReceived(Envelope envelope) {
         if (envelope instanceof Envelope.ClientConnection) {
-            PlayerApi playerApi = new PlayerApi(envelope.getContents(NetClient.class));
-            players.put(envelope.getOwnerId(), playerApi);
+//            PlayerApi playerApi = new PlayerApi(envelope.getContents(NetClient.class));
+//            players.put(envelope.getOwnerId(), playerApi);
         } else if (envelope instanceof Envelope.ClientDisconnection) {
             players.remove(envelope.getOwnerId());
         }

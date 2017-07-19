@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import olof.sjoholm.Net.Both.ConnectionException;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Both.NetClient;
 import olof.sjoholm.Utils.Logger;
@@ -58,25 +59,6 @@ public final class ServerConnection implements NetClient.Listener {
         return instance;
     }
 
-    public void openConnection() {
-        if (loopingThread != null && loopingThread.isRunning()) {
-            throw new IllegalStateException("Connection already opened");
-        }
-        loopingThread = new LoopingThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Socket socketConnection = serverSocket.accept(null);
-                    onNewConnection(socketConnection);
-                    Logger.d("New connection!");
-                } catch (GdxRuntimeException ignored) {
-                    // Seems to be only be caused by socket time outs here
-                }
-            }
-        });
-        loopingThread.start();
-    }
-
     private synchronized void onNewConnection(Socket socket) {
         try {
             clientCounter++;
@@ -91,7 +73,7 @@ public final class ServerConnection implements NetClient.Listener {
             if (onPlayerConnectedListener != null) {
                 onPlayerConnectedListener.onPlayerConnected(player);
             }
-        } catch (IOException e) {
+        } catch (ConnectionException e) {
             e.printStackTrace();
         }
     }
@@ -117,6 +99,33 @@ public final class ServerConnection implements NetClient.Listener {
 
     // API
 
+    public void openConnection() {
+        if (loopingThread != null && loopingThread.isRunning()) {
+            throw new IllegalStateException("Connection already opened");
+        }
+        loopingThread = new LoopingThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Socket socketConnection = serverSocket.accept(null);
+                    onNewConnection(socketConnection);
+                    Logger.d("New connection!");
+                } catch (GdxRuntimeException ignored) {
+                    // Seems to be only be caused by socket time outs here
+                }
+            }
+        });
+        loopingThread.start();
+    }
+
+    public synchronized void disconnect() {
+        for (NetClient netClient : netClients) {
+            netClient.disconnect();
+        }
+        netClients.clear();
+        loopingThread.stop();
+    }
+
     public List<Player> getConnectedPlayers() {
         return new ArrayList<Player>(players.values());
     }
@@ -125,12 +134,18 @@ public final class ServerConnection implements NetClient.Listener {
         return loopingThread != null && loopingThread.isRunning();
     }
 
-    public void disconnect() {
+    public synchronized void broadcast(Envelope envelope) {
         for (NetClient netClient : netClients) {
-            netClient.disconnect();
+            netClient.sendData(envelope);
         }
-        netClients.clear();
-        loopingThread.stop();
+    }
+
+    public synchronized void send(Player player, Envelope envelope) {
+        for (NetClient netClient : netClients) {
+            if (netClient.getId() == player.id) {
+                netClient.sendData(envelope);
+            }
+        }
     }
 
     public void setOnMessageListener(OnMessageListener listener) {

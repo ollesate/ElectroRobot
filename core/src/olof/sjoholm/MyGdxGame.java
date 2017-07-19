@@ -5,12 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
-import olof.sjoholm.Api.ScreenHandler;
+import olof.sjoholm.Api.PlayerScreenHandler;
+import olof.sjoholm.Api.ServerScreenHandler;
 import olof.sjoholm.Client.GameUiTest;
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.Client.ClientController;
-import olof.sjoholm.Net.Server.Server;
-import olof.sjoholm.Net.ServerConstants;
 import olof.sjoholm.Views.LoginScreen;
 import olof.sjoholm.Utils.Logger;
 
@@ -42,15 +40,14 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 
 	@Override
 	public void onStartServer() {
-		Server server = new Server(ServerConstants.HOST_NAME, ServerConstants.CONNECTION_PORT);
-		server.start();
-        ScreenHandler screenHandler = new ScreenHandler(this, server);
-        screenHandler.showLobbyScreen();
+        ServerScreenHandler screenHandler = new ServerScreenHandler(this);
+		screenHandler.showScreen(ServerScreenHandler.LOBBY);
 	}
 
 	@Override
 	public void onStartClient() {
-		new ClientController(this);
+		PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
+		screenHandler.showScreen(PlayerScreenHandler.GAME);
 	}
 
     @Override

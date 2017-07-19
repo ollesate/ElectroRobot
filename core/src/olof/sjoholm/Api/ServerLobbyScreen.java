@@ -3,37 +3,42 @@ package olof.sjoholm.Api;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Net.Both.Envelope;
-import olof.sjoholm.Net.Server.Server;
 import olof.sjoholm.Utils.Logger;
 
 public class ServerLobbyScreen extends ServerScreen {
     private final ScreenHandler screenHandler;
+    private final Stage stage;
 
     private PlayersLabel playersLabel;
     private StartGameButton startGameButton;
     private int connectedPlayers;
 
-    public ServerLobbyScreen(Server server, ScreenHandler screenHandler) {
-        super(server);
+    public ServerLobbyScreen(ServerScreenHandler screenHandler) {
+        stage = new Stage();
         this.screenHandler = screenHandler;
         initLayout();
+        startServer();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float delta) {
-
-    }
-
-    @Override
-    public void onMessage(Envelope envelope) {
-
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
@@ -48,6 +53,11 @@ public class ServerLobbyScreen extends ServerScreen {
         connectedPlayers--;
         playersLabel.setPlayers(connectedPlayers);
         startGameButton.setPlayers(connectedPlayers);
+    }
+
+    @Override
+    public void onMessage(Player player, Envelope envelope) {
+        // Do nothing
     }
 
     private void initLayout() {
@@ -65,12 +75,12 @@ public class ServerLobbyScreen extends ServerScreen {
         table.row();
         table.add(startGameButton).width(100);
 
-        addActor(table);
+        stage.addActor(table);
     }
 
     private void startGame() {
         broadcast(new Envelope.StartGame());
-        screenHandler.showGameScreen();
+        screenHandler.showScreen(ServerScreenHandler.GAME);
     }
 
     private static class PlayersLabel extends Label {
