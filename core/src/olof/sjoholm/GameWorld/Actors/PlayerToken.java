@@ -20,7 +20,6 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
     private float stepDelay = .25f;
     private float stepSpeed = .75f;
     private Callback finishedCallback;
-    private IGameBoard gameBoard;
     private TankAnimation tankAnimation;
 
     {
@@ -63,10 +62,6 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
         }
     };
 
-    public PlayerToken(IGameBoard gameBoard) {
-        this.gameBoard = gameBoard;
-    }
-
     @Override
     public void move(int steps, Direction direction, Callback finishedCallback) {
         this.finishedCallback = finishedCallback;
@@ -95,7 +90,9 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
 
         Logger.d("Current direction " + currentDir + " -> " + direction + " -> " + newDirection);
 
-        int possibleSteps = gameBoard.getPossibleSteps(newDirection, getBoardX(), getBoardY());
+        // TODO: rewrite. I guess this is a card action, so create card action. It should probably
+        // be the gameboard that should move this token. Because it knows the map, the players etc.
+        int possibleSteps = 100;
 
         int actualSteps = (possibleSteps > steps) ? steps : possibleSteps;
 

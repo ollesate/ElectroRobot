@@ -5,40 +5,43 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import olof.sjoholm.GameLogic.PlayerController;
-import olof.sjoholm.GameWorld.Level;
+import olof.sjoholm.GameWorld.Maps;
+import olof.sjoholm.GameWorld.Maps.Map;
+import olof.sjoholm.GameWorld.Maps.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
-import olof.sjoholm.Interfaces.IGameBoard;
-import olof.sjoholm.Interfaces.MovableToken;
 
-public class GameBoard extends Group implements IGameBoard {
+public class GameBoard extends Group {
     private int tileSize;
-    private Map<PlayerController, MovableToken> playerTokens;
-    private Level level;
+    private Map map;
 
-    public GameBoard() {
-        tileSize = (int) Constants.STEP_SIZE;
-        playerTokens = new HashMap<PlayerController, MovableToken>();
+    public GameBoard(int tileSize) {
+        this.tileSize = tileSize;
     }
 
-    public void loadMap(Level level) {
-        this.level = level;
-        reset();
+    public void loadMap(Map map) {
+        this.map = map;
+        clearChildren(); // TODO: why?
 
+        // TODO: can remove?
         // Make sure to set up level the first thing we do to
         // Level.setUpWorldSize(level);
         // setWidth(Constants.STEP_SIZE * level.getWidth());
         // setHeight(Constants.STEP_SIZE * level.getHeight());
+        map.create(this, tileSize);
+    }
 
-        for (int i = 0; i < level.getWidth(); i++) {
-            for (int j = 0; j < level.getHeight(); j++) {
-                addGameBoardActor(new Tile(i, j));
-            }
-        }
+    public List<SpawnPoint> getSpawnPoints() {
+        return map.getSpawnPoints();
+    }
+
+    public void spawnToken(SpawnPoint spawnPoint, PlayerToken playerToken) {
+        playerToken.setBoardX(spawnPoint.x);
+        playerToken.setBoardY(spawnPoint.y);
+        addActor(playerToken);
     }
 
     @Override
@@ -46,9 +49,9 @@ public class GameBoard extends Group implements IGameBoard {
         float width = getWidth();
         float height = getHeight();
 
-        if (level != null) {
-            float maxWidth = width / level.getWidth();
-            float maxHeight = height / level.getHeight();
+        if (map != null) {
+            float maxWidth = width / map.getWidth();
+            float maxHeight = height / map.getHeight();
 
             float min = Math.min(maxWidth, maxHeight);
 
@@ -61,8 +64,8 @@ public class GameBoard extends Group implements IGameBoard {
     }
 
     private void updateActualSize() {
-        setWidth(tileSize * level.getWidth());
-        setHeight(tileSize * level.getHeight());
+        setWidth(tileSize * map.getWidth());
+        setHeight(tileSize * map.getHeight());
         Group parent = getParent();
         if (parent instanceof Table) ((Table) parent).invalidate();
     }
@@ -76,57 +79,44 @@ public class GameBoard extends Group implements IGameBoard {
         }
     }
 
-    private void addGameBoardActor(GameBoardActor actor) {
-        actor.setWidth(tileSize);
-        actor.setHeight(tileSize);
-        actor.updateStepSize(tileSize);
-        addActor(actor);
-    }
-
-    private void reset() {
-        clearChildren();
-    }
-
-    @Override
+    @Deprecated
     public void spawnToken(PlayerController owner) {
-        PlayerToken playerToken = new PlayerToken(this);
-        if (playerTokens.size() == 0) {
-            playerToken.setBoardX(0);
-            playerToken.setBoardY(0);
-        } else {
-            playerToken.setBoardX(2);
-            playerToken.setBoardY(0);
-        }
-
-        playerTokens.put(owner, playerToken);
-        addActor(playerToken);
+//        PlayerToken playerToken = new PlayerToken(this);
+//        if (playerTokens.size() == 0) {
+//            playerToken.setBoardX(0);
+//            playerToken.setBoardY(0);
+//        } else {
+//            playerToken.setBoardX(2);
+//            playerToken.setBoardY(0);
+//        }
+//
+//        playerTokens.put(owner, playerToken);
+//        addActor(playerToken);
     }
 
-    @Override
-    public MovableToken getToken(PlayerController owner) {
-        return playerTokens.get(owner);
-    }
-
-    @Override
+    @Deprecated
     public int isTileAvailable(int x, int y) {
-        if (level.isOutsideLevel(x, y)) {
-            return -1;
-        }
-        if (isOccupiedByPlayer(x, y)) {
-            return -1;
-        }
-        return level.get(x, y);
+//        if (mapHandler.isWithinBounds(x, y)) {
+//            return -1;
+//        }
+//        if (isOccupiedByPlayer(x, y)) {
+//            return -1;
+//        }
+//        return mapHandler.get(x, y);
+        return 1;
     }
 
+    @Deprecated
     private boolean isOccupiedByPlayer(int x, int y) {
-        for (MovableToken token : playerTokens.values()) {
-            if (token.getBoardX() == x && token.getBoardY() == y) {
-                return true;
-            }
-        }
+//        for (MovableToken token : playerTokens.values()) {
+//            if (token.getBoardX() == x && token.getBoardY() == y) {
+//                return true;
+//            }
+//        }
         return false;
     }
 
+    @Deprecated
     public int getPossibleSteps(Vector2 direction, int x, int y) {
         int actualSteps = 0;
 

@@ -1,9 +1,15 @@
 package olof.sjoholm.Api;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import olof.sjoholm.GameWorld.Actors.GameBoard;
+import olof.sjoholm.GameWorld.Actors.PlayerToken;
+import olof.sjoholm.GameWorld.Maps;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
+import olof.sjoholm.Utils.Constants;
+import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
 public class ServerGameScreen extends ServerScreen {
@@ -11,6 +17,35 @@ public class ServerGameScreen extends ServerScreen {
 
     public ServerGameScreen(ServerScreenHandler serverScreenHandler) {
         gameStage = new GameStage();
+        GameBoard gameBoard = new GameBoard((int) Constants.STEP_SIZE);
+        gameBoard.loadMap(Maps.Level1());
+        for (Maps.SpawnPoint spawnPoint : gameBoard.getSpawnPoints()) {
+            gameBoard.spawnToken(spawnPoint, new PlayerToken());
+        }
+
+
+        CountDownText countDownText = new CountDownText();
+
+        Table table = new Table();
+        table.setFillParent(true);
+        table.top();
+        table.row();
+        table.add(getUpperTable()).fillX();
+        table.row();
+        table.add(gameBoard).grow().center();
+        table.addActor(countDownText);
+
+        gameStage.addActor(table);
+    }
+
+    private Table getUpperTable() {
+        Table table = new Table();
+        table.center();
+        table.left();
+        // table.add(playerHand1).expandX().padBottom(10f).padTop(10f).bottom();
+        table.add().expandX();
+        // table.add(playerHand2).expandX().padBottom(10f).padTop(10f).bottom();
+        return table;
     }
 
     @Override

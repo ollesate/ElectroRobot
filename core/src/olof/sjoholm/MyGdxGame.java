@@ -6,17 +6,24 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.Api.PlayerScreenHandler;
+import olof.sjoholm.Api.ServerGameScreen;
 import olof.sjoholm.Api.ServerScreenHandler;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.LoginScreen;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
+	private boolean debug = true;
 
 	@Override
 	public void create () {
 		Textures.initialize();
-		setScreen(new LoginScreen(this));
+		if (debug) {
+			ServerScreenHandler screenHandler = new ServerScreenHandler(this);
+			setScreen(new ServerGameScreen(screenHandler));
+		} else {
+			setScreen(new LoginScreen(this));
+		}
 	}
 
 	@Override
