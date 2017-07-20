@@ -51,7 +51,7 @@ public class CardModelFactory {
             MoveModel model = new MoveModel();
             model.type = MoveModel.class.getName();
             model.steps = MathUtils.random(1, 4);
-            model.direction = Direction.UP;
+            model.direction = Direction.FORWARD;
             return model;
         }
     }

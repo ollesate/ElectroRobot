@@ -2,13 +2,13 @@ package olof.sjoholm.Utils;
 
 public enum Direction {
 
-    UP(0, 1),
+    FORWARD(0, 1),
 
-    LEFT(-1, 0),
+    CRAB_LEFT(-1, 0),
 
-    RIGHT(1, 0),
+    CRAB_RIGHT(1, 0),
 
-    DOWN(0, -1);
+    BACKWARDS(0, -1);
 
     Direction(int x, int y) {
         this.x = x;

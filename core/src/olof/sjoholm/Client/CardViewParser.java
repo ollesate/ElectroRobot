@@ -55,13 +55,13 @@ public class CardViewParser {
 
         private Texture getTexture(Direction direction) {
             switch (direction) {
-                case UP:
+                case FORWARD:
                     return Textures.up;
-                case LEFT:
+                case CRAB_LEFT:
                     return Textures.left;
-                case RIGHT:
+                case CRAB_RIGHT:
                     return Textures.right;
-                case DOWN:
+                case BACKWARDS:
                     return Textures.down;
             }
             throw new IllegalArgumentException("No texture for " + direction);

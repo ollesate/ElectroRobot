@@ -11,15 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
-import olof.sjoholm.Interfaces.Callback;
-import olof.sjoholm.Interfaces.IGameBoard;
 import olof.sjoholm.Utils.Direction;
-import olof.sjoholm.Interfaces.MovableToken;
 
-public class PlayerToken extends GameBoardActor implements MovableToken {
+public class PlayerToken extends GameBoardActor {
     private float stepDelay = .25f;
     private float stepSpeed = .75f;
-    private Callback finishedCallback;
     private TankAnimation tankAnimation;
 
     {
@@ -39,9 +35,7 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
             setColor(Color.WHITE);
             updateToBoardPosition();
 
-            if (finishedCallback != null) {
-                finishedCallback.callback();
-            }
+            endAction();
             return true;
         }
     };
@@ -62,27 +56,26 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
         }
     };
 
-    @Override
-    public void move(int steps, Direction direction, Callback finishedCallback) {
-        this.finishedCallback = finishedCallback;
+    public void move(Direction direction, int steps) {
 
+        // TODO: this should not be up to math to decide
         Vector2 currentDir = new Vector2(
                 MathUtils.cos(getRotation()),
                 MathUtils.sin(getRotation())
         );
         Vector2 newDirection;
         switch (direction) {
-            case UP:
+            case FORWARD:
                 newDirection = new Vector2(currentDir);
                 break;
-            case LEFT:
+            case BACKWARDS:
+                newDirection = new Vector2(currentDir).scl(-1);
+                break;
+            case CRAB_LEFT:
                 newDirection = new Vector2(currentDir).rotate90(1);
                 break;
-            case RIGHT:
+            case CRAB_RIGHT:
                 newDirection = new Vector2(currentDir).rotate90(-1);
-                break;
-            case DOWN:
-                newDirection = new Vector2(currentDir).scl(-1);
                 break;
             default:
                 throw new IllegalArgumentException("Illegal direction " + direction);
@@ -96,8 +89,10 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
 
         int actualSteps = (possibleSteps > steps) ? steps : possibleSteps;
 
+        // TODO: This should always be 0 after rewrite
         int waitSteps = steps - actualSteps;
-        
+
+        // TODO: This is confusing, try to remove if possible
         setBoardX(getBoardX() + (int) newDirection.x * actualSteps);
         setBoardY(getBoardY() + (int) newDirection.y * actualSteps);
 
@@ -106,13 +101,11 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
                 getWaitSequence(waitSteps),
                 finishedAction
         );
+        startAction();
         addAction(moveSequence);
     }
 
-    @Override
-    public void rotate(Rotation rotation, Callback finishedCallback) {
-        this.finishedCallback = finishedCallback;
-
+    public void rotate(Rotation rotation) {
         SequenceAction sequence = Actions.sequence(
                 Actions.rotateBy(
                         rotation.degrees,
@@ -122,6 +115,7 @@ public class PlayerToken extends GameBoardActor implements MovableToken {
                 Actions.delay(stepDelay),
                 finishedAction
         );
+        startAction();
         addAction(sequence);
     }
 

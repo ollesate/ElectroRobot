@@ -2,24 +2,28 @@ package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.GameLogic.PlayerController;
-import olof.sjoholm.GameWorld.Maps;
 import olof.sjoholm.GameWorld.Maps.Map;
 import olof.sjoholm.GameWorld.Maps.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
-public class GameBoard extends Group {
+public class GameBoard extends Group implements EventListener {
+    private final List<GameBoardActor> movingActors = new ArrayList<GameBoardActor>();
     private int tileSize;
     private Map map;
 
     public GameBoard(int tileSize) {
         this.tileSize = tileSize;
+        addListener(this);
     }
 
     public void loadMap(Map map) {
@@ -32,6 +36,28 @@ public class GameBoard extends Group {
         // setWidth(Constants.STEP_SIZE * level.getWidth());
         // setHeight(Constants.STEP_SIZE * level.getHeight());
         map.create(this, tileSize);
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        for (GameBoardActor movingActor : movingActors) {
+            // TODO: Fix really nice logic about pushing back actors if they, move over bounds.
+            /** Most perfectest algorithm
+             * Example1:
+             * if (Math.abs(dir.y) > 0) {
+             *   boolean trespassing = dir.y % STEP_SIZE > 0;
+             *   if (trespassing) {
+             *     int tileA = pos.y / STEP_SIZE;
+             *     int tileB = tileA + 1;
+             *     if (immovable(tileA) || immovable(tileB)) {
+             *       player.pos.y = dir.y > 0 ? tileA : tileB;
+             *     }
+             *   }
+             *
+             * }
+             */
+        }
     }
 
     public List<SpawnPoint> getSpawnPoints() {
@@ -130,5 +156,19 @@ public class GameBoard extends Group {
         }
 
         return actualSteps;
+    }
+
+    @Override
+    public boolean handle(Event e) {
+        if (e instanceof GameBoardActor.OnStartActionEvent) {
+            // On start action
+            GameBoardActor.OnStartActionEvent event = (GameBoardActor.OnStartActionEvent) e;
+            movingActors.add(event.gameBoardActor);
+        } else if (e instanceof GameBoardActor.OnEndActionEvent) {
+            // On end action
+            GameBoardActor.OnEndActionEvent event = (GameBoardActor.OnEndActionEvent) e;
+            movingActors.remove(event.gameBoardActor);
+        }
+        return false;
     }
 }
