@@ -9,6 +9,6 @@ public class Tile extends GameBoardActor {
         setBoardX(x);
         setBoardY(y);
         updateToBoardPosition();
-        setDrawable(new RegionDrawable(this, Textures.TILE));
+        setDrawable(new RegionDrawable(Textures.TILE));
     }
 }

@@ -9,6 +9,7 @@ import olof.sjoholm.GameWorld.Maps;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
@@ -19,10 +20,11 @@ public class ServerGameScreen extends ServerScreen {
         gameStage = new GameStage();
         GameBoard gameBoard = new GameBoard((int) Constants.STEP_SIZE);
         gameBoard.loadMap(Maps.Level1());
-        for (Maps.SpawnPoint spawnPoint : gameBoard.getSpawnPoints()) {
-            gameBoard.spawnToken(spawnPoint, new PlayerToken());
-        }
 
+        Maps.SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
+        PlayerToken playerToken = new PlayerToken();
+        gameBoard.spawnToken(spawnPoint, playerToken);
+        gameBoard.performAction(playerToken, new BoardAction.MoveForward(2));
 
         CountDownText countDownText = new CountDownText();
 

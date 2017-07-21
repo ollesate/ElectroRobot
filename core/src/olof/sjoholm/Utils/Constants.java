@@ -6,5 +6,5 @@ public class Constants {
     public static final int WORLD_HEIGHT = 1080;
     public static final int IMMOBILE = 1;
     public static final int OUT_OF_BOUNDS = -1;
-    public static float STEP_SIZE = 32f;
+    public static float STEP_SIZE = 150f;
 }

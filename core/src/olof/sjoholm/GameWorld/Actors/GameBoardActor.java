@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Interfaces.Drawable;
+import olof.sjoholm.Utils.Logger;
 
 public class GameBoardActor extends Actor {
     // TODO: Why not keep this a constant and zoom out instead? :(
@@ -43,6 +44,9 @@ public class GameBoardActor extends Actor {
     }
 
     protected void updateToBoardPosition() {
+        if (getClass().equals(GameBoardActor.class)) {
+            Logger.d("updateToBoardPosition ");
+        }
         setX(boardX * stepSize);
         setY(boardY * stepSize);
     }
@@ -54,7 +58,8 @@ public class GameBoardActor extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (drawable != null) {
-            drawable.draw(batch, parentAlpha);
+            drawable.draw(batch, parentAlpha, getX(), getY(), getWidth(), getHeight(), getScaleX(),
+                    getScaleY(), getOriginX(), getOriginY(), getRotation(), getColor());
         }
     }
 

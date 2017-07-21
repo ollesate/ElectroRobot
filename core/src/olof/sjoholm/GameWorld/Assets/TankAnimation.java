@@ -1,6 +1,7 @@
 package olof.sjoholm.GameWorld.Assets;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,23 +10,21 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Interfaces.Drawable;
 
+import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
+
 
 public class TankAnimation implements Drawable {
     private static final float frameDuration = 0.1f;
     private Animation animation;
     private float duration;
     private boolean isPlaying;
-    private Actor actor;
 
-    public TankAnimation(Actor actor) {
-        this.actor = actor;
+    public TankAnimation() {
 
         TextureRegion[] regions = new TextureRegion[9];
         for (int i = 0; i < regions.length; i++) {
             regions[i] = getFrame(i);
         }
-
-        actor.setOrigin(olof.sjoholm.Utils.Constants.STEP_SIZE / 2, olof.sjoholm.Utils.Constants.STEP_SIZE / 2);
 
         animation = new Animation(frameDuration, regions);
     }
@@ -53,17 +52,19 @@ public class TankAnimation implements Drawable {
     }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
+    public void draw(Batch batch, float parentAlpha, float x, float y, float width, float height,
+                     float scaleX, float scaleY, float originX, float originY, float rotation, Color tint) {
         if (isPlaying) {
             duration += Gdx.graphics.getDeltaTime();
         }
+        batch.setColor(tint);
         batch.draw(
                 animation.getKeyFrame(duration, true),
-                actor.getX(), actor.getY(),
-                actor.getOriginX(), actor.getOriginY(),
-                actor.getWidth(), actor.getHeight(),
-                actor.getScaleX(), actor.getScaleY(),
-                actor.getRotation()
-                );
+                x, y,
+                originX, originY,
+                width, height,
+                scaleX, scaleY,
+                rotation
+        );
     }
 }

@@ -48,7 +48,7 @@ public class Textures {
 
         spritesheet = new Texture("spritesheet.png");
         
-        TILE = new SpriteSheetRegion(spritesheet, 1, 0);;
+        TILE = new SpriteSheetRegion(spritesheet, 1, 0, 32, 32);
 
         background = new Texture("background.png");
     }

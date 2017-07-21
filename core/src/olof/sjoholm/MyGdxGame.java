@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.Api.PlayerScreenHandler;
+import olof.sjoholm.Api.ScreenHandler;
 import olof.sjoholm.Api.ServerGameScreen;
 import olof.sjoholm.Api.ServerScreenHandler;
 import olof.sjoholm.GameWorld.Assets.Textures;
@@ -17,10 +18,11 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 
 	@Override
 	public void create () {
+		Logger.d("Game create");
 		Textures.initialize();
 		if (debug) {
 			ServerScreenHandler screenHandler = new ServerScreenHandler(this);
-			setScreen(new ServerGameScreen(screenHandler));
+			screenHandler.showScreen(ServerScreenHandler.GAME);
 		} else {
 			setScreen(new LoginScreen(this));
 		}
@@ -53,7 +55,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 
     @Override
     public void setScreen(Screen screen) {
-		Logger.d("Set screen " + screen.getClass().getSimpleName());
 		super.setScreen(screen);
+		Logger.d("Set screen " + screen.getClass().getSimpleName());
     }
 }

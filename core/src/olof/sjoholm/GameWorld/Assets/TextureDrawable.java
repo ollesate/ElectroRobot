@@ -1,26 +1,25 @@
 package olof.sjoholm.GameWorld.Assets;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import olof.sjoholm.Interfaces.Drawable;
+import olof.sjoholm.Utils.Logger;
 
 
 public class TextureDrawable implements Drawable {
     private Texture texture;
-    private Actor actor;
 
-    public TextureDrawable(Actor actor, Texture texture) {
+    public TextureDrawable(Texture texture) {
         this.texture = texture;
-        this.actor = actor;
     }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
-        if (texture != null) {
-            batch.setColor(actor.getColor());
-            batch.draw(texture, actor.getX(), actor.getY(), actor.getWidth(), actor.getHeight());
-        }
+    public void draw(Batch batch, float parentAlpha, float x, float y, float width, float height,
+                     float scaleX, float scaleY, float originX, float originY, float rotation,
+                     Color tint) {
+        batch.setColor(tint);
+        batch.draw(texture, x, y, width, height);
     }
 }

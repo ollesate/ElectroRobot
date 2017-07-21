@@ -6,7 +6,7 @@ import olof.sjoholm.Utils.Direction;
 
 public interface BoardAction {
 
-    void execute(PlayerToken playerToken);
+    void perform(PlayerToken playerToken);
 
     class MoveForward implements BoardAction {
         private int steps;
@@ -16,7 +16,7 @@ public interface BoardAction {
         }
 
         @Override
-        public void execute(PlayerToken playerToken) {
+        public void perform(PlayerToken playerToken) {
             playerToken.move(Direction.FORWARD, 2);
         }
     }

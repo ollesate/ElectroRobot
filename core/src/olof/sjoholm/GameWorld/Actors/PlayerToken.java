@@ -13,6 +13,8 @@ import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.Utils.Direction;
 
+import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
+
 public class PlayerToken extends GameBoardActor {
     private float stepDelay = .25f;
     private float stepSpeed = .75f;
@@ -20,7 +22,9 @@ public class PlayerToken extends GameBoardActor {
 
     {
         setOrigin(getWidth() / 2, getHeight() / 2);
-        tankAnimation = new TankAnimation(this);
+        // TODO: remove one if this?
+        setOrigin(olof.sjoholm.Utils.Constants.STEP_SIZE / 2, olof.sjoholm.Utils.Constants.STEP_SIZE / 2);
+        tankAnimation = new TankAnimation();
         setDrawable(tankAnimation);
     }
 

@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.GameLogic.PlayerController;
 import olof.sjoholm.GameWorld.Maps.Map;
 import olof.sjoholm.GameWorld.Maps.SpawnPoint;
@@ -54,7 +55,6 @@ public class GameBoard extends Group implements EventListener {
              *       player.pos.y = dir.y > 0 ? tileA : tileB;
              *     }
              *   }
-             *
              * }
              */
         }
@@ -65,9 +65,13 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public void spawnToken(SpawnPoint spawnPoint, PlayerToken playerToken) {
-        playerToken.setBoardX(spawnPoint.x);
-        playerToken.setBoardY(spawnPoint.y);
+        playerToken.setX(spawnPoint.x * Constants.STEP_SIZE);
+        playerToken.setY(spawnPoint.y * Constants.STEP_SIZE);
         addActor(playerToken);
+    }
+
+    public void performAction(PlayerToken playerToken, BoardAction boardAction) {
+        boardAction.perform(playerToken);
     }
 
     @Override
@@ -84,8 +88,8 @@ public class GameBoard extends Group implements EventListener {
             tileSize = (int) min;
             Logger.d("New size: " + width + ", " + height + ". Tilesize is now set to " + tileSize);
 
-            updateChildrenSizes();
-            updateActualSize();
+//            updateChildrenSizes();
+//            updateActualSize();
         }
     }
 
