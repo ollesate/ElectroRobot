@@ -13,11 +13,11 @@ public class Maps {
     public static Map Level1() {
         return new Map(
                 new int[][]{
-                        {0, 1, 0, 0, 0, 0, 1, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
                         {0, 0, 0, 0, 0, 0, 0, 0},
                         {0, 1, 0, 0, 0, 0, 1, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {0, 1, 0, 0, 0, 0, 1, 0},
+                        {0, 0, 0, 0, 0, 0, 0, 0},
                 }
         );
     }
@@ -59,7 +59,6 @@ public class Maps {
             Tile tile = new Tile(x, y);
             tile.setWidth(tileSize);
             tile.setHeight(tileSize);
-            tile.updateStepSize(tileSize);
             group.addActor(tile);
         }
 

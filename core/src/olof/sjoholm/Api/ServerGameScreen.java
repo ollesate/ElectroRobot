@@ -10,6 +10,7 @@ import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
@@ -24,7 +25,11 @@ public class ServerGameScreen extends ServerScreen {
         Maps.SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
         PlayerToken playerToken = new PlayerToken();
         gameBoard.spawnToken(spawnPoint, playerToken);
-        gameBoard.performAction(playerToken, new BoardAction.MoveForward(2));
+        gameBoard.performActions(
+                new GameBoard.PlayerAction(playerToken, new BoardAction.Rotate(Rotation.LEFT)),
+                new GameBoard.PlayerAction(playerToken, new BoardAction.MoveForward(4))
+        );
+
 
         CountDownText countDownText = new CountDownText();
 

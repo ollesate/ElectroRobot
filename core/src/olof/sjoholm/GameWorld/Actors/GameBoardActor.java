@@ -9,46 +9,11 @@ import olof.sjoholm.Interfaces.Drawable;
 import olof.sjoholm.Utils.Logger;
 
 public class GameBoardActor extends Actor {
-    // TODO: Why not keep this a constant and zoom out instead? :(
-    protected int stepSize;
-    private int boardX;
-    private int boardY;
     private Drawable drawable;
 
     {
         // TODO: Usch
         setSize(Constants.STEP_SIZE, Constants.STEP_SIZE);
-    }
-
-    public int getBoardX() {
-        return boardX;
-    }
-
-    public int getBoardY() {
-        return boardY;
-    }
-
-    public void setBoardX(int x) {
-        boardX = x;
-    }
-
-    public void setBoardY(int y) {
-        boardY = y;
-    }
-
-    // TODO: Why?
-    public void updateStepSize(int stepSize) {
-        this.stepSize = stepSize;
-        setSize(stepSize, stepSize);
-        updateToBoardPosition();
-    }
-
-    protected void updateToBoardPosition() {
-        if (getClass().equals(GameBoardActor.class)) {
-            Logger.d("updateToBoardPosition ");
-        }
-        setX(boardX * stepSize);
-        setY(boardY * stepSize);
     }
 
     public void setDrawable(Drawable drawable) {

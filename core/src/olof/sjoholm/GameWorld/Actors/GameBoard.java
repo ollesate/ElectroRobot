@@ -1,12 +1,17 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.sun.jmx.remote.internal.ArrayQueue;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,8 +75,69 @@ public class GameBoard extends Group implements EventListener {
         addActor(playerToken);
     }
 
+    private ArrayDeque<PlayerAction> actionsQueue = new ArrayDeque<PlayerAction>();
+
+    public static class PlayerAction {
+        public final PlayerToken playerToken;
+        public final BoardAction boardAction;
+
+        public PlayerAction(PlayerToken playerToken, BoardAction boardAction) {
+            this.playerToken = playerToken;
+            this.boardAction = boardAction;
+        }
+    }
+
+    private final Action playerFinishedTurn = new Action() {
+        @Override
+        public boolean act(float delta) {
+            if (actionsQueue != null) {
+                PlayerAction playerAction = actionsQueue.pop();
+                PlayerToken playerToken = playerAction.playerToken;
+                Action action = playerAction.boardAction.perform(playerToken);
+                playerToken.addAction(Actions.sequence(action, playerFinishedTurn));
+            }
+            return true;
+        }
+    };
+
     public void performAction(PlayerToken playerToken, BoardAction boardAction) {
-        boardAction.perform(playerToken);
+        if (actionsQueue.size() == 0) {
+            Action action = boardAction.perform(playerToken);
+            playerToken.addAction(Actions.sequence(action, playerFinishedTurn));
+            boardAction.perform(playerToken);
+        }
+    }
+
+    public void performActions(PlayerAction... playerActions) {
+        SequenceAction sequence = new SequenceAction();
+        for (PlayerAction action : playerActions) {
+            sequence.addAction(new ActionWrapper(action.playerToken, action.boardAction));
+        }
+        addAction(sequence);
+        PlayerAction playerAction = playerActions[0];
+//        addAction(playerAction.boardAction.perform(playerAction.playerToken));
+    }
+
+    private class ActionWrapper extends Action {
+        private final PlayerToken playerToken;
+        private final BoardAction boardAction;
+        private final Action perform;
+        private boolean added;
+
+        public ActionWrapper(PlayerToken playerToken, BoardAction boardAction) {
+            this.playerToken = playerToken;
+            this.boardAction = boardAction;
+            perform = boardAction.perform(playerToken);
+        }
+
+        @Override
+        public boolean act(float delta) {
+            if (!added) {
+                playerToken.addAction(perform);
+                added = true;
+            }
+            return perform.act(delta);
+        }
     }
 
     @Override
@@ -90,22 +156,6 @@ public class GameBoard extends Group implements EventListener {
 
 //            updateChildrenSizes();
 //            updateActualSize();
-        }
-    }
-
-    private void updateActualSize() {
-        setWidth(tileSize * map.getWidth());
-        setHeight(tileSize * map.getHeight());
-        Group parent = getParent();
-        if (parent instanceof Table) ((Table) parent).invalidate();
-    }
-
-    private void updateChildrenSizes() {
-        for (Actor actor : getChildren()) {
-            if (actor instanceof GameBoardActor) {
-                GameBoardActor gameBoardActor = ((GameBoardActor) actor);
-                gameBoardActor.updateStepSize(tileSize);
-            }
         }
     }
 
