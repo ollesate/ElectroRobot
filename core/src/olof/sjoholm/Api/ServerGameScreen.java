@@ -26,11 +26,10 @@ public class ServerGameScreen extends ServerScreen {
         PlayerToken playerToken = new PlayerToken();
         gameBoard.spawnToken(spawnPoint, playerToken);
         gameBoard.performActions(
-                new GameBoard.PlayerAction(playerToken, new BoardAction.Rotate(Rotation.LEFT)),
+                new GameBoard.PlayerAction(playerToken, new BoardAction.MoveForward(2)),
+                new GameBoard.PlayerAction(playerToken, new BoardAction.Rotate(Rotation.UTURN)),
                 new GameBoard.PlayerAction(playerToken, new BoardAction.MoveForward(4))
         );
-
-
         CountDownText countDownText = new CountDownText();
 
         Table table = new Table();

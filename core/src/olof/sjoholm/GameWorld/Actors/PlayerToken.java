@@ -6,10 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.Utils.Constants;
@@ -18,8 +16,8 @@ import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Utils.Rotation;
 
 public class PlayerToken extends GameBoardActor {
-    private float stepDelay = .25f;
-    private float stepSpeed = .75f;
+    private float stepDelay = 1.0f;
+    private float stepSpeed = 2.0f;
     private TankAnimation tankAnimation;
 
     {
@@ -60,12 +58,24 @@ public class PlayerToken extends GameBoardActor {
             SequenceAction tileSequence = Actions.sequence(
                     animationResumeAction,
                     new MoveDirectionAction(this, direction, stepSpeed),
+                    roundAction,
                     animationPauseAction,
                     Actions.delay(stepDelay));
             sequence.addAction(tileSequence);
         }
         return sequence;
     }
+
+    private final Action roundAction = new Action() {
+
+        @Override
+        public boolean act(float delta) {
+            setRotation(Math.round(getRotation()));
+            setX(Math.round(getX()));
+            setY(Math.round(getY()));
+            return true;
+        }
+    };
 
     public Action rotate(Rotation rotation) {
         return Actions.sequence(
@@ -74,6 +84,7 @@ public class PlayerToken extends GameBoardActor {
                         stepSpeed * rotation.duration,
                         Interpolation.linear
                 ),
+                roundAction,
                 Actions.delay(stepDelay)
         );
     }
@@ -105,6 +116,14 @@ public class PlayerToken extends GameBoardActor {
             }
             return update(delta);
         }
+    }
+
+    public Vector2 getDirection() {
+        // TODO: this is very dangerous rounding!
+        float rotation = getRotation();
+        float x = MathUtils.cosDeg(rotation);
+        float y = MathUtils.sinDeg(rotation);
+        return new Vector2(Math.round(x), Math.round(y));
     }
 
     private static class MoveDirectionAction extends RelativeAction {

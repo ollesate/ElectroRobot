@@ -69,7 +69,7 @@ public class Maps {
             return OUT_OF_BOUNDS;
         }
 
-        private boolean isWithinBounds(int x, int y) {
+        public boolean isWithinBounds(int x, int y) {
             return x >= 0 && x < width && y >= 0 && y < height;
         }
 

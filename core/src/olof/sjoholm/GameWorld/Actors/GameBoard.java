@@ -1,5 +1,7 @@
 package olof.sjoholm.GameWorld.Actors;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,19 +10,22 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.sun.jmx.remote.internal.ArrayQueue;
 
+import java.awt.Point;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.GameLogic.PlayerController;
+import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
+import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Maps.Map;
 import olof.sjoholm.GameWorld.Maps.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
+
+import static com.badlogic.gdx.net.HttpRequestHeader.From;
 
 public class GameBoard extends Group implements EventListener {
     private final List<GameBoardActor> movingActors = new ArrayList<GameBoardActor>();
@@ -49,20 +54,86 @@ public class GameBoard extends Group implements EventListener {
         super.act(delta);
         for (GameBoardActor movingActor : movingActors) {
             // TODO: Fix really nice logic about pushing back actors if they, move over bounds.
-            /** Most perfectest algorithm
-             * Example1:
-             * if (Math.abs(dir.y) > 0) {
-             *   boolean trespassing = dir.y % STEP_SIZE > 0;
-             *   if (trespassing) {
-             *     int tileA = pos.y / STEP_SIZE;
-             *     int tileB = tileA + 1;
-             *     if (immovable(tileA) || immovable(tileB)) {
-             *       player.pos.y = dir.y > 0 ? tileA : tileB;
-             *     }
-             *   }
-             * }
-             */
+            PlayerToken playerToken = (PlayerToken) movingActor;
+            Vector2 dir = playerToken.getDirection();
+            Vector2 pos = new Vector2(playerToken.getX(), playerToken.getY());
+
+            if (Math.abs(dir.y) > 0) {
+                boolean trespassing = Math.abs(pos.y % Constants.STEP_SIZE) > 0;
+                if (trespassing) {
+                    int fromTile;
+                    if (dir.y > 0) {
+                        if (pos.y > 0) {
+                            fromTile = (int) (pos.y / Constants.STEP_SIZE);
+                        } else {
+                            fromTile = (int) (pos.y / Constants.STEP_SIZE) -1;
+                        }
+                    } else {
+                        if (pos.y > 0) {
+                            fromTile = (int) (pos.y / Constants.STEP_SIZE) + 1;
+                        } else {
+                            fromTile = (int) (pos.y / Constants.STEP_SIZE);
+                        }
+                    }
+                    int toTile = dir.y > 0 ? fromTile + 1 : fromTile - 1;
+                    if (!map.isWithinBounds(0, toTile)) {
+                        playerToken.setY(fromTile * Constants.STEP_SIZE);
+                        playerToken.setColor(Color.RED);
+                    } else {
+                        playerToken.setColor(Color.GREEN);
+                    }
+                } else {
+                    playerToken.setColor(Color.WHITE);
+                }
+            } else if (Math.abs(dir.x) > 0) {
+                boolean trespassing = Math.abs(pos.x % Constants.STEP_SIZE) > 0;
+                if (trespassing) {
+                    int fromTile;
+                    if (dir.x > 0) {
+                        if (pos.x > 0) {
+                            fromTile = (int) (pos.x / Constants.STEP_SIZE);
+                        } else {
+                            fromTile = (int) (pos.x / Constants.STEP_SIZE) -1;
+                        }
+                    } else {
+                        if (pos.x > 0) {
+                            fromTile = (int) (pos.x / Constants.STEP_SIZE) + 1;
+                        } else {
+                            fromTile = (int) (pos.x / Constants.STEP_SIZE);
+                        }
+                    }
+                    int toTile = dir.x > 0 ? fromTile + 1 : fromTile - 1;
+                    if (!map.isWithinBounds(toTile, 0)) {
+                        playerToken.setX(fromTile * Constants.STEP_SIZE);
+                        playerToken.setColor(Color.RED);
+                    } else {
+                        playerToken.setColor(Color.GREEN);
+                    }
+                } else {
+                    playerToken.setColor(Color.WHITE);
+                }
+            }
         }
+    }
+
+    private Point insideTile(PlayerToken playerToken) {
+        Vector2 pos = new Vector2(playerToken.getX(), playerToken.getY());
+
+        int tileY;
+        if (pos.y > 0) {
+            tileY = (int) (pos.y / Constants.STEP_SIZE);
+        } else {
+            tileY = (int) (pos.y / Constants.STEP_SIZE) -1;
+        }
+
+        int tileX;
+        if (pos.x > 0) {
+            tileX = (int) (pos.x / Constants.STEP_SIZE);
+        } else {
+            tileX = (int) (pos.x / Constants.STEP_SIZE) -1;
+        }
+
+        return new Point(tileX, tileY);
     }
 
     public List<SpawnPoint> getSpawnPoints() {
@@ -111,11 +182,26 @@ public class GameBoard extends Group implements EventListener {
     public void performActions(PlayerAction... playerActions) {
         SequenceAction sequence = new SequenceAction();
         for (PlayerAction action : playerActions) {
+            sequence.addAction(new FireEventAction(new OnStartActionEvent(action.playerToken)));
             sequence.addAction(new ActionWrapper(action.playerToken, action.boardAction));
+            sequence.addAction(new FireEventAction(new OnEndActionEvent(action.playerToken)));
         }
         addAction(sequence);
-        PlayerAction playerAction = playerActions[0];
-//        addAction(playerAction.boardAction.perform(playerAction.playerToken));
+    }
+
+    public static class FireEventAction extends Action {
+        private final Event event;
+
+        public FireEventAction(Event event) {
+            this.event = event;
+        }
+
+        @Override
+        public boolean act(float delta) {
+            Actor target = getTarget();
+            target.fire(event);
+            return true;
+        }
     }
 
     private class ActionWrapper extends Action {
@@ -125,6 +211,7 @@ public class GameBoard extends Group implements EventListener {
         private boolean added;
 
         public ActionWrapper(PlayerToken playerToken, BoardAction boardAction) {
+            // TODO: Rename target action or similiar
             this.playerToken = playerToken;
             this.boardAction = boardAction;
             perform = boardAction.perform(playerToken);
@@ -214,13 +301,14 @@ public class GameBoard extends Group implements EventListener {
 
     @Override
     public boolean handle(Event e) {
-        if (e instanceof GameBoardActor.OnStartActionEvent) {
+        Logger.d("Event " + e);
+        if (e instanceof OnStartActionEvent) {
             // On start action
-            GameBoardActor.OnStartActionEvent event = (GameBoardActor.OnStartActionEvent) e;
+            OnStartActionEvent event = (OnStartActionEvent) e;
             movingActors.add(event.gameBoardActor);
-        } else if (e instanceof GameBoardActor.OnEndActionEvent) {
+        } else if (e instanceof OnEndActionEvent) {
             // On end action
-            GameBoardActor.OnEndActionEvent event = (GameBoardActor.OnEndActionEvent) e;
+            OnEndActionEvent event = (OnEndActionEvent) e;
             movingActors.remove(event.gameBoardActor);
         }
         return false;

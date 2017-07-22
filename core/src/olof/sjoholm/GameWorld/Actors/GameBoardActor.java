@@ -36,7 +36,7 @@ public class GameBoardActor extends Actor {
         fire(new OnEndActionEvent(this));
     }
 
-    public class OnEndActionEvent extends Event {
+    public static class OnEndActionEvent extends Event {
         public GameBoardActor gameBoardActor;
 
         public OnEndActionEvent(GameBoardActor gameBoardActor) {
@@ -44,7 +44,7 @@ public class GameBoardActor extends Actor {
         }
     }
 
-    public class OnStartActionEvent extends Event {
+    public static class OnStartActionEvent extends Event {
         public GameBoardActor gameBoardActor;
 
         public OnStartActionEvent(GameBoardActor gameBoardActor) {
