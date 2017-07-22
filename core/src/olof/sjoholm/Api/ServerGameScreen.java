@@ -1,6 +1,8 @@
 package olof.sjoholm.Api;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
@@ -14,8 +16,11 @@ import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
+import static sun.audio.AudioPlayer.player;
+
 public class ServerGameScreen extends ServerScreen {
     private final GameStage gameStage;
+    private boolean paused;
 
     public ServerGameScreen(ServerScreenHandler serverScreenHandler) {
         gameStage = new GameStage();
@@ -26,9 +31,8 @@ public class ServerGameScreen extends ServerScreen {
         PlayerToken playerToken = new PlayerToken();
         gameBoard.spawnToken(spawnPoint, playerToken);
         gameBoard.performActions(
-                new GameBoard.PlayerAction(playerToken, new BoardAction.MoveForward(2)),
-                new GameBoard.PlayerAction(playerToken, new BoardAction.Rotate(Rotation.UTURN)),
-                new GameBoard.PlayerAction(playerToken, new BoardAction.MoveForward(4))
+                new GameBoard.PlayerAction(playerToken, new BoardAction.Rotate(Rotation.RIGHT)),
+                new GameBoard.PlayerAction(playerToken, new BoardAction.MoveForward(7))
         );
         CountDownText countDownText = new CountDownText();
 
@@ -62,7 +66,12 @@ public class ServerGameScreen extends ServerScreen {
 
     @Override
     public void render(float delta) {
-        gameStage.act(delta);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            paused = !paused;
+        }
+        if (!paused) {
+            gameStage.act(delta);
+        }
         gameStage.draw();
     }
 

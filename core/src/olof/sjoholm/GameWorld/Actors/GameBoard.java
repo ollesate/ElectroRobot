@@ -1,7 +1,6 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -25,8 +24,6 @@ import olof.sjoholm.GameWorld.Maps.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
-import static com.badlogic.gdx.net.HttpRequestHeader.From;
-
 public class GameBoard extends Group implements EventListener {
     private final List<GameBoardActor> movingActors = new ArrayList<GameBoardActor>();
     private int tileSize;
@@ -40,12 +37,6 @@ public class GameBoard extends Group implements EventListener {
     public void loadMap(Map map) {
         this.map = map;
         clearChildren(); // TODO: why?
-
-        // TODO: can remove?
-        // Make sure to set up level the first thing we do to
-        // Level.setUpWorldSize(level);
-        // setWidth(Constants.STEP_SIZE * level.getWidth());
-        // setHeight(Constants.STEP_SIZE * level.getHeight());
         map.create(this, tileSize);
     }
 
@@ -53,86 +44,64 @@ public class GameBoard extends Group implements EventListener {
     public void act(float delta) {
         super.act(delta);
         for (GameBoardActor movingActor : movingActors) {
-            // TODO: Fix really nice logic about pushing back actors if they, move over bounds.
             PlayerToken playerToken = (PlayerToken) movingActor;
             Vector2 dir = playerToken.getDirection();
             Vector2 pos = new Vector2(playerToken.getX(), playerToken.getY());
 
-            if (Math.abs(dir.y) > 0) {
-                boolean trespassing = Math.abs(pos.y % Constants.STEP_SIZE) > 0;
-                if (trespassing) {
-                    int fromTile;
-                    if (dir.y > 0) {
-                        if (pos.y > 0) {
-                            fromTile = (int) (pos.y / Constants.STEP_SIZE);
-                        } else {
-                            fromTile = (int) (pos.y / Constants.STEP_SIZE) -1;
-                        }
-                    } else {
-                        if (pos.y > 0) {
-                            fromTile = (int) (pos.y / Constants.STEP_SIZE) + 1;
-                        } else {
-                            fromTile = (int) (pos.y / Constants.STEP_SIZE);
-                        }
-                    }
-                    int toTile = dir.y > 0 ? fromTile + 1 : fromTile - 1;
-                    if (!map.isWithinBounds(0, toTile)) {
-                        playerToken.setY(fromTile * Constants.STEP_SIZE);
-                        playerToken.setColor(Color.RED);
-                    } else {
-                        playerToken.setColor(Color.GREEN);
-                    }
-                } else {
-                    playerToken.setColor(Color.WHITE);
+            Point leftDownTile = getLeftDownTilePos(playerToken);
+            int actualX, actualY;
+            if (dir.x < 0) {
+                actualX = leftDownTile.x + 1;
+            } else {
+                actualX = leftDownTile.x;
+            }
+            if (dir.y < 0) {
+                actualY = leftDownTile.y + 1;
+            } else {
+                actualY = leftDownTile.y;
+            }
+            Point fromTile = new Point(actualX, actualY);
+            Point toTile = new Point((int)(fromTile.x + dir.x), (int)(fromTile.y + dir.y));
+            boolean isBlocked = false;
+            if (Math.abs(dir.y) > 0 && Math.abs(pos.y % Constants.STEP_SIZE) > 0) {
+                if (!map.isWithinBounds(toTile.x, toTile.y)) {
+                    isBlocked = true;
                 }
-            } else if (Math.abs(dir.x) > 0) {
-                boolean trespassing = Math.abs(pos.x % Constants.STEP_SIZE) > 0;
-                if (trespassing) {
-                    int fromTile;
-                    if (dir.x > 0) {
-                        if (pos.x > 0) {
-                            fromTile = (int) (pos.x / Constants.STEP_SIZE);
-                        } else {
-                            fromTile = (int) (pos.x / Constants.STEP_SIZE) -1;
-                        }
-                    } else {
-                        if (pos.x > 0) {
-                            fromTile = (int) (pos.x / Constants.STEP_SIZE) + 1;
-                        } else {
-                            fromTile = (int) (pos.x / Constants.STEP_SIZE);
-                        }
-                    }
-                    int toTile = dir.x > 0 ? fromTile + 1 : fromTile - 1;
-                    if (!map.isWithinBounds(toTile, 0)) {
-                        playerToken.setX(fromTile * Constants.STEP_SIZE);
-                        playerToken.setColor(Color.RED);
-                    } else {
-                        playerToken.setColor(Color.GREEN);
-                    }
-                } else {
-                    playerToken.setColor(Color.WHITE);
+            } else if (Math.abs(dir.x) > 0 && Math.abs(pos.x % Constants.STEP_SIZE) > 0) {
+                if (!map.isWithinBounds(toTile.x, toTile.y)) {
+                    isBlocked = true;
                 }
+            }
+//            Logger.d("From " + fromTile + " to " + toTile + " blocked " + isBlocked);
+            if (isBlocked) {
+//                Logger.d("Set x " + fromTile.x * Constants.STEP_SIZE + " y " + fromTile.y * Constants.STEP_SIZE);
+                playerToken.setColor(Color.RED);
+                playerToken.setX(fromTile.x * Constants.STEP_SIZE);
+                playerToken.setY(fromTile.y * Constants.STEP_SIZE);
+            } else {
+                playerToken.setColor(Color.GREEN);
             }
         }
     }
 
-    private Point insideTile(PlayerToken playerToken) {
+    private Point getLeftDownTilePos(PlayerToken playerToken) {
         Vector2 pos = new Vector2(playerToken.getX(), playerToken.getY());
 
         int tileY;
         if (pos.y > 0) {
             tileY = (int) (pos.y / Constants.STEP_SIZE);
         } else {
-            tileY = (int) (pos.y / Constants.STEP_SIZE) -1;
+            tileY = (int) (pos.y / Constants.STEP_SIZE) - 1;
         }
 
         int tileX;
         if (pos.x > 0) {
             tileX = (int) (pos.x / Constants.STEP_SIZE);
         } else {
-            tileX = (int) (pos.x / Constants.STEP_SIZE) -1;
+            tileX = (int) (pos.x / Constants.STEP_SIZE) - 1;
         }
 
+//        Logger.d("Pos " + pos + " tile " + new Vector2(tileX, tileY));
         return new Point(tileX, tileY);
     }
 
@@ -146,8 +115,6 @@ public class GameBoard extends Group implements EventListener {
         addActor(playerToken);
     }
 
-    private ArrayDeque<PlayerAction> actionsQueue = new ArrayDeque<PlayerAction>();
-
     public static class PlayerAction {
         public final PlayerToken playerToken;
         public final BoardAction boardAction;
@@ -155,27 +122,6 @@ public class GameBoard extends Group implements EventListener {
         public PlayerAction(PlayerToken playerToken, BoardAction boardAction) {
             this.playerToken = playerToken;
             this.boardAction = boardAction;
-        }
-    }
-
-    private final Action playerFinishedTurn = new Action() {
-        @Override
-        public boolean act(float delta) {
-            if (actionsQueue != null) {
-                PlayerAction playerAction = actionsQueue.pop();
-                PlayerToken playerToken = playerAction.playerToken;
-                Action action = playerAction.boardAction.perform(playerToken);
-                playerToken.addAction(Actions.sequence(action, playerFinishedTurn));
-            }
-            return true;
-        }
-    };
-
-    public void performAction(PlayerToken playerToken, BoardAction boardAction) {
-        if (actionsQueue.size() == 0) {
-            Action action = boardAction.perform(playerToken);
-            playerToken.addAction(Actions.sequence(action, playerFinishedTurn));
-            boardAction.perform(playerToken);
         }
     }
 
@@ -240,63 +186,7 @@ public class GameBoard extends Group implements EventListener {
 
             tileSize = (int) min;
             Logger.d("New size: " + width + ", " + height + ". Tilesize is now set to " + tileSize);
-
-//            updateChildrenSizes();
-//            updateActualSize();
         }
-    }
-
-    @Deprecated
-    public void spawnToken(PlayerController owner) {
-//        PlayerToken playerToken = new PlayerToken(this);
-//        if (playerTokens.size() == 0) {
-//            playerToken.setBoardX(0);
-//            playerToken.setBoardY(0);
-//        } else {
-//            playerToken.setBoardX(2);
-//            playerToken.setBoardY(0);
-//        }
-//
-//        playerTokens.put(owner, playerToken);
-//        addActor(playerToken);
-    }
-
-    @Deprecated
-    public int isTileAvailable(int x, int y) {
-//        if (mapHandler.isWithinBounds(x, y)) {
-//            return -1;
-//        }
-//        if (isOccupiedByPlayer(x, y)) {
-//            return -1;
-//        }
-//        return mapHandler.get(x, y);
-        return 1;
-    }
-
-    @Deprecated
-    private boolean isOccupiedByPlayer(int x, int y) {
-//        for (MovableToken token : playerTokens.values()) {
-//            if (token.getBoardX() == x && token.getBoardY() == y) {
-//                return true;
-//            }
-//        }
-        return false;
-    }
-
-    @Deprecated
-    public int getPossibleSteps(Vector2 direction, int x, int y) {
-        int actualSteps = 0;
-
-        x += direction.x;
-        y += direction.y;
-        while (isTileAvailable(x, y) != Constants.IMMOBILE &&
-                isTileAvailable(x, y) != Constants.OUT_OF_BOUNDS) {
-            x += direction.x;
-            y += direction.y;
-            actualSteps++;
-        }
-
-        return actualSteps;
     }
 
     @Override

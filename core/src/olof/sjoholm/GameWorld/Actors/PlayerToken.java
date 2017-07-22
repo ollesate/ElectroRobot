@@ -16,7 +16,7 @@ import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Utils.Rotation;
 
 public class PlayerToken extends GameBoardActor {
-    private float stepDelay = 1.0f;
+    private float stepDelay = .5f;
     private float stepSpeed = 2.0f;
     private TankAnimation tankAnimation;
 
