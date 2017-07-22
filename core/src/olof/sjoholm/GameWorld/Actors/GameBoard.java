@@ -1,6 +1,8 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,19 +10,23 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import java.awt.Point;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import olof.sjoholm.Api.BoardAction;
-import olof.sjoholm.GameLogic.PlayerController;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Maps.Map;
 import olof.sjoholm.GameWorld.Maps.SpawnPoint;
+import olof.sjoholm.Net.Server.Player;
+import olof.sjoholm.Skins;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
@@ -43,6 +49,7 @@ public class GameBoard extends Group implements EventListener {
     @Override
     public void act(float delta) {
         super.act(delta);
+
         for (GameBoardActor movingActor : movingActors) {
             PlayerToken playerToken = (PlayerToken) movingActor;
             Vector2 dir = playerToken.getDirection();
@@ -75,12 +82,15 @@ public class GameBoard extends Group implements EventListener {
 //            Logger.d("From " + fromTile + " to " + toTile + " blocked " + isBlocked);
             if (isBlocked) {
 //                Logger.d("Set x " + fromTile.x * Constants.STEP_SIZE + " y " + fromTile.y * Constants.STEP_SIZE);
-                playerToken.setColor(Color.RED);
                 playerToken.setX(fromTile.x * Constants.STEP_SIZE);
                 playerToken.setY(fromTile.y * Constants.STEP_SIZE);
-            } else {
-                playerToken.setColor(Color.GREEN);
             }
+
+
+        }
+
+        for (Badge badge : badges) {
+            badge.update();
         }
     }
 
@@ -109,11 +119,45 @@ public class GameBoard extends Group implements EventListener {
         return map.getSpawnPoints();
     }
 
-    public void spawnToken(SpawnPoint spawnPoint, PlayerToken playerToken) {
+    private java.util.Map<Player, PlayerToken> players = new HashMap<Player, PlayerToken>();
+
+    public void spawnPlayer(SpawnPoint spawnPoint, Player player) {
+        PlayerToken playerToken = new PlayerToken();
         playerToken.setX(spawnPoint.x * Constants.STEP_SIZE);
         playerToken.setY(spawnPoint.y * Constants.STEP_SIZE);
         addActor(playerToken);
+        playerToken.setColor(player.color);
+
+        Badge badge = new Badge(playerToken, player.getName());
+        badges.add(badge);
+        addActor(badge);
+
+        players.put(player, playerToken);
     }
+
+    public PlayerToken getToken(Player player) {
+        return players.get(player);
+    }
+
+    public static class Badge extends Label {
+        private final Actor target;
+
+        public Badge(Actor target, CharSequence text) {
+            super(text, Skins.DEFAULT);
+            this.target = target;
+            Pixmap labelColor = new Pixmap(1, 1, Pixmap.Format.RGB888);
+            labelColor.setColor(Color.GRAY);
+            labelColor.fill();
+            getStyle().background = new Image(new Texture(labelColor)).getDrawable();
+        }
+
+        public void update() {
+            setX(target.getX() + (target.getWidth() - getWidth()) / 2);
+            setY(target.getY() + (target.getHeight() - getHeight()) / 2);
+        }
+    }
+
+    private List<Badge> badges = new ArrayList<Badge>();
 
     public static class PlayerAction {
         public final PlayerToken playerToken;
@@ -157,7 +201,7 @@ public class GameBoard extends Group implements EventListener {
         private boolean added;
 
         public ActionWrapper(PlayerToken playerToken, BoardAction boardAction) {
-            // TODO: Rename target action or similiar
+            // TODO: Rename target action or similiar, or can we use add action here? No, dont think so
             this.playerToken = playerToken;
             this.boardAction = boardAction;
             perform = boardAction.perform(playerToken);

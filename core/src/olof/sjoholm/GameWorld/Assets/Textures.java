@@ -25,8 +25,7 @@ public class Textures {
 
     public static Texture background;
 
-    Textures() {
-
+    private Textures() {
     }
 
     public static void initialize() {

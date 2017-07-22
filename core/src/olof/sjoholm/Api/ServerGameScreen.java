@@ -3,6 +3,7 @@ package olof.sjoholm.Api;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
@@ -16,6 +17,7 @@ import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
+import static olof.sjoholm.GameWorld.Actors.GameBoard.*;
 import static sun.audio.AudioPlayer.player;
 
 public class ServerGameScreen extends ServerScreen {
@@ -27,12 +29,19 @@ public class ServerGameScreen extends ServerScreen {
         GameBoard gameBoard = new GameBoard((int) Constants.STEP_SIZE);
         gameBoard.loadMap(Maps.Level1());
 
-        Maps.SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
-        PlayerToken playerToken = new PlayerToken();
-        gameBoard.spawnToken(spawnPoint, playerToken);
+        Player player = new Player(0);
+        player.setColor(Color.BROWN);
+        player.setName("Olof");
+        gameBoard.spawnPlayer(gameBoard.getSpawnPoints().get(0), player);
+
+        Player player2 = new Player(1);
+        player2.setColor(Color.GREEN);
+        player2.setName("John");
+        gameBoard.spawnPlayer(gameBoard.getSpawnPoints().get(1), player2);
+
         gameBoard.performActions(
-                new GameBoard.PlayerAction(playerToken, new BoardAction.Rotate(Rotation.RIGHT)),
-                new GameBoard.PlayerAction(playerToken, new BoardAction.MoveForward(7))
+                new PlayerAction(gameBoard.getToken(player), new BoardAction.Rotate(Rotation.LEFT)),
+                new PlayerAction(gameBoard.getToken(player), new BoardAction.MoveForward(3))
         );
         CountDownText countDownText = new CountDownText();
 

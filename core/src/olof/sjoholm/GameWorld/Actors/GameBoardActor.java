@@ -3,6 +3,7 @@ package olof.sjoholm.GameWorld.Actors;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.Group;
 
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Interfaces.Drawable;
@@ -22,6 +23,7 @@ public class GameBoardActor extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
         if (drawable != null) {
             drawable.draw(batch, parentAlpha, getX(), getY(), getWidth(), getHeight(), getScaleX(),
                     getScaleY(), getOriginX(), getOriginY(), getRotation(), getColor());
