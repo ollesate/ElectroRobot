@@ -2,23 +2,18 @@ package olof.sjoholm.Api;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
-import olof.sjoholm.GameWorld.Actors.PlayerToken;
+import olof.sjoholm.GameWorld.Actors.PlayerAction;
 import olof.sjoholm.GameWorld.Maps;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
-import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
-
-import static olof.sjoholm.GameWorld.Actors.GameBoard.*;
-import static sun.audio.AudioPlayer.player;
 
 public class ServerGameScreen extends ServerScreen {
     private final GameStage gameStage;

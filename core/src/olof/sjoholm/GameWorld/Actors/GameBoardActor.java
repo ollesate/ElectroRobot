@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Interfaces.Drawable;
 import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Views.GameStage;
 
 public class GameBoardActor extends Actor {
     private Drawable drawable;
@@ -28,6 +30,11 @@ public class GameBoardActor extends Actor {
             drawable.draw(batch, parentAlpha, getX(), getY(), getWidth(), getHeight(), getScaleX(),
                     getScaleY(), getOriginX(), getOriginY(), getRotation(), getColor());
         }
+    }
+
+    @Override
+    public GameStage getStage() {
+        return (GameStage) super.getStage();
     }
 
     public void startAction() {

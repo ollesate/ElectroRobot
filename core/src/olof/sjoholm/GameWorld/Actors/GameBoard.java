@@ -1,32 +1,21 @@
 package olof.sjoholm.GameWorld.Actors;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Maps.Map;
 import olof.sjoholm.GameWorld.Maps.SpawnPoint;
 import olof.sjoholm.Net.Server.Player;
-import olof.sjoholm.Skins;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
@@ -139,35 +128,7 @@ public class GameBoard extends Group implements EventListener {
         return players.get(player);
     }
 
-    public static class Badge extends Label {
-        private final Actor target;
-
-        public Badge(Actor target, CharSequence text) {
-            super(text, Skins.DEFAULT);
-            this.target = target;
-            Pixmap labelColor = new Pixmap(1, 1, Pixmap.Format.RGB888);
-            labelColor.setColor(Color.GRAY);
-            labelColor.fill();
-            getStyle().background = new Image(new Texture(labelColor)).getDrawable();
-        }
-
-        public void update() {
-            setX(target.getX() + (target.getWidth() - getWidth()) / 2);
-            setY(target.getY() + (target.getHeight() - getHeight()) / 2);
-        }
-    }
-
     private List<Badge> badges = new ArrayList<Badge>();
-
-    public static class PlayerAction {
-        public final PlayerToken playerToken;
-        public final BoardAction boardAction;
-
-        public PlayerAction(PlayerToken playerToken, BoardAction boardAction) {
-            this.playerToken = playerToken;
-            this.boardAction = boardAction;
-        }
-    }
 
     public void performActions(PlayerAction... playerActions) {
         SequenceAction sequence = new SequenceAction();
@@ -177,60 +138,6 @@ public class GameBoard extends Group implements EventListener {
             sequence.addAction(new FireEventAction(new OnEndActionEvent(action.playerToken)));
         }
         addAction(sequence);
-    }
-
-    public static class FireEventAction extends Action {
-        private final Event event;
-
-        public FireEventAction(Event event) {
-            this.event = event;
-        }
-
-        @Override
-        public boolean act(float delta) {
-            Actor target = getTarget();
-            target.fire(event);
-            return true;
-        }
-    }
-
-    private class ActionWrapper extends Action {
-        private final PlayerToken playerToken;
-        private final BoardAction boardAction;
-        private final Action perform;
-        private boolean added;
-
-        public ActionWrapper(PlayerToken playerToken, BoardAction boardAction) {
-            // TODO: Rename target action or similiar, or can we use add action here? No, dont think so
-            this.playerToken = playerToken;
-            this.boardAction = boardAction;
-            perform = boardAction.perform(playerToken);
-        }
-
-        @Override
-        public boolean act(float delta) {
-            if (!added) {
-                playerToken.addAction(perform);
-                added = true;
-            }
-            return perform.act(delta);
-        }
-    }
-
-    @Override
-    protected void sizeChanged() {
-        float width = getWidth();
-        float height = getHeight();
-
-        if (map != null) {
-            float maxWidth = width / map.getWidth();
-            float maxHeight = height / map.getHeight();
-
-            float min = Math.min(maxWidth, maxHeight);
-
-            tileSize = (int) min;
-            Logger.d("New size: " + width + ", " + height + ". Tilesize is now set to " + tileSize);
-        }
     }
 
     @Override
