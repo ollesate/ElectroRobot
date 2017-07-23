@@ -20,7 +20,7 @@ class ActionWrapper extends Action {
     @Override
     public boolean act(float delta) {
         if (!added) {
-            playerToken.addAction(perform);
+            perform.setActor(playerToken);
             added = true;
         }
         return perform.act(delta);

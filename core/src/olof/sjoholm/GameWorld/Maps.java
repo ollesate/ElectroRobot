@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.GameWorld.Actors.Tile;
+import olof.sjoholm.Utils.Logger;
 
 public class Maps {
 

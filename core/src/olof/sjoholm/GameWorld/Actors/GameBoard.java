@@ -13,6 +13,7 @@ import java.util.List;
 
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
+import olof.sjoholm.GameWorld.Maps;
 import olof.sjoholm.GameWorld.Maps.Map;
 import olof.sjoholm.GameWorld.Maps.SpawnPoint;
 import olof.sjoholm.Net.Server.Player;
@@ -40,6 +41,7 @@ public class GameBoard extends Group implements EventListener {
         super.act(delta);
 
         for (GameBoardActor movingActor : movingActors) {
+            if (true) continue;
             PlayerToken playerToken = (PlayerToken) movingActor;
             Vector2 dir = playerToken.getDirection();
             Vector2 pos = new Vector2(playerToken.getX(), playerToken.getY());
@@ -74,8 +76,6 @@ public class GameBoard extends Group implements EventListener {
                 playerToken.setX(fromTile.x * Constants.STEP_SIZE);
                 playerToken.setY(fromTile.y * Constants.STEP_SIZE);
             }
-
-
         }
 
         for (Badge badge : badges) {
@@ -110,6 +110,8 @@ public class GameBoard extends Group implements EventListener {
 
     private java.util.Map<Player, PlayerToken> players = new HashMap<Player, PlayerToken>();
 
+    private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
+
     public void spawnPlayer(SpawnPoint spawnPoint, Player player) {
         PlayerToken playerToken = new PlayerToken();
         playerToken.setX(spawnPoint.x * Constants.STEP_SIZE);
@@ -122,6 +124,7 @@ public class GameBoard extends Group implements EventListener {
         addActor(badge);
 
         players.put(player, playerToken);
+        spawnedActors.add(playerToken);
     }
 
     public PlayerToken getToken(Player player) {
@@ -153,5 +156,26 @@ public class GameBoard extends Group implements EventListener {
             movingActors.remove(event.gameBoardActor);
         }
         return false;
+    }
+
+    public Map getMap() {
+        return map;
+    }
+
+    public List<GameBoardActor> getActorsAt(int x, int y) {
+        List<GameBoardActor> actors = new ArrayList<GameBoardActor>();
+        for (GameBoardActor spawnedActor : spawnedActors) {
+            Logger.d("is actor at " + x + " " + y + "?" + (int) (spawnedActor.getX() / Constants.STEP_SIZE) + " " + (int) (spawnedActor.getY() / Constants.STEP_SIZE));
+            if ((int) (spawnedActor.getX() / Constants.STEP_SIZE) == x &&
+                    (int) (spawnedActor.getY() / Constants.STEP_SIZE) == y) {
+                Logger.d("Yes");
+                actors.add(spawnedActor);
+            }
+        }
+        return actors;
+    }
+
+    public static Vector2 getBoardPosition(float x, float y) {
+        return new Vector2(x / Constants.STEP_SIZE, y / Constants.STEP_SIZE);
     }
 }

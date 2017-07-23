@@ -20,8 +20,8 @@ public class ServerGameScreen extends ServerScreen {
     private boolean paused;
 
     public ServerGameScreen(ServerScreenHandler serverScreenHandler) {
-        gameStage = new GameStage();
         GameBoard gameBoard = new GameBoard((int) Constants.STEP_SIZE);
+        gameStage = new GameStage(gameBoard);
         gameBoard.loadMap(Maps.Level1());
 
         Player player = new Player(0);
@@ -35,8 +35,7 @@ public class ServerGameScreen extends ServerScreen {
         gameBoard.spawnPlayer(gameBoard.getSpawnPoints().get(1), player2);
 
         gameBoard.performActions(
-                new PlayerAction(gameBoard.getToken(player), new BoardAction.Rotate(Rotation.LEFT)),
-                new PlayerAction(gameBoard.getToken(player), new BoardAction.MoveForward(3))
+                new PlayerAction(gameBoard.getToken(player), new BoardAction.MoveForward(6))
         );
         CountDownText countDownText = new CountDownText();
 
