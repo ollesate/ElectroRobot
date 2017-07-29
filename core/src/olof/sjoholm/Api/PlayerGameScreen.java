@@ -11,6 +11,7 @@ public class PlayerGameScreen extends PlayerScreen {
 
     public PlayerGameScreen() {
         handStage = new HandStage();
+        handStage.addCard(new HandStage.Card("Hello"));
         connect();
     }
 
