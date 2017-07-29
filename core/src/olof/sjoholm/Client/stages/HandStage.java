@@ -36,14 +36,16 @@ public class HandStage extends Stage {
     private final HandGroup handGroup;
 
     public HandStage() {
-        Camera camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
-        setViewport(new FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera));
-        getViewport().update(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, true);
-
         handGroup = new HandGroup();
         handGroup.setX((getWidth() - CARD_WIDTH) / 2);
         handGroup.setY(getHeight() - CARD_HEIGHT - 100);
         addActor(handGroup);
+    }
+
+    public void resize(int width, int height) {
+        Camera camera = new OrthographicCamera(width, height);
+        setViewport(new FitViewport(width, height, camera));
+        getViewport().update(width, height, true);
     }
 
     private static class CardActor extends Group {

@@ -27,7 +27,7 @@ public class PlayerGameScreen extends PlayerScreen {
     @Override
     public void resize(int width, int height) {
         Logger.d("Resize " + width + " " + height);
-        handStage.getViewport().update(width, height);
+        handStage.resize(width, height);
         super.resize(width, height);
     }
 
