@@ -220,8 +220,9 @@ public class PlayerToken extends GameBoardActor {
             if (blockingPlayer != null) {
                 int x = (int)(pos.x + movementDir.x * 2);
                 int y = (int)(pos.y + movementDir.y * 2);
-                boolean canMovePlayer = gameStage.isWithinBounds(x, y);
-                if (canMovePlayer) {
+                boolean freeSpace = gameStage.isWithinBounds(x, y);
+                boolean emptySpot = gameStage.getActorsAt(x, y).isEmpty();
+                if (freeSpace && emptySpot) {
                     Logger.d("Can move player!");
                     return Actions.parallel(
                             new MoveTileAction(playerToken, movementDir, true),
