@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -52,18 +53,20 @@ public class NetClient {
      * Respond to a handshake, receiving an id.
      */
     public static NetClient accept(String host, int port) throws ConnectionException {
-        Socket socket = Gdx.net.newClientSocket(
-                Net.Protocol.TCP, host, port, new SocketHints());
         ObjectInputStream inputStream;
         ObjectOutputStream outputStream;
         int id;
         try {
+            Socket socket = Gdx.net.newClientSocket(
+                    Net.Protocol.TCP, host, port, new SocketHints());
             inputStream = new ObjectInputStream(socket.getInputStream());
             id = ((Integer) inputStream.readObject());
             outputStream = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException e) {
             throw new ConnectionException(e.getMessage());
         } catch (ClassNotFoundException e) {
+            throw new ConnectionException(e.getMessage());
+        } catch (GdxRuntimeException e) {
             throw new ConnectionException(e.getMessage());
         }
         return new NetClient(id, inputStream, outputStream);

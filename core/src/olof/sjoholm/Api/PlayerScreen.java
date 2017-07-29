@@ -29,17 +29,17 @@ public abstract class PlayerScreen implements Screen, ClientConnection.OnMessage
     }
 
     public void connect() {
-        clientConnection.connect();
         clientConnection.setOnMessageListener(this);
         clientConnection.setOnConnectionListener(this);
         clientConnection.setOnDisconnectedListener(this);
+        clientConnection.connect();
     }
 
     public void disconnect() {
-        clientConnection.disconnect();
         clientConnection.setOnMessageListener(null);
         clientConnection.setOnConnectionListener(null);
         clientConnection.setOnDisconnectedListener(null);
+        clientConnection.disconnect();
     }
 
     public void send(Envelope envelope) {

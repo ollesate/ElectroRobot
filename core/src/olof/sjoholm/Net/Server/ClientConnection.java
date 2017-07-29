@@ -3,6 +3,7 @@ package olof.sjoholm.Net.Server;
 import olof.sjoholm.Net.Both.ConnectionException;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Both.NetClient;
+import olof.sjoholm.Utils.Logger;
 
 public class ClientConnection implements NetClient.Listener {
     private static ClientConnection instance;
@@ -19,7 +20,9 @@ public class ClientConnection implements NetClient.Listener {
 
     public interface OnConnectionListener {
 
-        void onConnected(boolean status);
+        void onConnected();
+
+        void onConnectionFailed(String reason);
     }
 
     public interface OnMessageListener {
@@ -70,15 +73,15 @@ public class ClientConnection implements NetClient.Listener {
             connection = NetClient.accept(ServerConnection.HOST_NAME, ServerConnection.PORT);
             connection.startReading(this);
             if (onConnectionListener != null) {
-                onConnectionListener.onConnected(true);
+                onConnectionListener.onConnected();
             }
             isConnected = true;
         } catch (ConnectionException e) {
             // TODO: Make this async instead.
-            e.printStackTrace();
+            Logger.d(e.getMessage());
             isConnected = false;
             if (onConnectionListener != null) {
-                onConnectionListener.onConnected(false);
+                onConnectionListener.onConnectionFailed(e.getMessage());
             }
         }
     }

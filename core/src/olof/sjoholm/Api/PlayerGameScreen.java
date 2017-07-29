@@ -27,9 +27,15 @@ public class PlayerGameScreen extends PlayerScreen {
     }
 
     @Override
-    public void onConnected(boolean status) {
+    public void onConnected() {
         Logger.d("Connected");
         // No behaviour right now
+    }
+
+    @Override
+    public void onConnectionFailed(String reason) {
+        Logger.d("On connection failed");
+        // Maybe keep it silent and just try reconnect once in a while.
     }
 
     @Override
