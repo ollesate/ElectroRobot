@@ -229,7 +229,7 @@ public class PlayerToken extends GameBoardActor {
                     );
                 } else {
                     Logger.d("Can't move player!");
-                    return Actions.delay(1f);
+                    return new Animate(playerToken, 1f);
                 }
             }
 
@@ -241,8 +241,40 @@ public class PlayerToken extends GameBoardActor {
                 return new MoveTileAction(playerToken, movementDir, true);
             } else {
                 Logger.d("Cant move wait!");
-                return Actions.delay(1f);
+                return new Animate(playerToken, 1f);
             }
+        }
+    }
+
+    private static class Animate extends Action {
+        private PlayerToken playerToken;
+        private final float duration;
+        float currentDuration;
+
+        public Animate(PlayerToken playerToken, float duration) {
+            this.playerToken = playerToken;
+            this.duration = duration;
+        }
+
+        private void start() {
+            playerToken.tankAnimation.resume();
+        }
+
+        private void end() {
+            playerToken.tankAnimation.pause();
+        }
+
+        @Override
+        public boolean act(float delta) {
+            if (currentDuration == 0) {
+                start();
+            }
+            currentDuration += delta;
+            if (currentDuration > duration) {
+                end();
+                return true;
+            }
+            return false;
         }
     }
 

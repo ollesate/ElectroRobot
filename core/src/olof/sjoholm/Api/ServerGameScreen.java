@@ -35,6 +35,7 @@ public class ServerGameScreen extends ServerScreen {
         gameBoard.spawnPlayer(gameBoard.getSpawnPoints().get(1), player2);
 
         gameBoard.performActions(
+                new PlayerAction(gameBoard.getToken(player), new BoardAction.Rotate(Rotation.LEFT)),
                 new PlayerAction(gameBoard.getToken(player), new BoardAction.MoveForward(6))
         );
         CountDownText countDownText = new CountDownText();
