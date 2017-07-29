@@ -5,15 +5,16 @@ import com.badlogic.gdx.Gdx;
 import olof.sjoholm.Client.stages.HandStage;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Utils.Rotation;
 
 public class PlayerGameScreen extends PlayerScreen {
     private final HandStage handStage;
 
     public PlayerGameScreen() {
         handStage = new HandStage();
-        handStage.addCard(new HandStage.Card("Olof"));
-        handStage.addCard(new HandStage.Card("Anna"));
-        handStage.addCard(new HandStage.Card("Stina"));
+        for (BoardAction boardAction : CardGenerator.generateList(7)) {
+            handStage.addCard(boardAction);
+        }
         connect();
     }
 

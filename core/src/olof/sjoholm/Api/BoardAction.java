@@ -11,6 +11,8 @@ public interface BoardAction {
 
     Action perform(PlayerToken playerToken);
 
+    String getText();
+
     class MoveForward implements BoardAction {
         private int steps;
 
@@ -21,6 +23,11 @@ public interface BoardAction {
         @Override
         public Action perform(PlayerToken playerToken) {
             return playerToken.move(Direction.FORWARD, steps);
+        }
+
+        @Override
+        public String getText() {
+            return String.format("Move forward %s steps", steps);
         }
     }
 
@@ -34,6 +41,14 @@ public interface BoardAction {
         @Override
         public Action perform(PlayerToken playerToken) {
             return playerToken.rotate(rotation);
+        }
+
+        @Override
+        public String getText() {
+            if (Rotation.UTURN.equals(rotation)) {
+                return "Perform U-TURN";
+            }
+            return "Rotate " + rotation;
         }
     }
 }

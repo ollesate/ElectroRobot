@@ -16,8 +16,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import olof.sjoholm.Client.CardHandModel;
+import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Api.Pair;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Skins;
@@ -29,11 +32,8 @@ public class HandStage extends Stage {
     private static final float CARD_WIDTH = 400f;
     private static final float CARD_HEIGHT = 100f;
 
-    private CardHandTable cardHandTable;
-    private CardHandModel cardHandModel;
-
+    private final List<Pair<BoardAction, CardActor>> cardActors = new ArrayList<Pair<BoardAction, CardActor>>();
     private final HandGroup handGroup;
-
 
     public HandStage() {
         Camera camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
@@ -42,7 +42,7 @@ public class HandStage extends Stage {
 
         handGroup = new HandGroup();
         handGroup.setX((getWidth() - CARD_WIDTH) / 2);
-        handGroup.setY(getHeight() / 2);
+        handGroup.setY(getHeight() - CARD_HEIGHT - 100);
         addActor(handGroup);
     }
 
@@ -112,15 +112,6 @@ public class HandStage extends Stage {
                 return true;
             }
         };
-    }
-
-    public static class Card {
-
-        public final String text;
-        public Card(String text) {
-            this.text = text;
-        }
-
     }
 
     private static class HandGroup extends Group {
@@ -203,9 +194,20 @@ public class HandStage extends Stage {
         }
     }
 
-    public void addCard(final Card card) {
-        final CardActor actor = new CardActor(card.text, CARD_WIDTH, CARD_HEIGHT);
+    public void addCard(BoardAction boardAction) {
+        final CardActor actor = new CardActor(boardAction.getText(), CARD_WIDTH, CARD_HEIGHT);
         actor.setColor(Color.RED);
         handGroup.addCard(actor);
+
+        cardActors.add(new Pair<BoardAction, CardActor>(boardAction, actor));
+    }
+
+    public List<BoardAction> getCards() {
+        // Sort cards by y.
+        SortedMap<Float, BoardAction> sortedMap = new TreeMap<Float, BoardAction>();
+        for (Pair<BoardAction, CardActor> pair : cardActors) {
+            sortedMap.put(pair.value.getY(), pair.key);
+        }
+        return new ArrayList<BoardAction>(sortedMap.values());
     }
 }
