@@ -1,23 +1,17 @@
 package olof.sjoholm.Client.stages;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
@@ -32,6 +26,9 @@ import olof.sjoholm.Utils.Logger;
 
 
 public class HandStage extends Stage {
+    private static final float CARD_WIDTH = 400f;
+    private static final float CARD_HEIGHT = 100f;
+
     private CardHandTable cardHandTable;
     private CardHandModel cardHandModel;
 
@@ -44,21 +41,36 @@ public class HandStage extends Stage {
         getViewport().update(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, true);
 
         handGroup = new HandGroup();
-        handGroup.setX(getWidth() / 2);
+        handGroup.setX((getWidth() - CARD_WIDTH) / 2);
         handGroup.setY(getHeight() / 2);
         addActor(handGroup);
     }
 
-    private static class CardActor extends Label {
+    private static class CardActor extends Group {
         private Action animateAction;
         private CardActor animateActor;
 
-        public CardActor(String text) {
-            super(text, Skins.DEFAULT);
+        private Label label;
+        private DrawableActor background;
+
+        public CardActor(String text, float width, float height) {
+            setWidth(width);
+            setHeight(height);
+
+            background = new DrawableActor(new TextureDrawable(Textures.background));
+            background.setColor(Color.GREEN);
+            background.setWidth(getWidth());
+            background.setHeight(getHeight());
+            addActor(background);
+
+            label = new Label(text, Skins.DEFAULT);
+            label.setX((getWidth() - label.getWidth()) / 2);
+            label.setY((getHeight() - label.getHeight()) / 2);
+            addActor(label);
         }
 
         public CardActor copy() {
-            CardActor actor = new CardActor(getText().toString());
+            CardActor actor = new CardActor(label.getText().toString(), getWidth(), getHeight());
             actor.setX(getX());
             actor.setY(getY());
             actor.setColor(getColor());
@@ -112,7 +124,7 @@ public class HandStage extends Stage {
     }
 
     private static class HandGroup extends Group {
-        private static final float ySpacing = 200;
+        private static final float ySpacing = 25;
         private final List<CardActor> cardActors = new ArrayList<CardActor>();
         private final Vector2 cardPressedPos = new Vector2();
         private float currentYPos;
@@ -121,7 +133,7 @@ public class HandStage extends Stage {
 
         public void addCard(final CardActor actor) {
             actor.setY(currentYPos);
-            currentYPos -= ySpacing;
+            currentYPos -= actor.getHeight() + ySpacing;
 
             addActor(actor);
             cardActors.add(actor);
@@ -145,13 +157,14 @@ public class HandStage extends Stage {
             });
         }
 
+
         private void onCardPressed(CardActor card, float x, float y) {
             Logger.d("onCardPressed " + x + " " + y);
             draggedObject = card;
             draggedObject.setVisible(false);
             draggedObjectGhost = card.copy();
 
-            cardPressedPos.set(draggedObject.getX(), draggedObject.getY());
+            cardPressedPos.set(x, y);
             addActor(draggedObjectGhost);
         }
 
@@ -162,8 +175,8 @@ public class HandStage extends Stage {
         }
 
         private void onCardDragged(CardActor card, float x, float y) {
+            draggedObjectGhost.setY(draggedObject.getY() + y - cardPressedPos.y);
             Vector2 tempPos = new Vector2();
-            draggedObjectGhost.setY(draggedObject.getY() + y);
 
             for (CardActor other : cardActors) {
                 if (card.equals(other)) {
@@ -191,7 +204,7 @@ public class HandStage extends Stage {
     }
 
     public void addCard(final Card card) {
-        final CardActor actor = new CardActor(card.text);
+        final CardActor actor = new CardActor(card.text, CARD_WIDTH, CARD_HEIGHT);
         actor.setColor(Color.RED);
         handGroup.addCard(actor);
     }
