@@ -11,7 +11,9 @@ public class PlayerGameScreen extends PlayerScreen {
 
     public PlayerGameScreen() {
         handStage = new HandStage();
-        handStage.addCard(new HandStage.Card("Hello"));
+        handStage.addCard(new HandStage.Card("Olof"));
+        handStage.addCard(new HandStage.Card("Anna"));
+        handStage.addCard(new HandStage.Card("Stina"));
         connect();
     }
 
@@ -19,6 +21,13 @@ public class PlayerGameScreen extends PlayerScreen {
     public void show() {
         super.show();
         Gdx.input.setInputProcessor(handStage);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        Logger.d("Resize " + width + " " + height);
+        handStage.getViewport().update(width, height);
+        super.resize(width, height);
     }
 
     @Override
