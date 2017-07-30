@@ -15,7 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -131,9 +133,6 @@ public class HandStage extends Stage {
 
     private static class HandGroup extends Group {
         private final List<CardActor> cardActors = new ArrayList<CardActor>();
-        private final Vector2 cardPressedPos = new Vector2();
-        private CardActor draggedObject;
-        private CardActor draggedObjectGhost;
         private float spacing;
 
         public void addCard(final CardActor actor) {
@@ -172,26 +171,43 @@ public class HandStage extends Stage {
             }
         }
 
+        private static class DraggedCard {
+            public final CardActor fake;
+            public final float initialY;
+
+            public DraggedCard(CardActor fake, float initialY) {
+                this.fake = fake;
+                this.initialY = initialY;
+                fake.setColor(Color.BLUE);
+            }
+        }
+
+        private Map<CardActor, DraggedCard> draggedCards = new HashMap<CardActor, DraggedCard>();
+
         private void onCardPressed(CardActor card, float x, float y) {
             Logger.d("onCardPressed " + x + " " + y);
 
-            draggedObject = card;
-            draggedObject.setVisible(false);
-            draggedObjectGhost = card.copy();
-            draggedObjectGhost.setColor(Color.BLUE);
+            card.setVisible(false);
 
-            cardPressedPos.set(x, y);
-            addActor(draggedObjectGhost);
+            DraggedCard draggedCard = new DraggedCard(card.copy(), y);
+            addActor(draggedCard.fake);
+            draggedCards.put(card, draggedCard);
         }
 
         private void onCardReleased(CardActor card, float x, float y) {
             Logger.d("onCardReleased " + x + " " + y);
-            draggedObject.setVisible(true);
-            removeActor(draggedObjectGhost);
+            DraggedCard draggedCard = draggedCards.get(card);
+
+            card.setVisible(true);
+
+            removeActor(draggedCard.fake);
+            draggedCards.remove(card);
         }
 
         private void onCardDragged(CardActor card, float x, float y) {
-            draggedObjectGhost.setY(draggedObject.getY() + y - cardPressedPos.y);
+            DraggedCard draggedCard = draggedCards.get(card);
+
+            draggedCard.fake.setY(card.getY() + y - draggedCard.initialY);
             Vector2 tempPos = new Vector2();
 
             for (CardActor other : cardActors) {
@@ -199,20 +215,20 @@ public class HandStage extends Stage {
                     continue;
                 }
 
-                float yDir = draggedObjectGhost.getY() - draggedObject.getY();
-                float yPos = draggedObjectGhost.getY();
-                if (yDir > 0 && draggedObject.getY() < other.getY() && yPos > other.getY()) {
+                float yDir = draggedCard.fake.getY() - card.getY();
+                float yPos = draggedCard.fake.getY();
+                if (yDir > 0 && card.getY() < other.getY() && yPos > other.getY()) {
                     // Dragged up. Swap position.
                     // Do this in the class instead. Animate to: set pos directly, but animate. :)
                     tempPos.set(other.getX(), other.getY());
-                    other.animate(draggedObject.getX(), draggedObject.getY());
-                    draggedObject.setPosition(tempPos.x, tempPos.y);
+                    other.animate(card.getX(), card.getY());
+                    card.setPosition(tempPos.x, tempPos.y);
                     break;
-                } else if (yDir < 0 && draggedObject.getY() > other.getY() && yPos < other.getY()) {
+                } else if (yDir < 0 && card.getY() > other.getY() && yPos < other.getY()) {
                     // Dragged down. Swap position.
                     tempPos.set(other.getX(), other.getY());
-                    other.animate(draggedObject.getX(), draggedObject.getY());
-                    draggedObject.setPosition(tempPos.x, tempPos.y);
+                    other.animate(card.getX(), card.getY());
+                    card.setPosition(tempPos.x, tempPos.y);
                     break;
                 }
             }
