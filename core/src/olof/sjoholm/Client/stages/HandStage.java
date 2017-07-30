@@ -1,5 +1,6 @@
 package olof.sjoholm.Client.stages;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
@@ -31,12 +32,8 @@ import olof.sjoholm.Utils.Logger;
 
 
 public class HandStage extends Stage {
-    private static final float CARD_WIDTH = 400f;
-    private static final float CARD_HEIGHT = 100f;
-
     private final List<Pair<BoardAction, CardActor>> cardActors = new ArrayList<Pair<BoardAction, CardActor>>();
     private final HandGroup handGroup;
-    private OrthographicCamera gameCam;
 
     public HandStage() {
         handGroup = new HandGroup();
@@ -44,13 +41,13 @@ public class HandStage extends Stage {
     }
 
     public void resize(int width, int height) {
-        gameCam = new OrthographicCamera(width, height);
-        setViewport(new FitViewport(width, height, gameCam));
+        Camera camera = new OrthographicCamera(width, height);
+        setViewport(new FitViewport(width, height, camera));
         getViewport().update(width, height, true);
         handGroup.setX(width * 0.1f);
-        handGroup.setY(getHeight() - CARD_HEIGHT - 100);
+        handGroup.setY(getHeight() - GraphicsUtil.dpToPixels(16f));
         handGroup.setSize(width * 0.8f, height * 0.8f);
-        handGroup.setSpacing(GraphicsUtil.dpToPixels(20f));
+        handGroup.setSpacing(GraphicsUtil.dpToPixels(8f));
     }
 
     private static class CardActor extends Group {
@@ -62,7 +59,7 @@ public class HandStage extends Stage {
 
         public CardActor(String text) {
             background = new DrawableActor(new TextureDrawable(Textures.background));
-            background.setColor(Color.BROWN);
+            setColor(Color.ORANGE);
             addActor(background);
 
             label = new Label(text, Skins.DEFAULT);
@@ -161,8 +158,8 @@ public class HandStage extends Stage {
         @Override
         protected void sizeChanged() {
             super.sizeChanged();
-            float yPos = 0;
             float height = (getHeight() - spacing * (getChildren().size - 1)) / getChildren().size;
+            float yPos = -height;
             for (Actor actor : getChildren()) {
                 actor.setWidth(getWidth());
                 actor.setHeight(height);
@@ -178,7 +175,6 @@ public class HandStage extends Stage {
             public DraggedCard(CardActor fake, float initialY) {
                 this.fake = fake;
                 this.initialY = initialY;
-                fake.setColor(Color.BLUE);
             }
         }
 
