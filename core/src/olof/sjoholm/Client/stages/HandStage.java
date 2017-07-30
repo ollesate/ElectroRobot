@@ -20,6 +20,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Api.GraphicsUtil;
 import olof.sjoholm.Api.Pair;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
@@ -47,7 +48,7 @@ public class HandStage extends Stage {
         handGroup.setX(width * 0.1f);
         handGroup.setY(getHeight() - CARD_HEIGHT - 100);
         handGroup.setSize(width * 0.8f, height * 0.8f);
-        handGroup.setSpacing(30f);
+        handGroup.setSpacing(GraphicsUtil.dpToPixels(20f));
     }
 
     private static class CardActor extends Group {
@@ -59,7 +60,7 @@ public class HandStage extends Stage {
 
         public CardActor(String text) {
             background = new DrawableActor(new TextureDrawable(Textures.background));
-            background.setColor(Color.GREEN);
+            background.setColor(Color.BROWN);
             addActor(background);
 
             label = new Label(text, Skins.DEFAULT);
@@ -68,7 +69,6 @@ public class HandStage extends Stage {
 
         @Override
         protected void sizeChanged() {
-            Logger.d("Size changed m8 " + getWidth());
             super.sizeChanged();
             background.setWidth(getWidth());
             background.setHeight(getHeight());
@@ -111,6 +111,12 @@ public class HandStage extends Stage {
 
             setX(x);
             setY(y);
+        }
+
+        @Override
+        public void setColor(Color color) {
+            super.setColor(color);
+            background.setColor(color);
         }
 
         private final Action finishAction = new Action() {
@@ -168,9 +174,11 @@ public class HandStage extends Stage {
 
         private void onCardPressed(CardActor card, float x, float y) {
             Logger.d("onCardPressed " + x + " " + y);
+
             draggedObject = card;
             draggedObject.setVisible(false);
             draggedObjectGhost = card.copy();
+            draggedObjectGhost.setColor(Color.BLUE);
 
             cardPressedPos.set(x, y);
             addActor(draggedObjectGhost);
@@ -212,12 +220,12 @@ public class HandStage extends Stage {
 
         public void setSpacing(float spacing) {
             this.spacing = spacing;
+            sizeChanged();
         }
     }
 
     public void addCard(BoardAction boardAction) {
         final CardActor actor = new CardActor(boardAction.getText());
-        actor.setColor(Color.RED);
         handGroup.addCard(actor);
 
         cardActors.add(new Pair<BoardAction, CardActor>(boardAction, actor));
