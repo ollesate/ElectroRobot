@@ -17,7 +17,7 @@ import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.LoginScreen;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
-	private boolean debug = false;
+	private boolean debug = true;
 
 	@Override
 	public void create () {
