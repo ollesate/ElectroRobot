@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import java.util.List;
 
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
+import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Direction;
 import olof.sjoholm.Utils.Logger;
@@ -22,6 +23,7 @@ public class PlayerToken extends GameBoardActor {
     private float stepDelay = .5f;
     private float stepSpeed = 1.0f;
     private TankAnimation tankAnimation;
+    private SpawnPoint spawnPoint;
 
     {
         setOrigin(getWidth() / 2, getHeight() / 2);
@@ -94,6 +96,14 @@ public class PlayerToken extends GameBoardActor {
             actions.addAction(getSingleWaitSequence());
         }
         return actions;
+    }
+
+    public SpawnPoint getSpawnPoint() {
+        return spawnPoint;
+    }
+
+    public void setSpawnPoint(SpawnPoint spawnPoint) {
+        this.spawnPoint = spawnPoint;
     }
 
     public abstract static class RelativeAction extends Action {

@@ -9,13 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
-import olof.sjoholm.GameWorld.Maps;
 import olof.sjoholm.GameWorld.Maps.Map;
-import olof.sjoholm.GameWorld.Maps.SpawnPoint;
+import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
@@ -104,20 +105,32 @@ public class GameBoard extends Group implements EventListener {
         return new Point(tileX, tileY);
     }
 
+    private Set<SpawnPoint> occupiedSpawnPoints = new HashSet<SpawnPoint>();
+
     public List<SpawnPoint> getSpawnPoints() {
-        return map.getSpawnPoints();
+        List<SpawnPoint> availableSpots = new ArrayList<SpawnPoint>();
+        for (SpawnPoint spawnPoint : map.getSpawnPoints()) {
+            if (!occupiedSpawnPoints.contains(spawnPoint)) {
+                availableSpots.add(spawnPoint);
+            }
+        }
+        return availableSpots;
     }
 
     private java.util.Map<Player, PlayerToken> players = new HashMap<Player, PlayerToken>();
 
     private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
 
-    public void spawnPlayer(SpawnPoint spawnPoint, Player player) {
+    public void initializePlayer(SpawnPoint spawnPoint, Player player) {
+        occupiedSpawnPoints.add(spawnPoint);
+
         PlayerToken playerToken = new PlayerToken();
         playerToken.setX(spawnPoint.x * Constants.STEP_SIZE);
         playerToken.setY(spawnPoint.y * Constants.STEP_SIZE);
-        addActor(playerToken);
         playerToken.setColor(player.color);
+        playerToken.setSpawnPoint(spawnPoint);
+        addActor(playerToken);
+
 
         Badge badge = new Badge(playerToken, player.getName());
         badges.add(badge);
@@ -177,5 +190,19 @@ public class GameBoard extends Group implements EventListener {
 
     public static Vector2 getBoardPosition(float x, float y) {
         return new Vector2(x / Constants.STEP_SIZE, y / Constants.STEP_SIZE);
+    }
+
+    public void removePlayer(Player player) {
+        PlayerToken playerToken = players.get(player);
+        removeActor(playerToken);
+        SpawnPoint spawnPoint = playerToken.getSpawnPoint();
+        occupiedSpawnPoints.remove(spawnPoint);
+        Badge badgeToRemove = null;
+        for (Badge badge : badges) {
+            if (badge.getTarget().equals(playerToken)) {
+                badgeToRemove = badge;
+            }
+        }
+        removeActor(badgeToRemove);
     }
 }

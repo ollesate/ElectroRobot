@@ -12,9 +12,6 @@ public class PlayerGameScreen extends PlayerScreen {
 
     public PlayerGameScreen() {
         handStage = new HandStage();
-        for (BoardAction boardAction : CardGenerator.generateList(7)) {
-            handStage.addCard(boardAction);
-        }
         connect();
     }
 

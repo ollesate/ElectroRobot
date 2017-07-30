@@ -6,7 +6,6 @@ import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +99,7 @@ public final class ServerConnection implements NetClient.Listener {
     // API
 
     public void openConnection() {
+        Logger.d("openConnection");
         if (loopingThread != null && loopingThread.isRunning()) {
             throw new IllegalStateException("Connection already opened");
         }

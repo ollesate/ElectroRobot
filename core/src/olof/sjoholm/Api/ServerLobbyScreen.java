@@ -42,21 +42,21 @@ public class ServerLobbyScreen extends ServerScreen {
     }
 
     @Override
-    public void onPlayerConnected(Player player) {
+    public void onHandlePlayerConnected(Player player) {
         connectedPlayers++;
         playersLabel.setPlayers(connectedPlayers);
         startGameButton.setPlayers(connectedPlayers);
     }
 
     @Override
-    public void onPlayerDisconnected(Player player) {
+    public void onHandlePlayerDisconnected(Player player) {
         connectedPlayers--;
         playersLabel.setPlayers(connectedPlayers);
         startGameButton.setPlayers(connectedPlayers);
     }
 
     @Override
-    public void onMessage(Player player, Envelope envelope) {
+    public void onHandleMessage(Player player, Envelope envelope) {
         // Do nothing
     }
 

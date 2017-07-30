@@ -1,13 +1,11 @@
 package olof.sjoholm.GameWorld;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.GameWorld.Actors.Tile;
-import olof.sjoholm.Utils.Logger;
 
 public class Maps {
 
@@ -87,13 +85,4 @@ public class Maps {
         }
     }
 
-    public static class SpawnPoint {
-        public final int x;
-        public final int y;
-
-        public SpawnPoint(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
 }

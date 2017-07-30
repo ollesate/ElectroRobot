@@ -21,6 +21,10 @@ public class Badge extends Label {
         getStyle().background = new Image(new Texture(labelColor)).getDrawable();
     }
 
+    public Actor getTarget() {
+        return target;
+    }
+
     public void update() {
         setX(target.getX() + (target.getWidth() - getWidth()) / 2);
         setY(target.getY() + (target.getHeight() - getHeight()) / 2);

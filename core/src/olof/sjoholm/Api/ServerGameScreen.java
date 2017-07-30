@@ -3,41 +3,30 @@ package olof.sjoholm.Api;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
-import olof.sjoholm.GameWorld.Actors.PlayerAction;
 import olof.sjoholm.GameWorld.Maps;
+import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
-import olof.sjoholm.Utils.Rotation;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
 public class ServerGameScreen extends ServerScreen {
     private final GameStage gameStage;
     private boolean paused;
+    private final GameBoard gameBoard;
 
     public ServerGameScreen(ServerScreenHandler serverScreenHandler) {
-        GameBoard gameBoard = new GameBoard((int) Constants.STEP_SIZE);
+        super();
+        gameBoard = new GameBoard((int) Constants.STEP_SIZE);
         gameStage = new GameStage(gameBoard);
         gameBoard.loadMap(Maps.Level1());
 
-        Player player = new Player(0);
-        player.setColor(Color.BROWN);
-        player.setName("Olof");
-        gameBoard.spawnPlayer(gameBoard.getSpawnPoints().get(0), player);
-
-        Player player2 = new Player(1);
-        player2.setColor(Color.GREEN);
-        player2.setName("John");
-        gameBoard.spawnPlayer(gameBoard.getSpawnPoints().get(1), player2);
-
-        gameBoard.performActions(
-                new PlayerAction(gameBoard.getToken(player), new BoardAction.Rotate(Rotation.LEFT)),
-                new PlayerAction(gameBoard.getToken(player), new BoardAction.MoveForward(6))
-        );
         CountDownText countDownText = new CountDownText();
 
         Table table = new Table();
@@ -80,17 +69,23 @@ public class ServerGameScreen extends ServerScreen {
     }
 
     @Override
-    public void onMessage(Player player, Envelope envelope) {
+    public void onHandleMessage(Player player, Envelope envelope) {
 
     }
 
     @Override
-    public void onPlayerConnected(Player player) {
-
+    public void onHandlePlayerConnected(Player player) {
+        Logger.d("onPlayerConnected");
+        player.setColor(Color.BROWN);
+        player.setName("Player " + player.id);
+        // TODO: will throw NPE here.
+        SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
+        gameBoard.initializePlayer(spawnPoint, player);
     }
 
     @Override
-    public void onPlayerDisconnected(Player player) {
-
+    public void onHandlePlayerDisconnected(Player player) {
+        Logger.d("onPlayerDisconnected");
+        gameBoard.removePlayer(player);
     }
 }
