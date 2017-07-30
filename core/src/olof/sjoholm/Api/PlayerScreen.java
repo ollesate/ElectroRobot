@@ -1,5 +1,6 @@
 package olof.sjoholm.Api;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
 import olof.sjoholm.Net.Both.Envelope;
@@ -8,9 +9,11 @@ import olof.sjoholm.Net.Server.ClientConnection;
 public abstract class PlayerScreen implements Screen, ClientConnection.OnMessageListener,
         ClientConnection.OnConnectionListener, ClientConnection.OnDisconnectedListener {
     private final ClientConnection clientConnection;
+    private final ClientServerHandler serverHandler;
 
     public PlayerScreen() {
         clientConnection = ClientConnection.getInstance();
+        serverHandler = new ClientServerHandler(this, this, this);
     }
 
     @Override
@@ -29,9 +32,9 @@ public abstract class PlayerScreen implements Screen, ClientConnection.OnMessage
     }
 
     public void connect() {
-        clientConnection.setOnMessageListener(this);
-        clientConnection.setOnConnectionListener(this);
-        clientConnection.setOnDisconnectedListener(this);
+        clientConnection.setOnMessageListener(serverHandler);
+        clientConnection.setOnConnectionListener(serverHandler);
+        clientConnection.setOnDisconnectedListener(serverHandler);
         clientConnection.connect();
     }
 

@@ -252,6 +252,10 @@ public class HandStage extends Stage {
         cardActors.add(new Pair<BoardAction, CardActor>(boardAction, actor));
     }
 
+    public void update() {
+        handGroup.sizeChanged();
+    }
+
     public List<BoardAction> getCards() {
         // Sort cards by y.
         SortedMap<Float, BoardAction> sortedMap = new TreeMap<Float, BoardAction>();

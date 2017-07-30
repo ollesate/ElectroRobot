@@ -1,13 +1,16 @@
 package olof.sjoholm.Api;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.utils.Json;
+
+import java.io.Serializable;
 
 import olof.sjoholm.GameWorld.Actors.PlayerToken;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Utils.Direction;
 import olof.sjoholm.Utils.Rotation;
 
-public interface BoardAction {
+public interface BoardAction extends Serializable {
 
     Action perform(PlayerToken playerToken);
 

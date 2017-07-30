@@ -81,6 +81,9 @@ public class ServerGameScreen extends ServerScreen {
         // TODO: will throw NPE here.
         SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
         gameBoard.initializePlayer(spawnPoint, player);
+
+        Envelope.SendCards sendCards = new Envelope.SendCards(CardGenerator.generateList(5));
+        send(player, sendCards);
     }
 
     @Override

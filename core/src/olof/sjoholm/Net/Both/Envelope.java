@@ -3,6 +3,7 @@ package olof.sjoholm.Net.Both;
 import java.io.Serializable;
 import java.util.List;
 
+import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.Models.CardModel;
 
 public class Envelope implements Serializable {
@@ -71,9 +72,11 @@ public class Envelope implements Serializable {
     }
 
     public static class SendCards extends Envelope {
+        public final List<BoardAction> cards;
 
-        public SendCards(List<CardModel> cards) {
+        public SendCards(List<BoardAction> cards) {
             super(cards);
+            this.cards = cards;
         }
     }
 

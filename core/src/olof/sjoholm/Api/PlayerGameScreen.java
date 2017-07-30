@@ -11,6 +11,7 @@ public class PlayerGameScreen extends PlayerScreen {
     private final HandStage handStage;
 
     public PlayerGameScreen() {
+        super();
         handStage = new HandStage();
         connect();
     }
@@ -55,5 +56,11 @@ public class PlayerGameScreen extends PlayerScreen {
     @Override
     public void onMessage(Envelope envelope) {
         Logger.d("Player receive message " + envelope);
+        if (envelope instanceof Envelope.SendCards) {
+            for (BoardAction card : ((Envelope.SendCards) envelope).cards) {
+                handStage.addCard(card);
+            }
+        }
+        handStage.update();
     }
 }
