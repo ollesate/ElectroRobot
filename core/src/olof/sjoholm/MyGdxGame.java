@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+import olof.sjoholm.Api.Fonts;
 import olof.sjoholm.Api.PlayerGameScreen;
 import olof.sjoholm.Api.PlayerScreenHandler;
 import olof.sjoholm.Api.ScreenHandler;
@@ -23,6 +24,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		Logger.d("Game create");
 		Textures.initialize();
 		Skins.initialize();
+		Fonts.initialize();
 		if (debug) {
 			setScreen(new PlayerGameScreen());
 		} else {

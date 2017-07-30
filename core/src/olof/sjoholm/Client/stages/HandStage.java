@@ -3,6 +3,8 @@ package olof.sjoholm.Client.stages;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -23,6 +25,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Api.Fonts;
 import olof.sjoholm.Api.GraphicsUtil;
 import olof.sjoholm.Api.Pair;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
@@ -48,6 +51,7 @@ public class HandStage extends Stage {
         handGroup.setY(getHeight() - GraphicsUtil.dpToPixels(16f));
         handGroup.setSize(width * 0.8f, height * 0.8f);
         handGroup.setSpacing(GraphicsUtil.dpToPixels(8f));
+        handGroup.setItemHeight(GraphicsUtil.dpToPixels(54f));
     }
 
     private static class CardActor extends Group {
@@ -62,7 +66,8 @@ public class HandStage extends Stage {
             setColor(Color.ORANGE);
             addActor(background);
 
-            label = new Label(text, Skins.DEFAULT);
+            BitmapFont font = Fonts.get(Fonts.FONT_20);
+            label = new Label(text, new Label.LabelStyle(font, Color.WHITE));
             addActor(label);
         }
 
@@ -131,6 +136,7 @@ public class HandStage extends Stage {
     private static class HandGroup extends Group {
         private final List<CardActor> cardActors = new ArrayList<CardActor>();
         private float spacing;
+        private float itemHeight;
 
         public void addCard(final CardActor actor) {
             addActor(actor);
@@ -158,14 +164,17 @@ public class HandStage extends Stage {
         @Override
         protected void sizeChanged() {
             super.sizeChanged();
-            float height = (getHeight() - spacing * (getChildren().size - 1)) / getChildren().size;
-            float yPos = -height;
+            float yPos = -itemHeight;
             for (Actor actor : getChildren()) {
                 actor.setWidth(getWidth());
-                actor.setHeight(height);
+                actor.setHeight(itemHeight);
                 actor.setY(yPos);
                 yPos -= actor.getHeight() + spacing;
             }
+        }
+
+        public void setItemHeight(float itemHeight) {
+            this.itemHeight = itemHeight;
         }
 
         private static class DraggedCard {
