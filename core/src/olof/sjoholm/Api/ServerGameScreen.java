@@ -108,6 +108,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
         gameBoard.initializePlayer(spawnPoint, player);
 
+        // TODO: we should not start game directly when someone joins.
         final List<BoardAction> boardActions = CardGenerator.generateList(5);
         Envelope.SendCards sendCards = new Envelope.SendCards(boardActions);
         send(player, sendCards);
