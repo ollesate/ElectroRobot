@@ -10,13 +10,22 @@ import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Utils.Direction;
 import olof.sjoholm.Utils.Rotation;
 
-public interface BoardAction extends Serializable {
+public abstract class BoardAction implements Serializable {
+    private int id;
 
-    Action perform(PlayerToken playerToken);
+    public abstract Action perform(PlayerToken playerToken);
 
-    String getText();
+    public abstract String getText();
 
-    class MoveForward implements BoardAction {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public static class MoveForward extends BoardAction {
         private int steps;
 
         public MoveForward(int steps) {
@@ -34,7 +43,7 @@ public interface BoardAction extends Serializable {
         }
     }
 
-    class Rotate implements BoardAction {
+    public static class Rotate extends BoardAction {
         private Rotation rotation;
 
         public Rotate(Rotation rotation) {

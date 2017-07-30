@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import olof.sjoholm.Client.stages.HandStage;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Utils.Logger;
-import olof.sjoholm.Utils.Rotation;
 
 public class PlayerGameScreen extends PlayerScreen {
     private final HandStage handStage;
@@ -57,10 +56,21 @@ public class PlayerGameScreen extends PlayerScreen {
     public void onMessage(Envelope envelope) {
         Logger.d("Player receive message " + envelope);
         if (envelope instanceof Envelope.SendCards) {
+            // Received cards.
             for (BoardAction card : ((Envelope.SendCards) envelope).cards) {
                 handStage.addCard(card);
             }
+            handStage.update();
+        } else if (envelope instanceof Envelope.StartCountdown) {
+            // Start a countdown.
+            float coolDown = ((Envelope.StartCountdown) envelope).time;
+            handStage.startCountdown(coolDown);
+        } else if (envelope instanceof Envelope.OnCardActivated) {
+            // Card activated.
+            handStage.select(((Envelope.OnCardActivated) envelope).boardAction);
+        } else if (envelope instanceof Envelope.OnCardDeActivated) {
+            // Card deactivated.
+            handStage.deselect(((Envelope.OnCardDeActivated) envelope).boardAction);
         }
-        handStage.update();
     }
 }

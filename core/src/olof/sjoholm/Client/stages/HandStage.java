@@ -3,7 +3,6 @@ package olof.sjoholm.Client.stages;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
@@ -28,30 +27,90 @@ import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.Api.Fonts;
 import olof.sjoholm.Api.GraphicsUtil;
 import olof.sjoholm.Api.Pair;
+import olof.sjoholm.Api.Palette;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.Skins;
 import olof.sjoholm.Utils.Logger;
 
 
 public class HandStage extends Stage {
+    private static final Color COLOR_SELECTED = Palette.ACCENT;
+    private static final Color COLOR_CONSUMED = Palette.PRIMARY_DESELECTED;
+
     private final List<Pair<BoardAction, CardActor>> cardActors = new ArrayList<Pair<BoardAction, CardActor>>();
     private final HandGroup handGroup;
+    private final LoadingBar loadingBar;
 
     public HandStage() {
         handGroup = new HandGroup();
+        handGroup.selectedColor(Palette.ACCENT);
+        handGroup.activeColor(Palette.PRIMARY);
+        handGroup.consumedColor(Palette.PRIMARY_DESELECTED);
         addActor(handGroup);
+
+        loadingBar = new LoadingBar();
+        loadingBar.setColor(Palette.ACCENT);
+        addActor(loadingBar);
     }
 
     public void resize(int width, int height) {
         Camera camera = new OrthographicCamera(width, height);
         setViewport(new FitViewport(width, height, camera));
         getViewport().update(width, height, true);
+
+        loadingBar.setSize(width, GraphicsUtil.dpToPixels(12));
+        loadingBar.setY(getHeight() - loadingBar.getHeight());
+
         handGroup.setX(width * 0.1f);
-        handGroup.setY(getHeight() - GraphicsUtil.dpToPixels(16f));
+        handGroup.setY(getHeight() - GraphicsUtil.dpToPixels(16f) - loadingBar.getHeight());
         handGroup.setSize(width * 0.8f, height * 0.8f);
         handGroup.setSpacing(GraphicsUtil.dpToPixels(8f));
         handGroup.setItemHeight(GraphicsUtil.dpToPixels(54f));
+    }
+
+    public void startCountdown(float countdown) {
+        loadingBar.start(countdown);
+    }
+
+    private static class LoadingBar extends Group {
+        private final DrawableActor background;
+        private float duration;
+        private float currentDuration;
+
+        public LoadingBar() {
+            background = new DrawableActor(new TextureDrawable(Textures.background));
+            background.setColor(Color.OLIVE);
+            addActor(background);
+        }
+
+        @Override
+        protected void sizeChanged() {
+            background.setWidth(getWidth());
+            background.setHeight(getHeight());
+        }
+
+        public void start(float time) {
+            currentDuration = time;
+            duration = time;
+        }
+
+        @Override
+        public void setColor(Color color) {
+            background.setColor(color);
+        }
+
+        @Override
+        public void act(float delta) {
+            super.act(delta);
+
+            if (currentDuration > 0) {
+                background.setWidth(getWidth() * currentDuration / duration);
+                currentDuration -= delta;
+            } else {
+                currentDuration = 0;
+                background.setWidth(0);
+            }
+        }
     }
 
     private static class CardActor extends Group {
@@ -63,7 +122,6 @@ public class HandStage extends Stage {
 
         public CardActor(String text) {
             background = new DrawableActor(new TextureDrawable(Textures.background));
-            setColor(Color.ORANGE);
             addActor(background);
 
             BitmapFont font = Fonts.get(Fonts.FONT_20);
@@ -137,10 +195,15 @@ public class HandStage extends Stage {
         private final List<CardActor> cardActors = new ArrayList<CardActor>();
         private float spacing;
         private float itemHeight;
+        private Color selectedColor;
+        private Color activeColor;
+        private Color consumedColor;
 
         public void addCard(final CardActor actor) {
-            addActor(actor);
             cardActors.add(actor);
+
+            addActor(actor);
+            actor.setColor(activeColor);
             actor.addListener(new InputListener() {
 
                 @Override
@@ -177,6 +240,18 @@ public class HandStage extends Stage {
             this.itemHeight = itemHeight;
         }
 
+        public void selectedColor(Color selectedColor) {
+            this.selectedColor = selectedColor;
+        }
+
+        public void activeColor(Color activeColor) {
+            this.activeColor = activeColor;
+        }
+
+        public void consumedColor(Color consumedColor) {
+            this.consumedColor = consumedColor;
+        }
+
         private static class DraggedCard {
             public final CardActor fake;
             public final float initialY;
@@ -190,8 +265,6 @@ public class HandStage extends Stage {
         private Map<CardActor, DraggedCard> draggedCards = new HashMap<CardActor, DraggedCard>();
 
         private void onCardPressed(CardActor card, float x, float y) {
-            Logger.d("onCardPressed " + x + " " + y);
-
             card.setVisible(false);
 
             DraggedCard draggedCard = new DraggedCard(card.copy(), y);
@@ -200,7 +273,6 @@ public class HandStage extends Stage {
         }
 
         private void onCardReleased(CardActor card, float x, float y) {
-            Logger.d("onCardReleased " + x + " " + y);
             DraggedCard draggedCard = draggedCards.get(card);
 
             card.setVisible(true);
@@ -243,6 +315,10 @@ public class HandStage extends Stage {
             this.spacing = spacing;
             sizeChanged();
         }
+
+        public void select(CardActor cardActor) {
+
+        }
     }
 
     public void addCard(BoardAction boardAction) {
@@ -250,6 +326,22 @@ public class HandStage extends Stage {
         handGroup.addCard(actor);
 
         cardActors.add(new Pair<BoardAction, CardActor>(boardAction, actor));
+    }
+
+    public void select(BoardAction boardAction) {
+        for (Pair<BoardAction, CardActor> pair : cardActors) {
+            if (pair.key.getId() == boardAction.getId()) {
+                pair.value.setColor(COLOR_SELECTED);
+            }
+        }
+    }
+
+    public void deselect(BoardAction boardAction) {
+        for (Pair<BoardAction, CardActor> pair : cardActors) {
+            if (pair.key.getId() == boardAction.getId()) {
+                pair.value.setColor(COLOR_CONSUMED);
+            }
+        }
     }
 
     public void update() {

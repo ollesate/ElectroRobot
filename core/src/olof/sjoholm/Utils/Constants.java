@@ -7,4 +7,6 @@ public class Constants {
     public static final int IMMOBILE = 1;
     public static final int OUT_OF_BOUNDS = -1;
     public static float STEP_SIZE = 150f;
+
+    public static float CARD_TURN_DURATION = 30f;
 }

@@ -12,7 +12,9 @@ public class CardGenerator {
     public static List<BoardAction> generateList(int nrOfCards) {
         List<BoardAction> list = new ArrayList<BoardAction>(nrOfCards);
         for (int i = 0; i < nrOfCards; i++) {
-            list.add(randomAction());
+            BoardAction boardAction = randomAction();
+            boardAction.setId(i);
+            list.add(boardAction);
         }
         return list;
     }

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import olof.sjoholm.Api.BoardAction;
-import olof.sjoholm.Models.CardModel;
 
 public class Envelope implements Serializable {
     private Long responseId = -1L;
@@ -77,6 +76,34 @@ public class Envelope implements Serializable {
         public SendCards(List<BoardAction> cards) {
             super(cards);
             this.cards = cards;
+        }
+    }
+
+    public static class StartCountdown extends Envelope {
+        public final float time;
+
+        public StartCountdown(float time) {
+            this.time = time;
+        }
+    }
+
+    public static class StartTurn extends Envelope {
+
+    }
+
+    public static class OnCardActivated extends Envelope {
+        public final BoardAction boardAction;
+
+        public OnCardActivated(BoardAction boardAction) {
+            this.boardAction = boardAction;
+        }
+    }
+
+    public static class OnCardDeActivated extends Envelope {
+        public final BoardAction boardAction;
+
+        public OnCardDeActivated(BoardAction boardAction) {
+            this.boardAction = boardAction;
         }
     }
 

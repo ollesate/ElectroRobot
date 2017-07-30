@@ -84,6 +84,7 @@ public class ServerGameScreen extends ServerScreen {
 
         Envelope.SendCards sendCards = new Envelope.SendCards(CardGenerator.generateList(5));
         send(player, sendCards);
+        send(player, new Envelope.StartCountdown(Constants.CARD_TURN_DURATION));
     }
 
     @Override
