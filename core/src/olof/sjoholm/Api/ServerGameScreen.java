@@ -23,7 +23,6 @@ import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
-import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
@@ -63,6 +62,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 //                new PlayerAction(token, new BoardAction.Rotate(Rotation.LEFT)),
 //                new PlayerAction(token, new BoardAction.MoveForward(2)));
         startServer();
+
+        onHandlePlayerConnected(new Player(1));
     }
 
     private Table getUpperTable() {
@@ -110,9 +111,12 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 
         // TODO: we should not start game directly when someone joins.
         final List<BoardAction> boardActions = CardGenerator.generateList(5);
+
         Envelope.SendCards sendCards = new Envelope.SendCards(boardActions);
         send(player, sendCards);
-        send(player, new Envelope.StartCountdown(Constants.CARD_TURN_DURATION));
+        float turnDuration = Config.get(Config.STAGE_CARD_TURN_DURATION);
+        send(player, new Envelope.StartCountdown(turnDuration));
+
         new Timer().scheduleTask(new Timer.Task() {
             @Override
             public void run() {
@@ -123,7 +127,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
                 }
                 gameBoard.performActions(actions);
             }
-        }, Constants.CARD_TURN_DURATION);
+        }, turnDuration);
     }
 
     @Override
