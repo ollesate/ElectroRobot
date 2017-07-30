@@ -3,29 +3,41 @@ package olof.sjoholm.Api;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Timer;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
-import olof.sjoholm.GameWorld.Maps;
+import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
+import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
+import olof.sjoholm.GameWorld.Actors.PlayerAction;
+import olof.sjoholm.GameWorld.Actors.PlayerToken;
+import olof.sjoholm.GameWorld.Levels;
 import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
-public class ServerGameScreen extends ServerScreen {
+public class ServerGameScreen extends ServerScreen implements EventListener {
     private final GameStage gameStage;
     private boolean paused;
     private final GameBoard gameBoard;
 
-    public ServerGameScreen(ServerScreenHandler serverScreenHandler) {
+    public ServerGameScreen() {
         super();
         gameBoard = new GameBoard((int) Constants.STEP_SIZE);
         gameStage = new GameStage(gameBoard);
-        gameBoard.loadMap(Maps.Level1());
+        gameBoard.loadMap(Levels.level1());
+        gameBoard.addListener(this);
 
         CountDownText countDownText = new CountDownText();
 
@@ -39,6 +51,18 @@ public class ServerGameScreen extends ServerScreen {
         table.addActor(countDownText);
 
         gameStage.addActor(table);
+//
+//        Player player = new Player(1);
+//        player.setName("Olof");
+//        player.setColor(Color.ORANGE);
+//        SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
+//        gameBoard.initializePlayer(spawnPoint, player);
+//        PlayerToken token = gameBoard.getToken(player);
+//
+//        gameBoard.performActions(new PlayerAction(token, new BoardAction.MoveForward(2)),
+//                new PlayerAction(token, new BoardAction.Rotate(Rotation.LEFT)),
+//                new PlayerAction(token, new BoardAction.MoveForward(2)));
+        startServer();
     }
 
     private Table getUpperTable() {
@@ -73,8 +97,10 @@ public class ServerGameScreen extends ServerScreen {
 
     }
 
+    private Map<PlayerToken, Player> players = new HashMap<PlayerToken, Player>();
+
     @Override
-    public void onHandlePlayerConnected(Player player) {
+    public void onHandlePlayerConnected(final Player player) {
         Logger.d("onPlayerConnected");
         player.setColor(Color.BROWN);
         player.setName("Player " + player.id);
@@ -82,14 +108,42 @@ public class ServerGameScreen extends ServerScreen {
         SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
         gameBoard.initializePlayer(spawnPoint, player);
 
-        Envelope.SendCards sendCards = new Envelope.SendCards(CardGenerator.generateList(5));
+        final List<BoardAction> boardActions = CardGenerator.generateList(5);
+        Envelope.SendCards sendCards = new Envelope.SendCards(boardActions);
         send(player, sendCards);
         send(player, new Envelope.StartCountdown(Constants.CARD_TURN_DURATION));
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                PlayerAction[] actions = new PlayerAction[boardActions.size()];
+                PlayerToken token = gameBoard.getToken(player);
+                for (int i = 0; i < boardActions.size(); i++) {
+                    actions[i] = new PlayerAction(token, boardActions.get(i));
+                }
+                gameBoard.performActions(actions);
+            }
+        }, Constants.CARD_TURN_DURATION);
     }
 
     @Override
     public void onHandlePlayerDisconnected(Player player) {
         Logger.d("onPlayerDisconnected");
         gameBoard.removePlayer(player);
+    }
+
+    @Override
+    public boolean handle(Event event) {
+        if (event instanceof OnStartActionEvent) {
+            Logger.d("On start action");
+            OnStartActionEvent startEvent = (OnStartActionEvent) event;
+            Player player = gameBoard.getPlayer(startEvent.playerAction.playerToken);
+            send(player, new Envelope.OnCardActivated(startEvent.playerAction.boardAction));
+        } else if (event instanceof OnEndActionEvent) {
+            Logger.d("On end action");
+            OnEndActionEvent endEvent = (OnEndActionEvent) event;
+            Player player = gameBoard.getPlayer(endEvent.playerAction.playerToken);
+            send(player, new Envelope.OnCardDeactivated(endEvent.playerAction.boardAction));
+        }
+        return false;
     }
 }

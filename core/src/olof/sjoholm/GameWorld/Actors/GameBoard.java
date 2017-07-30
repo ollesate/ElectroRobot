@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
-import olof.sjoholm.GameWorld.Maps.Map;
+import olof.sjoholm.GameWorld.Levels.Level;
 import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
@@ -24,17 +25,17 @@ import olof.sjoholm.Utils.Logger;
 public class GameBoard extends Group implements EventListener {
     private final List<GameBoardActor> movingActors = new ArrayList<GameBoardActor>();
     private int tileSize;
-    private Map map;
+    private Level level;
 
     public GameBoard(int tileSize) {
         this.tileSize = tileSize;
         addListener(this);
     }
 
-    public void loadMap(Map map) {
-        this.map = map;
+    public void loadMap(Level level) {
+        this.level = level;
         clearChildren(); // TODO: why?
-        map.create(this, tileSize);
+        level.create(this, tileSize);
     }
 
     @Override
@@ -63,17 +64,15 @@ public class GameBoard extends Group implements EventListener {
             Point toTile = new Point((int)(fromTile.x + dir.x), (int)(fromTile.y + dir.y));
             boolean isBlocked = false;
             if (Math.abs(dir.y) > 0 && Math.abs(pos.y % Constants.STEP_SIZE) > 0) {
-                if (!map.isWithinBounds(toTile.x, toTile.y)) {
+                if (!level.isWithinBounds(toTile.x, toTile.y)) {
                     isBlocked = true;
                 }
             } else if (Math.abs(dir.x) > 0 && Math.abs(pos.x % Constants.STEP_SIZE) > 0) {
-                if (!map.isWithinBounds(toTile.x, toTile.y)) {
+                if (!level.isWithinBounds(toTile.x, toTile.y)) {
                     isBlocked = true;
                 }
             }
-//            Logger.d("From " + fromTile + " to " + toTile + " blocked " + isBlocked);
             if (isBlocked) {
-//                Logger.d("Set x " + fromTile.x * Constants.STEP_SIZE + " y " + fromTile.y * Constants.STEP_SIZE);
                 playerToken.setX(fromTile.x * Constants.STEP_SIZE);
                 playerToken.setY(fromTile.y * Constants.STEP_SIZE);
             }
@@ -100,8 +99,6 @@ public class GameBoard extends Group implements EventListener {
         } else {
             tileX = (int) (pos.x / Constants.STEP_SIZE) - 1;
         }
-
-//        Logger.d("Pos " + pos + " tile " + new Vector2(tileX, tileY));
         return new Point(tileX, tileY);
     }
 
@@ -109,7 +106,7 @@ public class GameBoard extends Group implements EventListener {
 
     public List<SpawnPoint> getSpawnPoints() {
         List<SpawnPoint> availableSpots = new ArrayList<SpawnPoint>();
-        for (SpawnPoint spawnPoint : map.getSpawnPoints()) {
+        for (SpawnPoint spawnPoint : level.getSpawnPoints()) {
             if (!occupiedSpawnPoints.contains(spawnPoint)) {
                 availableSpots.add(spawnPoint);
             }
@@ -117,7 +114,7 @@ public class GameBoard extends Group implements EventListener {
         return availableSpots;
     }
 
-    private java.util.Map<Player, PlayerToken> players = new HashMap<Player, PlayerToken>();
+    private Map<Player, PlayerToken> players = new HashMap<Player, PlayerToken>();
 
     private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
 
@@ -131,13 +128,21 @@ public class GameBoard extends Group implements EventListener {
         playerToken.setSpawnPoint(spawnPoint);
         addActor(playerToken);
 
-
         Badge badge = new Badge(playerToken, player.getName());
         badges.add(badge);
         addActor(badge);
 
         players.put(player, playerToken);
         spawnedActors.add(playerToken);
+    }
+
+    public Player getPlayer(PlayerToken playerToken) {
+        for (Map.Entry<Player, PlayerToken> entry : players.entrySet()) {
+            if (entry.getValue().equals(playerToken)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     public PlayerToken getToken(Player player) {
@@ -149,9 +154,9 @@ public class GameBoard extends Group implements EventListener {
     public void performActions(PlayerAction... playerActions) {
         SequenceAction sequence = new SequenceAction();
         for (PlayerAction action : playerActions) {
-            sequence.addAction(new FireEventAction(new OnStartActionEvent(action.playerToken)));
+            sequence.addAction(new FireEventAction(new OnStartActionEvent(action)));
             sequence.addAction(new ActionWrapper(action.playerToken, action.boardAction));
-            sequence.addAction(new FireEventAction(new OnEndActionEvent(action.playerToken)));
+            sequence.addAction(new FireEventAction(new OnEndActionEvent(action)));
         }
         addAction(sequence);
     }
@@ -162,17 +167,17 @@ public class GameBoard extends Group implements EventListener {
         if (e instanceof OnStartActionEvent) {
             // On start action
             OnStartActionEvent event = (OnStartActionEvent) e;
-            movingActors.add(event.gameBoardActor);
+            movingActors.add(event.playerAction.playerToken);
         } else if (e instanceof OnEndActionEvent) {
             // On end action
             OnEndActionEvent event = (OnEndActionEvent) e;
-            movingActors.remove(event.gameBoardActor);
+            movingActors.remove(event.playerAction.playerToken);
         }
         return false;
     }
 
-    public Map getMap() {
-        return map;
+    public Level getLevel() {
+        return level;
     }
 
     public List<GameBoardActor> getActorsAt(int x, int y) {

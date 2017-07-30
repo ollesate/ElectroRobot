@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.ClientConnection;
+import olof.sjoholm.Utils.Logger;
 
 public abstract class PlayerScreen implements Screen, ClientConnection.OnMessageListener,
         ClientConnection.OnConnectionListener, ClientConnection.OnDisconnectedListener {
@@ -32,10 +33,12 @@ public abstract class PlayerScreen implements Screen, ClientConnection.OnMessage
     }
 
     public void connect() {
+        Logger.d("Connecting...!");
         clientConnection.setOnMessageListener(serverHandler);
         clientConnection.setOnConnectionListener(serverHandler);
         clientConnection.setOnDisconnectedListener(serverHandler);
         clientConnection.connect();
+        Logger.d("Connected");
     }
 
     public void disconnect() {

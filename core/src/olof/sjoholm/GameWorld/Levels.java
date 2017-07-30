@@ -7,10 +7,10 @@ import java.util.List;
 
 import olof.sjoholm.GameWorld.Actors.Tile;
 
-public class Maps {
+public class Levels {
 
-    public static Map Level1() {
-        return new Map(
+    public static Level level1() {
+        return new Level(
                 new int[][]{
                         {0, 0, 0, 0, 0, 0, 0, 0},
                         {0, 1, 0, 0, 0, 0, 1, 0},
@@ -21,7 +21,7 @@ public class Maps {
         );
     }
 
-    public static class Map {
+    public static class Level {
         public static final int OUT_OF_BOUNDS = -1;
         public static final int FLOOR = 0;
         public static final int SPAWN = 1;
@@ -31,7 +31,7 @@ public class Maps {
         private final int width;
         private final int height;
 
-        private Map(int [][] tileArray) {
+        private Level(int [][] tileArray) {
             this.tileArray = tileArray;
             width = tileArray[0].length;
             height = tileArray.length;

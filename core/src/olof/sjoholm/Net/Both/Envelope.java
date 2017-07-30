@@ -99,10 +99,10 @@ public class Envelope implements Serializable {
         }
     }
 
-    public static class OnCardDeActivated extends Envelope {
+    public static class OnCardDeactivated extends Envelope {
         public final BoardAction boardAction;
 
-        public OnCardDeActivated(BoardAction boardAction) {
+        public OnCardDeactivated(BoardAction boardAction) {
             this.boardAction = boardAction;
         }
     }

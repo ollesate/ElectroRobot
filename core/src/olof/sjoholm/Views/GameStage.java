@@ -7,12 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.util.Collections;
 import java.util.List;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor;
-import olof.sjoholm.GameWorld.Maps;
 import olof.sjoholm.Utils.Constants;
 
 
@@ -35,6 +33,6 @@ public class GameStage extends Stage {
     }
 
     public boolean isWithinBounds(int x, int y) {
-        return gameBoard.getMap().isWithinBounds(x, y);
+        return gameBoard.getLevel().isWithinBounds(x, y);
     }
 }

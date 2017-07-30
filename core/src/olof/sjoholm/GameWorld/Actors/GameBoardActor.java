@@ -37,27 +37,19 @@ public class GameBoardActor extends Actor {
         return (GameStage) super.getStage();
     }
 
-    public void startAction() {
-        fire(new OnStartActionEvent(this));
-    }
-
-    public void endAction() {
-        fire(new OnEndActionEvent(this));
-    }
-
     public static class OnEndActionEvent extends Event {
-        public GameBoardActor gameBoardActor;
+        public final PlayerAction playerAction;
 
-        public OnEndActionEvent(GameBoardActor gameBoardActor) {
-            this.gameBoardActor = gameBoardActor;
+        public OnEndActionEvent(PlayerAction playerAction) {
+            this.playerAction = playerAction;
         }
     }
 
     public static class OnStartActionEvent extends Event {
-        public GameBoardActor gameBoardActor;
+        public final PlayerAction playerAction;
 
-        public OnStartActionEvent(GameBoardActor gameBoardActor) {
-            this.gameBoardActor = gameBoardActor;
+        public OnStartActionEvent(PlayerAction playerAction) {
+            this.playerAction = playerAction;;
         }
     }
 }

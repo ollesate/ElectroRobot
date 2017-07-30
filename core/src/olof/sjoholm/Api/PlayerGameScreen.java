@@ -68,9 +68,9 @@ public class PlayerGameScreen extends PlayerScreen {
         } else if (envelope instanceof Envelope.OnCardActivated) {
             // Card activated.
             handStage.select(((Envelope.OnCardActivated) envelope).boardAction);
-        } else if (envelope instanceof Envelope.OnCardDeActivated) {
+        } else if (envelope instanceof Envelope.OnCardDeactivated) {
             // Card deactivated.
-            handStage.deselect(((Envelope.OnCardDeActivated) envelope).boardAction);
+            handStage.deselect(((Envelope.OnCardDeactivated) envelope).boardAction);
         }
     }
 }
