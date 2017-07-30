@@ -183,10 +183,8 @@ public class GameBoard extends Group implements EventListener {
     public List<GameBoardActor> getActorsAt(int x, int y) {
         List<GameBoardActor> actors = new ArrayList<GameBoardActor>();
         for (GameBoardActor spawnedActor : spawnedActors) {
-            Logger.d("is actor at " + x + " " + y + "?" + (int) (spawnedActor.getX() / Constants.STEP_SIZE) + " " + (int) (spawnedActor.getY() / Constants.STEP_SIZE));
             if ((int) (spawnedActor.getX() / Constants.STEP_SIZE) == x &&
                     (int) (spawnedActor.getY() / Constants.STEP_SIZE) == y) {
-                Logger.d("Yes");
                 actors.add(spawnedActor);
             }
         }

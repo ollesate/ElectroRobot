@@ -220,7 +220,6 @@ public class PlayerToken extends GameBoardActor {
         private Action getNextMovement() {
             Vector2 movementDir = playerToken.getMovementVector(direction);
             Vector2 pos = GameBoard.getBoardPosition(playerToken.getX(), playerToken.getY());
-            Logger.d("Pos " + pos + "dir " + direction + " mov vec " + movementDir);
             List<GameBoardActor> actorsAt = gameStage.getActorsAt((int) (pos.x + movementDir.x),
                     (int) (pos.y + movementDir.y));
             PlayerToken blockingPlayer = null;
@@ -233,13 +232,11 @@ public class PlayerToken extends GameBoardActor {
                 boolean freeSpace = gameStage.isWithinBounds(x, y);
                 boolean emptySpot = gameStage.getActorsAt(x, y).isEmpty();
                 if (freeSpace && emptySpot) {
-                    Logger.d("Can move player!");
                     return Actions.parallel(
                             new MoveTileAction(playerToken, movementDir, true),
                             new MoveTileAction(blockingPlayer, movementDir, false)
                     );
                 } else {
-                    Logger.d("Can't move player!");
                     return new Animate(playerToken, 1f);
                 }
             }
@@ -248,10 +245,8 @@ public class PlayerToken extends GameBoardActor {
             int y = (int)(pos.y + movementDir.y);
             boolean canMoveNextStep = gameStage.isWithinBounds(x, y);
             if (canMoveNextStep) {
-                Logger.d("Move step!");
                 return new MoveTileAction(playerToken, movementDir, true);
             } else {
-                Logger.d("Cant move wait!");
                 return new Animate(playerToken, 1f);
             }
         }

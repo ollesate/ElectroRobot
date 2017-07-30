@@ -134,12 +134,10 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     @Override
     public boolean handle(Event event) {
         if (event instanceof OnStartActionEvent) {
-            Logger.d("On start action");
             OnStartActionEvent startEvent = (OnStartActionEvent) event;
             Player player = gameBoard.getPlayer(startEvent.playerAction.playerToken);
             send(player, new Envelope.OnCardActivated(startEvent.playerAction.boardAction));
         } else if (event instanceof OnEndActionEvent) {
-            Logger.d("On end action");
             OnEndActionEvent endEvent = (OnEndActionEvent) event;
             Player player = gameBoard.getPlayer(endEvent.playerAction.playerToken);
             send(player, new Envelope.OnCardDeactivated(endEvent.playerAction.boardAction));
