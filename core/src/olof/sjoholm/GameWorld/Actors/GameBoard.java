@@ -208,4 +208,16 @@ public class GameBoard extends Group implements EventListener {
         }
         removeActor(badgeToRemove);
     }
+
+    public void updatePlayer(Player player) {
+        PlayerToken playerToken = players.get(player);
+        if (playerToken != null) {
+            playerToken.setColor(player.color);
+        }
+        for (Badge badge : badges) {
+            if (badge.getTarget().equals(playerToken)) {
+                badge.setText(player.getName());
+            }
+        }
+    }
 }

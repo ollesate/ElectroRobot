@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import olof.sjoholm.Api.Fonts;
 import olof.sjoholm.Api.PlayerGameScreen;
+import olof.sjoholm.Api.PlayerLobbyScreen;
 import olof.sjoholm.Api.PlayerScreenHandler;
 import olof.sjoholm.Api.ScreenHandler;
 import olof.sjoholm.Api.ServerGameScreen;
@@ -26,7 +27,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		Skins.initialize();
 		Fonts.initialize();
 		if (debug) {
-			setScreen(new ServerGameScreen());
+			setScreen(new PlayerLobbyScreen());
 		} else {
 			setScreen(new LoginScreen(this));
 		}

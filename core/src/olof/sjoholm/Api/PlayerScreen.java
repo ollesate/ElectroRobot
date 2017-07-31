@@ -48,6 +48,10 @@ public abstract class PlayerScreen implements Screen, ClientConnection.OnMessage
         clientConnection.disconnect();
     }
 
+    public boolean isConnected() {
+        return clientConnection.isConnected();
+    }
+
     public void send(Envelope envelope) {
         clientConnection.send(envelope);
     }

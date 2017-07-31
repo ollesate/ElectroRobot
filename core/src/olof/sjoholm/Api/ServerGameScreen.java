@@ -95,7 +95,14 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 
     @Override
     public void onHandleMessage(Player player, Envelope envelope) {
-
+        if (envelope instanceof Envelope.PlayerSelectColor) {
+            player.setColor(((Envelope.PlayerSelectColor) envelope).color);
+            gameBoard.updatePlayer(player);
+        }
+        if (envelope instanceof Envelope.PlayerSelectName) {
+            player.setName(((Envelope.PlayerSelectName) envelope).name);
+            gameBoard.updatePlayer(player);
+        }
     }
 
     private Map<PlayerToken, Player> players = new HashMap<PlayerToken, Player>();

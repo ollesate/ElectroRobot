@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import olof.sjoholm.Interfaces.Drawable;
 
-class DrawableActor extends Actor {
+public class DrawableActor extends Actor {
     private Drawable drawable;
 
     public DrawableActor(Drawable drawable) {

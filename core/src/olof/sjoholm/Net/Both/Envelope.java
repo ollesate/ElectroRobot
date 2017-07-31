@@ -1,5 +1,7 @@
 package olof.sjoholm.Net.Both;
 
+import com.badlogic.gdx.graphics.Color;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -107,11 +109,24 @@ public class Envelope implements Serializable {
         }
     }
 
-    public static class RequestCards extends Envelope {
+    public static class PlayerSelectColor extends Envelope {
+        public final Color color;
 
+        public PlayerSelectColor(Color color) {
+            this.color = color;
+        }
+    }
+
+    public static class PlayerSelectName extends Envelope {
+        public final String name;
+
+        public PlayerSelectName(String name) {
+            this.name = name;
+        }
     }
 
     public static class StartGame extends Envelope {
 
     }
+
 }
