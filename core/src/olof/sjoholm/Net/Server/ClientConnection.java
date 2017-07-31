@@ -96,7 +96,7 @@ public class ClientConnection implements NetClient.Listener {
 
     public void send(Envelope envelope) {
         if (!isConnected) {
-            throw new IllegalStateException("Not connected");
+            Logger.e("Not connected trying to send " + envelope);
         }
         connection.sendData(envelope);
     }

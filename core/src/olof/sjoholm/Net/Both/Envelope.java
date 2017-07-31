@@ -110,10 +110,20 @@ public class Envelope implements Serializable {
     }
 
     public static class PlayerSelectColor extends Envelope {
-        public final Color color;
+        private final float r;
+        private final float g;
+        private final float b;
+        private final float a;
 
         public PlayerSelectColor(Color color) {
-            this.color = color;
+            r = color.r;
+            g = color.g;
+            b = color.b;
+            a = color.a;
+        }
+
+        public Color getColor() {
+            return new Color(r, g, b, a);
         }
     }
 

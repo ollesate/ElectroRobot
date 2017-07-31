@@ -30,6 +30,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
     public PlayerLobbyScreen() {
         lobbyStage = new LobbyStage();
+        connect();
     }
 
     @Override
@@ -129,7 +130,9 @@ public class PlayerLobbyScreen extends PlayerScreen {
                         if (textField.getText().equals("")) {
                             textField.setText(hintText);
                         } else {
-                            send(new Envelope.PlayerSelectName(textField.getName()));
+                            if (isConnected()) {
+                                send(new Envelope.PlayerSelectName(textField.getText()));
+                            }
                         }
 
                         if (hitActor != null && hitActor instanceof Swatch) {

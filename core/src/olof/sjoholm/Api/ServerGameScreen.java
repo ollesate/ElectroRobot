@@ -62,8 +62,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 //                new PlayerAction(token, new BoardAction.Rotate(Rotation.LEFT)),
 //                new PlayerAction(token, new BoardAction.MoveForward(2)));
         startServer();
-
-        onHandlePlayerConnected(new Player(1));
     }
 
     private Table getUpperTable() {
@@ -96,7 +94,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     @Override
     public void onHandleMessage(Player player, Envelope envelope) {
         if (envelope instanceof Envelope.PlayerSelectColor) {
-            player.setColor(((Envelope.PlayerSelectColor) envelope).color);
+            player.setColor(((Envelope.PlayerSelectColor) envelope).getColor());
             gameBoard.updatePlayer(player);
         }
         if (envelope instanceof Envelope.PlayerSelectName) {
@@ -104,8 +102,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             gameBoard.updatePlayer(player);
         }
     }
-
-    private Map<PlayerToken, Player> players = new HashMap<PlayerToken, Player>();
 
     @Override
     public void onHandlePlayerConnected(final Player player) {
