@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
@@ -92,6 +94,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
             playerToken.setSize(size, size);
             playerToken.setX((getWidth() - playerToken.getWidth()) / 2);
             playerToken.setY(swatchGroup.getY(Align.top) + GraphicsUtil.dpToPixels(64));
+            playerToken.setOrigin(playerToken.getWidth() / 2, playerToken.getHeight() / 2);
             group.addActor(playerToken);
 
             TextField.TextFieldStyle tfStyle = new TextField.TextFieldStyle(
@@ -160,15 +163,37 @@ public class PlayerLobbyScreen extends PlayerScreen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (textButton.isChecked()) {
+                        playerToken.setTouchable(Touchable.enabled);
                         textButton.setText("Ready");
                         playerToken.startAnimation();
                     } else {
+                        playerToken.setTouchable(Touchable.disabled);
                         textButton.setText(notReady);
                         playerToken.stopAnimation();
                     }
                 }
             });
             addActor(textButton);
+
+            playerToken.setTouchable(Touchable.disabled);
+            playerToken.addListener(new InputListener() {
+                private Vector2 touchScreen;
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    touchScreen = new Vector2(playerToken.getWidth() / 2, playerToken.getHeight() / 2);
+                    playerToken.localToStageCoordinates(touchScreen);
+                    return true;
+                }
+
+                @Override
+                public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                    Vector2 direction = new Vector2(event.getStageX() - touchScreen.x,
+                            event.getStageY() - touchScreen.y);
+                    if (direction.len() > GraphicsUtil.dpToPixels(40)) {
+                        playerToken.setRotation(direction.angle());
+                    }
+                }
+            });
         }
 
         private void sizeGroup(Group group) {
