@@ -11,12 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,6 +36,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
     public PlayerLobbyScreen() {
         lobbyStage = new LobbyStage();
+        lobbyStage.label.setText("Connecting...");
         connect();
     }
 
@@ -55,7 +58,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
     @Override
     public void onDisconnected() {
-
+        lobbyStage.label.setText("Disconnected");
     }
 
     @Override
@@ -66,7 +69,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
     @Override
     public void onConnectionFailed(String reason) {
-
+        lobbyStage.label.setText("Not connected");
     }
 
     @Override
@@ -78,9 +81,18 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
         private final TextField textField;
         private final PlayerToken playerToken;
+        private final Label label;
 
         public LobbyStage() {
             super();
+
+            Label.LabelStyle labelStyle = new Label.LabelStyle(Fonts.get(Fonts.FONT_14), Color.BLACK);
+            label = new Label("", labelStyle);
+            label.setAlignment(Align.center);
+            label.setY(getHeight() - GraphicsUtil.dpToPixels(16) - label.getHeight());
+            label.setWidth(getWidth());
+            addActor(label);
+
             Group group = new Group();
             addActor(group);
 

@@ -38,7 +38,6 @@ public abstract class PlayerScreen implements Screen, ClientConnection.OnMessage
         clientConnection.setOnConnectionListener(serverHandler);
         clientConnection.setOnDisconnectedListener(serverHandler);
         clientConnection.connect();
-        Logger.d("Connected");
     }
 
     public void disconnect() {
