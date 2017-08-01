@@ -9,8 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 
@@ -84,7 +86,6 @@ public class PlayerLobbyScreen extends PlayerScreen {
             group.addActor(swatchGroup);
             sizeGroup(swatchGroup);
             swatchGroup.setX((getWidth() - swatchGroup.getWidth()) / 2);
-            Logger.d("Group " + swatchGroup.getHeight());
 
             playerToken = new PlayerToken();
             float size = GraphicsUtil.dpToPixels(124);
@@ -111,15 +112,11 @@ public class PlayerLobbyScreen extends PlayerScreen {
             
             sizeGroup(group);
             group.setY((getHeight() - group.getHeight()) / 2);
-            Logger.d("Height " + group.getHeight());
-            Logger.d("Stage hieght " + getHeight());
-
 
             addListener(new InputListener() {
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     Actor hitActor = hit(x, y, false);
-                    Logger.d("Hit " + hitActor);
                     if (textField.equals(hitActor)) {
                         if (textField.getText().equals(hintText)) {
                             textField.setText("");
@@ -146,6 +143,32 @@ public class PlayerLobbyScreen extends PlayerScreen {
                     return false;
                 }
             });
+
+            TextButton.TextButtonStyle tbStyle = new TextButton.TextButtonStyle(
+                    getDrawable(Palette.PRIMARY),
+                    getDrawable(Palette.PRIMARY_DESELECTED),
+                    getDrawable(Palette.ACCENT),
+                    Fonts.get(Fonts.FONT_24)
+            );
+            final String notReady = "Press when ready";
+            final TextButton textButton = new TextButton(notReady, tbStyle);
+            textButton.setWidth(getWidth() - 2 * GraphicsUtil.dpToPixels(16));
+            textButton.setHeight(GraphicsUtil.dpToPixels(40));
+            textButton.setY(GraphicsUtil.dpToPixels(16));
+            textButton.setX((getWidth() - textButton.getWidth()) / 2);
+            textButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (textButton.isChecked()) {
+                        textButton.setText("Ready");
+                        playerToken.startAnimation();
+                    } else {
+                        textButton.setText(notReady);
+                        playerToken.stopAnimation();
+                    }
+                }
+            });
+            addActor(textButton);
         }
 
         private void sizeGroup(Group group) {

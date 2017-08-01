@@ -308,11 +308,11 @@ public class PlayerToken extends GameBoardActor {
         return movementVector;
     }
 
-    private void startAnimation() {
+    public void startAnimation() {
         tankAnimation.resume();
     }
 
-    private void endAnimation() {
+    public void stopAnimation() {
         tankAnimation.pause();
     }
 
