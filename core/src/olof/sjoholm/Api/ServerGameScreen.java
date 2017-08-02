@@ -92,7 +92,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     }
 
     @Override
-    public void onHandleMessage(Player player, Envelope envelope) {
+    public void onMessage(Player player, Envelope envelope) {
         if (envelope instanceof Envelope.PlayerSelectColor) {
             player.setColor(((Envelope.PlayerSelectColor) envelope).getColor());
             gameBoard.updatePlayer(player);
@@ -104,7 +104,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     }
 
     @Override
-    public void onHandlePlayerConnected(final Player player) {
+    public void onPlayerConnected(final Player player) {
         Logger.d("onPlayerConnected");
         player.setColor(Color.BROWN);
         player.setName("Player " + player.id);
@@ -134,7 +134,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     }
 
     @Override
-    public void onHandlePlayerDisconnected(Player player) {
+    public void onPlayerDisconnected(Player player) {
         Logger.d("onPlayerDisconnected");
         gameBoard.removePlayer(player);
     }

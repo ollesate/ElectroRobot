@@ -10,12 +10,11 @@ import olof.sjoholm.Net.Server.Player;
 public abstract class ServerScreen implements Screen, ServerConnection.OnMessageListener,
         ServerConnection.OnPlayerConnectedListener, ServerConnection.OnPlayerDisconnectedListener {
     private final ServerConnection serverConnection;
+    private final UiDispatcher uiDispatcher;
 
     public ServerScreen() {
+        uiDispatcher = new UiDispatcher(this, this, this);
         serverConnection = ServerConnection.getInstance();
-        serverConnection.setOnMessageListener(this);
-        serverConnection.setOnPlayerConnectedListener(this);
-        serverConnection.setOnPlayerDisconnectedListener(this);
     }
 
     @Override
@@ -34,9 +33,9 @@ public abstract class ServerScreen implements Screen, ServerConnection.OnMessage
     }
 
     public void startServer() {
-        serverConnection.setOnMessageListener(this);
-        serverConnection.setOnPlayerConnectedListener(this);
-        serverConnection.setOnPlayerDisconnectedListener(this);
+        serverConnection.setOnMessageListener(uiDispatcher);
+        serverConnection.setOnPlayerConnectedListener(uiDispatcher);
+        serverConnection.setOnPlayerDisconnectedListener(uiDispatcher);
         serverConnection.openConnection();
     }
 
@@ -56,47 +55,14 @@ public abstract class ServerScreen implements Screen, ServerConnection.OnMessage
     }
 
     @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void resize(int width, int height) {}
-
-    @Override
-    public void onMessage(final Player player, final Envelope envelope) {
-        Gdx.app.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                onHandleMessage(player, envelope);
-            }
-        });
+    public void pause() {
     }
 
-    protected abstract void onHandleMessage(Player player, Envelope envelope);
-
     @Override
-    public void onPlayerConnected(final Player player) {
-        Gdx.app.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                onHandlePlayerConnected(player);
-            }
-        });
+    public void resume() {
     }
 
-    protected abstract void onHandlePlayerConnected(Player player);
-
     @Override
-    public void onPlayerDisconnected(final Player player) {
-        Gdx.app.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                onHandlePlayerDisconnected(player);
-            }
-        });
+    public void resize(int width, int height) {
     }
-
-    protected abstract void onHandlePlayerDisconnected(Player player);
 }
