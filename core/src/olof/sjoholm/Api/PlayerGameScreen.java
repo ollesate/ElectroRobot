@@ -12,7 +12,6 @@ public class PlayerGameScreen extends PlayerScreen {
     public PlayerGameScreen() {
         super();
         handStage = new HandStage();
-        connect();
     }
 
     @Override

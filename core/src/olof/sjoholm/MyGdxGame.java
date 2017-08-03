@@ -4,21 +4,17 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import olof.sjoholm.Api.Fonts;
-import olof.sjoholm.Api.PlayerGameScreen;
 import olof.sjoholm.Api.PlayerLobbyScreen;
 import olof.sjoholm.Api.PlayerScreenHandler;
-import olof.sjoholm.Api.ScreenHandler;
-import olof.sjoholm.Api.ServerGameScreen;
 import olof.sjoholm.Api.ServerScreenHandler;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.LoginScreen;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
-	private boolean debug = true;
+	private static final boolean debug = false;
 
 	@Override
 	public void create () {
@@ -27,7 +23,8 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		Skins.initialize();
 		Fonts.initialize();
 		if (debug) {
-			setScreen(new PlayerLobbyScreen());
+			PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
+			screenHandler.showScreen(PlayerScreenHandler.LOBBY);
 		} else {
 			setScreen(new LoginScreen(this));
 		}
@@ -57,7 +54,8 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 	@Override
 	public void onStartClient() {
 		Logger.d("onStartClient");
-		setScreen(new PlayerLobbyScreen());
+		PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
+		screenHandler.showScreen(PlayerScreenHandler.LOBBY);
 	}
 
     @Override

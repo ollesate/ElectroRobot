@@ -1,5 +1,8 @@
 package olof.sjoholm.Net.Server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import olof.sjoholm.Net.Both.ConnectionException;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Both.NetClient;
@@ -8,9 +11,9 @@ import olof.sjoholm.Utils.Logger;
 public class ClientConnection implements NetClient.Listener {
     private static ClientConnection instance;
     private NetClient connection;
-    private OnConnectionListener onConnectionListener;
-    private OnDisconnectedListener onDisconnectedListener;
-    private OnMessageListener onMessageListener;
+    private List<OnConnectionListener> onConnectionListeners = new ArrayList<OnConnectionListener>();
+    private List<OnDisconnectedListener> onDisconnectedListeners = new ArrayList<OnDisconnectedListener>();
+    private List<OnMessageListener> onMessageListeners = new ArrayList<OnMessageListener>();
     private boolean isConnected;
 
     public interface OnDisconnectedListener {
@@ -41,28 +44,28 @@ public class ClientConnection implements NetClient.Listener {
 
     @Override
     public void onMessage(NetClient netClient, Envelope envelope) {
-        if (onMessageListener != null) {
-            onMessageListener.onMessage(envelope);
+        for (OnMessageListener listener : onMessageListeners) {
+            listener.onMessage(envelope);
         }
     }
 
     @Override
     public void onDisconnected(NetClient netClient) {
-        if (onDisconnectedListener != null) {
-            onDisconnectedListener.onDisconnected();
+        for (OnDisconnectedListener listener : onDisconnectedListeners) {
+            listener.onDisconnected();
         }
     }
 
-    public void setOnConnectionListener(OnConnectionListener listener) {
-        onConnectionListener = listener;
+    public void addOnConnectionListener(OnConnectionListener listener) {
+        onConnectionListeners.add(listener);
     }
 
-    public void setOnDisconnectedListener(OnDisconnectedListener listener) {
-        onDisconnectedListener = listener;
+    public void addOnDisconnectedListener(OnDisconnectedListener listener) {
+        onDisconnectedListeners.add(listener);
     }
 
-    public void setOnMessageListener(OnMessageListener listener) {
-        onMessageListener = listener;
+    public void addOnMessageListener(OnMessageListener listener) {
+        onMessageListeners.add(listener);
     }
 
     public void connect() {
@@ -72,16 +75,16 @@ public class ClientConnection implements NetClient.Listener {
         try {
             connection = NetClient.accept(ServerConnection.HOST_NAME, ServerConnection.PORT);
             connection.startReading(this);
-            if (onConnectionListener != null) {
-                onConnectionListener.onConnected();
+            for (OnConnectionListener listener : onConnectionListeners) {
+                listener.onConnected();
             }
             isConnected = true;
         } catch (ConnectionException e) {
             // TODO: Make this async instead.
             Logger.d(e.getMessage());
             isConnected = false;
-            if (onConnectionListener != null) {
-                onConnectionListener.onConnectionFailed(e.getMessage());
+            for (OnConnectionListener listener : onConnectionListeners) {
+                listener.onConnectionFailed(e.getMessage());
             }
         }
     }

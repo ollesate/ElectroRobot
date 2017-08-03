@@ -13,7 +13,7 @@ import olof.sjoholm.Utils.Rotation;
 public abstract class BoardAction implements Serializable {
     private int id;
 
-    public abstract Action perform(PlayerToken playerToken);
+    public abstract Action getAction(PlayerToken playerToken);
 
     public abstract String getText();
 
@@ -33,7 +33,7 @@ public abstract class BoardAction implements Serializable {
         }
 
         @Override
-        public Action perform(PlayerToken playerToken) {
+        public Action getAction(PlayerToken playerToken) {
             return playerToken.move(Direction.FORWARD, steps);
         }
 
@@ -51,7 +51,7 @@ public abstract class BoardAction implements Serializable {
         }
 
         @Override
-        public Action perform(PlayerToken playerToken) {
+        public Action getAction(PlayerToken playerToken) {
             return playerToken.rotate(rotation);
         }
 

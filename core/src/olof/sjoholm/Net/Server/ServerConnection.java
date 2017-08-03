@@ -142,7 +142,7 @@ public final class ServerConnection implements NetClient.Listener {
 
     public synchronized void send(Player player, Envelope envelope) {
         for (NetClient netClient : netClients) {
-            if (netClient.getId() == player.id) {
+            if (netClient.getId() == player.getId()) {
                 netClient.sendData(envelope);
             }
         }

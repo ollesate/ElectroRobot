@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,11 +32,14 @@ import olof.sjoholm.Utils.Logger;
 
 public class PlayerLobbyScreen extends PlayerScreen {
     private final LobbyStage lobbyStage;
+    private final PlayerScreenHandler playerScreenHandler;
+    private boolean justPressed;
 
-    public PlayerLobbyScreen() {
+    public PlayerLobbyScreen(PlayerScreenHandler playerScreenHandler) {
+        super();
+        this.playerScreenHandler = playerScreenHandler;
         lobbyStage = new LobbyStage();
         lobbyStage.label.setText("Connecting...");
-        connect();
     }
 
     @Override
@@ -49,6 +51,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(lobbyStage);
+        connect();
     }
 
     @Override
@@ -74,7 +77,10 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
     @Override
     public void onMessage(Envelope envelope) {
-
+        Logger.d("Player Lobby onMessage " + envelope);
+        if (envelope instanceof Envelope.StartGame) {
+            playerScreenHandler.showScreen(PlayerScreenHandler.GAME);
+        }
     }
 
     private class LobbyStage extends Stage {
@@ -133,6 +139,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     Actor hitActor = hit(x, y, false);
                     if (textField.equals(hitActor)) {
+                        justPressed = true;
                         if (textField.getText().equals(hintText)) {
                             textField.setText("");
                         }
@@ -141,11 +148,13 @@ public class PlayerLobbyScreen extends PlayerScreen {
                         Gdx.input.setOnscreenKeyboardVisible(false);
                         if (textField.getText().equals("")) {
                             textField.setText(hintText);
-                        } else {
-                            if (isConnected()) {
+                        }
+                        if (isConnected()) {
+                            if (justPressed) {
                                 send(new Envelope.PlayerSelectName(textField.getText()));
                             }
                         }
+                        justPressed = false;
 
                         if (hitActor != null && hitActor instanceof Swatch) {
                             Color swatchColor = ((Swatch) hitActor).getSwatchColor();
@@ -178,10 +187,14 @@ public class PlayerLobbyScreen extends PlayerScreen {
                         playerToken.setTouchable(Touchable.enabled);
                         textButton.setText("Ready");
                         playerToken.startAnimation();
+
+                        send(new Envelope.PlayerReady(true));
                     } else {
                         playerToken.setTouchable(Touchable.disabled);
                         textButton.setText(notReady);
                         playerToken.stopAnimation();
+
+                        send(new Envelope.PlayerReady(true));
                     }
                 }
             });

@@ -8,15 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Timer;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Actors.PlayerAction;
-import olof.sjoholm.GameWorld.Actors.PlayerToken;
 import olof.sjoholm.GameWorld.Levels;
 import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Net.Both.Envelope;
@@ -25,11 +23,19 @@ import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
+import sun.rmi.runtime.Log;
 
 public class ServerGameScreen extends ServerScreen implements EventListener {
     private final GameStage gameStage;
     private boolean paused;
     private final GameBoard gameBoard;
+
+    public enum State {
+        GAME_LOBBY,
+        GAME_ON_GOING
+    }
+
+    private State state = State.GAME_LOBBY;
 
     public ServerGameScreen() {
         super();
@@ -50,17 +56,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         table.addActor(countDownText);
 
         gameStage.addActor(table);
-//
-//        Player player = new Player(1);
-//        player.setName("Olof");
-//        player.setColor(Color.ORANGE);
-//        SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
-//        gameBoard.initializePlayer(spawnPoint, player);
-//        PlayerToken token = gameBoard.getToken(player);
-//
-//        gameBoard.performActions(new PlayerAction(token, new BoardAction.MoveForward(2)),
-//                new PlayerAction(token, new BoardAction.Rotate(Rotation.LEFT)),
-//                new PlayerAction(token, new BoardAction.MoveForward(2)));
+
         startServer();
     }
 
@@ -93,6 +89,18 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 
     @Override
     public void onMessage(Player player, Envelope envelope) {
+        switch (state) {
+            case GAME_LOBBY:
+                onMessageLobby(player, envelope);
+                break;
+            case GAME_ON_GOING:
+                onMessageGame(player, envelope);
+                break;
+        }
+    }
+
+    private void onMessageLobby(Player player, Envelope envelope) {
+        Logger.d("onMessageLobby " + envelope);
         if (envelope instanceof Envelope.PlayerSelectColor) {
             player.setColor(((Envelope.PlayerSelectColor) envelope).getColor());
             gameBoard.updatePlayer(player);
@@ -101,36 +109,83 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             player.setName(((Envelope.PlayerSelectName) envelope).name);
             gameBoard.updatePlayer(player);
         }
+        if (envelope instanceof Envelope.PlayerReady) {
+            boolean ready = ((Envelope.PlayerReady) envelope).ready;
+            player.setReady(ready);
+            boolean allReady = true;
+            for (Player connectedPlayer : getConnectedPlayers()) {
+                if (!connectedPlayer.isReady()) {
+                    allReady = false;
+                }
+            }
+            Logger.d("all players ready? " + allReady + " " + getConnectedPlayers().size());
+            final Turns turns = new Turns(Constants.NR_OF_CARDS);
+            if (allReady) {
+                float delay = Config.get(Config.GAME_TURN);
+                for (Player connectedPlayer : getConnectedPlayers()) {
+                    send(connectedPlayer, new Envelope.StartGame());
+                    send(connectedPlayer, new Envelope.StartCountdown(delay));
+                    List<BoardAction> cards = CardGenerator.generateList(Constants.NR_OF_CARDS);
+                    send(connectedPlayer, new Envelope.SendCards(cards));
+
+                    for (int i = 0; i < Constants.NR_OF_CARDS; i++) {
+                        BoardAction boardAction = cards.get(i);
+                        turns.addToTurn(i, new PlayerAction(connectedPlayer, boardAction));
+                    }
+                }
+                new Timer().scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        // TODO: do something if someone disconnects
+                        onMatchStarted(turns);
+                    }
+                }, delay);
+            }
+            state = State.GAME_ON_GOING;
+        }
+    }
+
+    public static class Turns {
+        private final List<List<PlayerAction>> playerActions = new ArrayList<List<PlayerAction>>();
+        private final int turnSize;
+
+        public Turns(int turnSize) {
+            this.turnSize = turnSize;
+            for (int i = 0; i < turnSize; i++) {
+                playerActions.add(new ArrayList<PlayerAction>());
+            }
+        }
+
+        public void addToTurn(int turn, PlayerAction playerAction) {
+            List<PlayerAction> turnActions = this.playerActions.get(turn);
+            turnActions.add(playerAction);
+        }
+
+        public List<PlayerAction> getTurn(int turn) {
+            return playerActions.get(turn);
+        }
+
+        public int size() {
+            return turnSize;
+        }
+    }
+
+    private void onMatchStarted(Turns turns) {
+        gameBoard.startTurns(turns);
+    }
+
+    private void onMessageGame(Player player, Envelope envelope) {
+        Logger.d("onMessageGame " + envelope);
     }
 
     @Override
     public void onPlayerConnected(final Player player) {
         Logger.d("onPlayerConnected");
-        player.setColor(Color.BROWN);
-        player.setName("Player " + player.id);
+        player.setColor(Color.WHITE);
+        player.setName("Player " + player.getId());
         // TODO: will throw NPE here.
         SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
         gameBoard.initializePlayer(spawnPoint, player);
-
-        // TODO: we should not start game directly when someone joins.
-        final List<BoardAction> boardActions = CardGenerator.generateList(5);
-
-        Envelope.SendCards sendCards = new Envelope.SendCards(boardActions);
-        send(player, sendCards);
-        float turnDuration = Config.get(Config.STAGE_CARD_TURN_DURATION);
-        send(player, new Envelope.StartCountdown(turnDuration));
-
-        new Timer().scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                PlayerAction[] actions = new PlayerAction[boardActions.size()];
-                PlayerToken token = gameBoard.getToken(player);
-                for (int i = 0; i < boardActions.size(); i++) {
-                    actions[i] = new PlayerAction(token, boardActions.get(i));
-                }
-                gameBoard.performActions(actions);
-            }
-        }, turnDuration);
     }
 
     @Override
@@ -143,12 +198,12 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     public boolean handle(Event event) {
         if (event instanceof OnStartActionEvent) {
             OnStartActionEvent startEvent = (OnStartActionEvent) event;
-            Player player = gameBoard.getPlayer(startEvent.playerAction.playerToken);
-            send(player, new Envelope.OnCardActivated(startEvent.playerAction.boardAction));
+            Player player = startEvent.player;
+            send(player, new Envelope.OnCardActivated(startEvent.boardAction));
         } else if (event instanceof OnEndActionEvent) {
             OnEndActionEvent endEvent = (OnEndActionEvent) event;
-            Player player = gameBoard.getPlayer(endEvent.playerAction.playerToken);
-            send(player, new Envelope.OnCardDeactivated(endEvent.playerAction.boardAction));
+            Player player = endEvent.player;
+            send(player, new Envelope.OnCardDeactivated(endEvent.boardAction));
         }
         return false;
     }

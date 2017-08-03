@@ -1,13 +1,14 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Net.Server.Player;
 
 public class PlayerAction {
-    public final PlayerToken playerToken;
+    public final Player player;
     public final BoardAction boardAction;
 
-    public PlayerAction(PlayerToken playerToken, BoardAction boardAction) {
-        this.playerToken = playerToken;
+    public PlayerAction(Player player, BoardAction boardAction) {
+        this.player = player;
         this.boardAction = boardAction;
     }
 }

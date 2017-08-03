@@ -3,9 +3,10 @@ package olof.sjoholm.Net.Server;
 import com.badlogic.gdx.graphics.Color;
 
 public class Player {
-    public final int id;
-    public Color color;
-    public String name;
+    private final int id;
+    private Color color;
+    private String name;
+    private boolean ready;
 
     public Player(int id) {
         this.id = id;
@@ -25,5 +26,17 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public int getId() {
+        return id;
     }
 }

@@ -1,9 +1,11 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.awt.Point;
@@ -14,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Api.ServerGameScreen;
+import olof.sjoholm.Api.ServerGameScreen.Turns;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Levels.Level;
@@ -24,6 +29,11 @@ import olof.sjoholm.Utils.Logger;
 
 public class GameBoard extends Group implements EventListener {
     private final List<GameBoardActor> movingActors = new ArrayList<GameBoardActor>();
+    private Set<SpawnPoint> occupiedSpawnPoints = new HashSet<SpawnPoint>();
+
+    // TODO: extract away this. Would be cool to handle in base class.
+    private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
+    private Map<Player, PlayerToken> playerTokens = new HashMap<Player, PlayerToken>();
     private int tileSize;
     private Level level;
 
@@ -43,6 +53,7 @@ public class GameBoard extends Group implements EventListener {
         super.act(delta);
 
         for (GameBoardActor movingActor : movingActors) {
+            // TODO: Can we remove this?
             if (true) continue;
             PlayerToken playerToken = (PlayerToken) movingActor;
             Vector2 dir = playerToken.getDirection();
@@ -102,8 +113,6 @@ public class GameBoard extends Group implements EventListener {
         return new Point(tileX, tileY);
     }
 
-    private Set<SpawnPoint> occupiedSpawnPoints = new HashSet<SpawnPoint>();
-
     public List<SpawnPoint> getSpawnPoints() {
         List<SpawnPoint> availableSpots = new ArrayList<SpawnPoint>();
         for (SpawnPoint spawnPoint : level.getSpawnPoints()) {
@@ -114,17 +123,13 @@ public class GameBoard extends Group implements EventListener {
         return availableSpots;
     }
 
-    private Map<Player, PlayerToken> players = new HashMap<Player, PlayerToken>();
-
-    private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
-
     public void initializePlayer(SpawnPoint spawnPoint, Player player) {
         occupiedSpawnPoints.add(spawnPoint);
 
         PlayerToken playerToken = new PlayerToken();
         playerToken.setX(spawnPoint.x * Constants.STEP_SIZE);
         playerToken.setY(spawnPoint.y * Constants.STEP_SIZE);
-        playerToken.setColor(player.color);
+        playerToken.setColor(player.getColor());
         playerToken.setSpawnPoint(spawnPoint);
         addActor(playerToken);
 
@@ -132,21 +137,8 @@ public class GameBoard extends Group implements EventListener {
         badges.add(badge);
         addActor(badge);
 
-        players.put(player, playerToken);
+        playerTokens.put(player, playerToken);
         spawnedActors.add(playerToken);
-    }
-
-    public Player getPlayer(PlayerToken playerToken) {
-        for (Map.Entry<Player, PlayerToken> entry : players.entrySet()) {
-            if (entry.getValue().equals(playerToken)) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-
-    public PlayerToken getToken(Player player) {
-        return players.get(player);
     }
 
     private List<Badge> badges = new ArrayList<Badge>();
@@ -154,9 +146,43 @@ public class GameBoard extends Group implements EventListener {
     public void performActions(PlayerAction... playerActions) {
         SequenceAction sequence = new SequenceAction();
         for (PlayerAction action : playerActions) {
-            sequence.addAction(new FireEventAction(new OnStartActionEvent(action)));
-            sequence.addAction(new ActionWrapper(action.playerToken, action.boardAction));
-            sequence.addAction(new FireEventAction(new OnEndActionEvent(action)));
+            Player player = action.player;
+            BoardAction boardAction = action.boardAction;
+            PlayerToken playerToken = playerTokens.get(player);
+            if (playerToken == null) {
+                // TODO: handle player died
+            }
+            sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
+            sequence.addAction(new ActionWrapper(playerToken, action.boardAction));
+            sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
+        }
+        addAction(sequence);
+    }
+
+    public void startTurns(Turns turns) {
+        SequenceAction sequence = new SequenceAction();
+        for (int i = 0; i < turns.size(); i++) {
+            for (PlayerAction playerAction : turns.getTurn(i)) {
+                Player player = playerAction.player;
+                BoardAction boardAction = playerAction.boardAction;
+                PlayerToken playerToken = playerTokens.get(player);
+                if (playerToken == null) {
+                    // TODO: handle player died
+                }
+
+                sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
+                sequence.addAction(new ActionWrapper(playerToken, boardAction));
+                sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
+
+                sequence.addAction(new Action() {
+                    @Override
+                    public boolean act(float delta) {
+                        Logger.d("End of turn, wait 5 seconds");
+                        return true;
+                    }
+                });
+                sequence.addAction(new DelayAction(5f));
+            }
         }
         addAction(sequence);
     }
@@ -167,11 +193,19 @@ public class GameBoard extends Group implements EventListener {
         if (e instanceof OnStartActionEvent) {
             // On start action
             OnStartActionEvent event = (OnStartActionEvent) e;
-            movingActors.add(event.playerAction.playerToken);
+            PlayerToken playerToken = playerTokens.get(event.player);
+            if (playerToken == null) {
+                // TODO: handle player died. Should be possible?
+            }
+            movingActors.add(playerToken);
         } else if (e instanceof OnEndActionEvent) {
             // On end action
             OnEndActionEvent event = (OnEndActionEvent) e;
-            movingActors.remove(event.playerAction.playerToken);
+            PlayerToken playerToken = playerTokens.get(event.player);
+            if (playerToken == null) {
+                // TODO: handle player died. Should be possible?
+            }
+            movingActors.add(playerToken);
         }
         return false;
     }
@@ -196,7 +230,7 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public void removePlayer(Player player) {
-        PlayerToken playerToken = players.get(player);
+        PlayerToken playerToken = playerTokens.get(player);
         removeActor(playerToken);
         SpawnPoint spawnPoint = playerToken.getSpawnPoint();
         occupiedSpawnPoints.remove(spawnPoint);
@@ -210,9 +244,9 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public void updatePlayer(Player player) {
-        PlayerToken playerToken = players.get(player);
+        PlayerToken playerToken = playerTokens.get(player);
         if (playerToken != null) {
-            playerToken.setColor(player.color);
+            playerToken.setColor(player.getColor());
         }
         for (Badge badge : badges) {
             if (badge.getTarget().equals(playerToken)) {

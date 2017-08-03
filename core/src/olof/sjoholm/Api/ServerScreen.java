@@ -3,6 +3,8 @@ package olof.sjoholm.Api;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
+import java.util.List;
+
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.ServerConnection;
 import olof.sjoholm.Net.Server.Player;
@@ -52,6 +54,10 @@ public abstract class ServerScreen implements Screen, ServerConnection.OnMessage
 
     public void send(Player player, Envelope envelope) {
         serverConnection.send(player, envelope);
+    }
+
+    List<Player> getConnectedPlayers() {
+        return serverConnection.getConnectedPlayers();
     }
 
     @Override

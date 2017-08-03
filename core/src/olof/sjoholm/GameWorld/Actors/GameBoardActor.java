@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Interfaces.Drawable;
 import olof.sjoholm.Utils.Logger;
@@ -38,18 +40,22 @@ public class GameBoardActor extends Actor {
     }
 
     public static class OnEndActionEvent extends Event {
-        public final PlayerAction playerAction;
+        public final BoardAction boardAction;
+        public final Player player;
 
-        public OnEndActionEvent(PlayerAction playerAction) {
-            this.playerAction = playerAction;
+        public OnEndActionEvent(Player player, BoardAction boardAction) {
+            this.player = player;
+            this.boardAction = boardAction;
         }
     }
 
     public static class OnStartActionEvent extends Event {
-        public final PlayerAction playerAction;
+        public final BoardAction boardAction;
+        public final Player player;
 
-        public OnStartActionEvent(PlayerAction playerAction) {
-            this.playerAction = playerAction;;
+        public OnStartActionEvent(Player player, BoardAction boardAction) {
+            this.player = player;
+            this.boardAction = boardAction;
         }
     }
 }

@@ -14,7 +14,7 @@ class ActionWrapper extends Action {
         // TODO: Rename target action or similiar, or can we use add action here? No, dont think so
         this.playerToken = playerToken;
         this.boardAction = boardAction;
-        perform = boardAction.perform(playerToken);
+        perform = boardAction.getAction(playerToken);
     }
 
     @Override

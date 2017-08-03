@@ -89,10 +89,6 @@ public class Envelope implements Serializable {
         }
     }
 
-    public static class StartTurn extends Envelope {
-
-    }
-
     public static class OnCardActivated extends Envelope {
         public final BoardAction boardAction;
 
@@ -135,8 +131,15 @@ public class Envelope implements Serializable {
         }
     }
 
+    public static class PlayerReady extends Envelope {
+        public final boolean ready;
+
+        public PlayerReady(boolean ready) {
+            this.ready = ready;
+        }
+    }
+
     public static class StartGame extends Envelope {
 
     }
-
 }
