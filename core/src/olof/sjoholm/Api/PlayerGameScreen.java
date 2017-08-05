@@ -24,7 +24,6 @@ public class PlayerGameScreen extends PlayerScreen {
     public void resize(int width, int height) {
         Logger.d("Resize " + width + " " + height);
         handStage.resize(width, height);
-        super.resize(width, height);
     }
 
     @Override
@@ -70,6 +69,9 @@ public class PlayerGameScreen extends PlayerScreen {
         } else if (envelope instanceof Envelope.OnCardDeactivated) {
             // Card deactivated.
             handStage.deselect(((Envelope.OnCardDeactivated) envelope).boardAction);
+        } else if (envelope instanceof Envelope.OnCardPhaseEnded) {
+            send(new Envelope.SendCards(handStage.getCards()));
+            handStage.lockCards();
         }
     }
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 import olof.sjoholm.Utils.Logger;
 
 public class Config {
-    public static final String GAME_TURN = "GAME_TURN";
+    public static final String CARD_WAIT = "CARD_WAIT";
     public static final String STAGE_CARD_TURN_DURATION = "STAGE_CARD_TURN_DURATION";
     public static final String CARD_DELAY_NEXT = "CARD_DELAY_NEXT";
     public static final String CARD_STEP_DURATION = "CARD_STEP_DURATION";
@@ -18,7 +18,7 @@ public class Config {
     private final Map<String, Object> mDefaultValues = new HashMap<String, Object>();
 
     public Config() {
-        mDefaultValues.put(GAME_TURN, 10f);
+        mDefaultValues.put(CARD_WAIT, 25f);
         mDefaultValues.put(STAGE_CARD_TURN_DURATION, 1f);
         mDefaultValues.put(CARD_DELAY_NEXT, 2f);
         mDefaultValues.put(CARD_STEP_DURATION, 0.5);

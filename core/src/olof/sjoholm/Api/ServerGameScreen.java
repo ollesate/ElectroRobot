@@ -122,7 +122,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             }
             Logger.d("all players ready? " + allReady + " " + getConnectedPlayers().size());
             if (allReady) {
-                float delay = Config.get(Config.GAME_TURN);
+                float delay = Config.get(Config.CARD_WAIT);
                 for (Player connectedPlayer : getConnectedPlayers()) {
                     send(connectedPlayer, new Envelope.StartGame());
                     send(connectedPlayer, new Envelope.StartCountdown(delay));

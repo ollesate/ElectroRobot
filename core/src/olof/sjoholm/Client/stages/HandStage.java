@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -198,6 +199,7 @@ public class HandStage extends Stage {
         private Color selectedColor;
         private Color activeColor;
         private Color consumedColor;
+        private boolean isCardsLocked;
 
         public void addCard(final CardActor actor) {
             cardActors.add(actor);
@@ -208,13 +210,12 @@ public class HandStage extends Stage {
 
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    onCardPressed(actor, x, y);
-                    return true;
+                    return onCardPressed(actor, x, y);
                 }
 
                 @Override
                 public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                    onCardReleased(actor, x, y);
+                    onCardReleased(actor);
                 }
 
                 @Override
@@ -264,15 +265,19 @@ public class HandStage extends Stage {
 
         private Map<CardActor, DraggedCard> draggedCards = new HashMap<CardActor, DraggedCard>();
 
-        private void onCardPressed(CardActor card, float x, float y) {
+        private boolean onCardPressed(CardActor card, float x, float y) {
+            if (isCardsLocked) {
+                return false;
+            }
             card.setVisible(false);
 
             DraggedCard draggedCard = new DraggedCard(card.copy(), y);
             addActor(draggedCard.fake);
             draggedCards.put(card, draggedCard);
+            return true;
         }
 
-        private void onCardReleased(CardActor card, float x, float y) {
+        private void onCardReleased(CardActor card) {
             DraggedCard draggedCard = draggedCards.get(card);
 
             card.setVisible(true);
@@ -282,6 +287,9 @@ public class HandStage extends Stage {
         }
 
         private void onCardDragged(CardActor card, float x, float y) {
+            if (isCardsLocked) {
+                return;
+            }
             DraggedCard draggedCard = draggedCards.get(card);
 
             draggedCard.fake.setY(card.getY() + y - draggedCard.initialY);
@@ -319,6 +327,18 @@ public class HandStage extends Stage {
         public void select(CardActor cardActor) {
 
         }
+
+        public void lockCards() {
+            isCardsLocked = true;
+            // Drop cards if currently dragged.
+            for (CardActor actor : draggedCards.keySet()) {
+                onCardReleased(actor);
+            }
+        }
+
+        public void unlockCards() {
+            isCardsLocked = false;
+        }
     }
 
     public void addCard(BoardAction boardAction) {
@@ -350,10 +370,14 @@ public class HandStage extends Stage {
 
     public List<BoardAction> getCards() {
         // Sort cards by y.
-        SortedMap<Float, BoardAction> sortedMap = new TreeMap<Float, BoardAction>();
+        SortedMap<Float, BoardAction> sortedMap = new TreeMap<Float, BoardAction>(Collections.reverseOrder());
         for (Pair<BoardAction, CardActor> pair : cardActors) {
             sortedMap.put(pair.value.getY(), pair.key);
         }
         return new ArrayList<BoardAction>(sortedMap.values());
+    }
+
+    public void lockCards() {
+        handGroup.lockCards();
     }
 }
