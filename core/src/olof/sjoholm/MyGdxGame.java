@@ -24,7 +24,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		Fonts.initialize();
 		if (debug) {
 			PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
-			screenHandler.showScreen(PlayerScreenHandler.LOBBY);
+			screenHandler.showScreen(PlayerScreenHandler.GAME);
 		} else {
 			setScreen(new LoginScreen(this));
 		}

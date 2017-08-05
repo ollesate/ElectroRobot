@@ -18,6 +18,7 @@ public abstract class BoardAction implements Serializable {
     public abstract String getText();
 
     public void setId(int id) {
+        // TODO: make package protected.
         this.id = id;
     }
 
