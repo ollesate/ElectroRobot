@@ -279,6 +279,10 @@ public class HandStage extends Stage {
 
         private void onCardReleased(CardActor card) {
             DraggedCard draggedCard = draggedCards.get(card);
+            if (draggedCard == null) {
+                // We've force released this card.
+                return;
+            }
 
             card.setVisible(true);
 
