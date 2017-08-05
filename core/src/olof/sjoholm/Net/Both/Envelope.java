@@ -142,4 +142,12 @@ public class Envelope implements Serializable {
     public static class StartGame extends Envelope {
 
     }
+
+    public static class OnCardPhaseEnded extends Envelope {
+
+    }
+
+    public static class UnReadyMyCards extends Envelope {
+
+    }
 }

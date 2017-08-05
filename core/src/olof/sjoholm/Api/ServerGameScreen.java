@@ -9,7 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
@@ -23,19 +25,19 @@ import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
-import sun.rmi.runtime.Log;
 
 public class ServerGameScreen extends ServerScreen implements EventListener {
     private final GameStage gameStage;
     private boolean paused;
     private final GameBoard gameBoard;
 
-    public enum State {
-        GAME_LOBBY,
-        GAME_ON_GOING
+    public enum GamePhase {
+        LOBBY,
+        CARD,
+        GAME
     }
 
-    private State state = State.GAME_LOBBY;
+    private GamePhase gamePhase = GamePhase.LOBBY;
 
     public ServerGameScreen() {
         super();
@@ -89,12 +91,12 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 
     @Override
     public void onMessage(Player player, Envelope envelope) {
-        switch (state) {
-            case GAME_LOBBY:
+        switch (gamePhase) {
+            case LOBBY:
                 onMessageLobby(player, envelope);
                 break;
-            case GAME_ON_GOING:
-                onMessageGame(player, envelope);
+            case CARD:
+                onMessageWaitingForCards(player, envelope);
                 break;
         }
     }
@@ -119,30 +121,53 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
                 }
             }
             Logger.d("all players ready? " + allReady + " " + getConnectedPlayers().size());
-            final Turns turns = new Turns(Constants.NR_OF_CARDS);
             if (allReady) {
                 float delay = Config.get(Config.GAME_TURN);
                 for (Player connectedPlayer : getConnectedPlayers()) {
                     send(connectedPlayer, new Envelope.StartGame());
                     send(connectedPlayer, new Envelope.StartCountdown(delay));
-                    List<BoardAction> cards = CardGenerator.generateList(Constants.NR_OF_CARDS);
+                    List<BoardAction> cards = CardGenerator.generateList(Constants.CARDS_TO_DEAL);
                     send(connectedPlayer, new Envelope.SendCards(cards));
-
-                    for (int i = 0; i < Constants.NR_OF_CARDS; i++) {
-                        BoardAction boardAction = cards.get(i);
-                        turns.addToTurn(i, new PlayerAction(connectedPlayer, boardAction));
-                    }
                 }
+                // Let them arrange their cards before calling turn ended.
                 new Timer().scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        // TODO: do something if someone disconnects
-                        onMatchStarted(turns);
+                        onCardPhaseEnd();
                     }
                 }, delay);
             }
-            state = State.GAME_ON_GOING;
+            gamePhase = GamePhase.CARD;
         }
+    }
+
+    private void onCardPhaseEnd() {
+        // TODO: do something if someone disconnects
+        for (Player player : getConnectedPlayers()) {
+            // This will tell them to return cards to play.
+            send(player, new Envelope.OnCardPhaseEnded());
+        }
+        // They need a little time to give their response.
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                gamePhase = GamePhase.GAME;
+                // TODO: What to do if not everyone has given their cards?
+                // Maybe just play in the order they were given out.
+                onGameBegin();
+            }
+        }, Constants.WAIT_FOR_CARD_RESPONSE_DURATION);
+    }
+
+    private void onGameBegin() {
+        Turns turns = new Turns(Constants.CARDS_TO_PLAY);
+        for (Player player : getConnectedPlayers()) {
+            List<BoardAction> cards = cardsToPlay.get(player);
+            for (int i = 0; i < Constants.CARDS_TO_PLAY; i++) {
+                turns.addToTurn(i, new PlayerAction(player, cards.get(i)));
+            }
+        }
+        gameBoard.startTurns(turns);
     }
 
     public static class Turns {
@@ -170,12 +195,17 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         }
     }
 
-    private void onMatchStarted(Turns turns) {
-        gameBoard.startTurns(turns);
-    }
+    private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();
 
-    private void onMessageGame(Player player, Envelope envelope) {
-        Logger.d("onMessageGame " + envelope);
+    private void onMessageWaitingForCards(Player player, Envelope envelope) {
+        Logger.d("onMessageWaitingForCards " + envelope);
+        if (envelope instanceof Envelope.SendCards) {
+            List<BoardAction> cards = ((Envelope.SendCards) envelope).cards;
+            cardsToPlay.put(player, cards);
+        }
+        if (envelope instanceof Envelope.UnReadyMyCards) {
+            cardsToPlay.remove(player);
+        }
     }
 
     @Override
