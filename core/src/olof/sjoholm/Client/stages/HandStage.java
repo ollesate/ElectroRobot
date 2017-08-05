@@ -31,7 +31,7 @@ import olof.sjoholm.Api.Pair;
 import olof.sjoholm.Api.Palette;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Utils.Constants;
 
 
 public class HandStage extends Stage {
@@ -333,6 +333,7 @@ public class HandStage extends Stage {
         }
 
         public void lockCards() {
+            setColor(new Color(1f, 1f, 1f, Constants.ALPHA_DISABLED));
             isCardsLocked = true;
             // Drop cards if currently dragged.
             for (CardActor actor : draggedCards.keySet()) {
@@ -341,6 +342,7 @@ public class HandStage extends Stage {
         }
 
         public void unlockCards() {
+            setColor(new Color(1f, 1f, 1f, Constants.ALPHA_ENABLED));
             isCardsLocked = false;
         }
     }

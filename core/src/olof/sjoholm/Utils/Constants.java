@@ -11,6 +11,9 @@ public class Constants {
 
     public static float WAIT_FOR_CARD_RESPONSE_DURATION = 2f;
 
+    public static float ALPHA_ENABLED = 1f;
+    public static float ALPHA_DISABLED = 0.7f;
+
     public static float CARD_TURN_DURATION = 2f;
     public static float CARD_STEP_DURATION = 1f;
     public static float CARD_STEP_DELAY = 1f;
