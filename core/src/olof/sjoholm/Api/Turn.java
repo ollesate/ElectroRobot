@@ -28,4 +28,29 @@ public class Turn {
     public int size() {
         return turnSize;
     }
+
+    public boolean isLastOfRound(BoardAction boardAction) {
+        for (List<PlayerAction> playerAction : playerActions) {
+            for (int i = 0; i < playerAction.size(); i++) {
+                BoardAction action = playerAction.get(i).boardAction;
+                if (boardAction.equals(action) && i == playerAction.size() - 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int getRoundOf(BoardAction boardAction) {
+        for (int i = 0; i < playerActions.size(); i++) {
+            List<PlayerAction> actions = playerActions.get(i);
+            for (PlayerAction playerAction : actions) {
+                BoardAction action = playerAction.boardAction;
+                if (boardAction.equals(action)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 }

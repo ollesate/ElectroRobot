@@ -24,7 +24,7 @@ public class Config {
         mDefaultValues.put(CARD_DELAY_NEXT, 2f);
         mDefaultValues.put(CARD_STEP_DURATION, 0.5);
         mDefaultValues.put(CARD_STEP_DELAY, 1f);
-        mDefaultValues.put(PLAY_SPEED, 1f);
+        mDefaultValues.put(PLAY_SPEED, 4f);
         mConfigs = new HashMap<String, Object>(mDefaultValues);
     }
 

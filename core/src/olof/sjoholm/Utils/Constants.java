@@ -4,6 +4,7 @@ package olof.sjoholm.Utils;
 public class Constants {
     public static final int WORLD_WIDTH = 1920;
     public static final int WORLD_HEIGHT = 1080;
+    public static final float NEW_ROUND_POPUP_DURATION = 3f;
     public static float STEP_SIZE = 150f;
 
     public static final float MOVE_STEP_DURATION = 1f;

@@ -38,6 +38,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     private boolean paused;
     private final GameBoard gameBoard;
     private final CardFlowPanel cardFlowPanel;
+    private final Turn currentTurn;
 
     public enum GamePhase {
         LOBBY,
@@ -72,9 +73,9 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             players.add(player);
         }
 
-        Turn turn = DebugUtil.generateTurns(players);
-        cardFlowPanel.setTurns(turn);
-        gameBoard.startTurns(turn);
+        currentTurn = DebugUtil.generateTurns(players);
+        cardFlowPanel.setTurns(currentTurn);
+        gameBoard.startTurns(currentTurn);
 
         gameBoard.addListener(new EventListener() {
             @Override
@@ -163,7 +164,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         public void setTurns(Turn turns) {
             for (int i = 0; i < turns.size(); i++) {
                 List<PlayerAction> turn = turns.getRound(i);
-                RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + i);
+                RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + (i + 1));
                 roundTitleActor.setHeight(GraphicsUtil.dpToPixels(100));
                 addActor(roundTitleActor);
                 for (PlayerAction playerAction : turn) {
@@ -347,6 +348,16 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             Player player = endEvent.player;
             send(player, new Envelope.OnCardDeactivated(endEvent.boardAction));
 
+            if (currentTurn.isLastOfRound(endEvent.boardAction)) {
+                int whatRound = currentTurn.getRoundOf(endEvent.boardAction);
+                PopupText popupText = new PopupText("Round " + (whatRound + 2),
+                        Fonts.get(Fonts.FONT_60), Constants.NEW_ROUND_POPUP_DURATION);
+                popupText.start();
+                popupText.setWidth(gameStage.getWidth());
+                popupText.setAlignment(Align.center);
+                popupText.setPosition(0, gameStage.getHeight(), Align.topLeft);
+                gameStage.addActor(popupText);
+            }
         }
         return false;
     }

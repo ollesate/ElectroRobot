@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 public class Fonts {
     private static String RIFFICFREE = "fonts/OpenSans-Regular.ttf";
 
+    public static final String FONT_60 = "FONT_60.ttf";
     public static final String FONT_34 = "FONT_34.ttf";
     public static final String FONT_24 = "FONT_24.ttf";
     public static final String FONT_20 = "FONT_20.ttf";
@@ -26,6 +27,7 @@ public class Fonts {
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
+        loadRifficFreeFont(60, FONT_60);
         loadRifficFreeFont(34, FONT_34);
         loadRifficFreeFont(24, FONT_24);
         loadRifficFreeFont(20, FONT_20);
