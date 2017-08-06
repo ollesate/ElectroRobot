@@ -1,7 +1,6 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -18,7 +17,7 @@ import java.util.Set;
 
 import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.Api.Config;
-import olof.sjoholm.Api.Turns;
+import olof.sjoholm.Api.Turn;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Levels.Level;
@@ -159,11 +158,11 @@ public class GameBoard extends Group implements EventListener {
         addAction(sequence);
     }
 
-    public void startTurns(Turns turns) {
+    public void startTurns(Turn turn) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
         SequenceAction sequence = new SequenceAction();
-        for (int i = 0; i < turns.size(); i++) {
-            for (PlayerAction playerAction : turns.getTurn(i)) {
+        for (int i = 0; i < turn.size(); i++) {
+            for (PlayerAction playerAction : turn.getRound(i)) {
                 Player player = playerAction.player;
                 BoardAction boardAction = playerAction.boardAction;
                 PlayerToken playerToken = playerTokens.get(player);

@@ -5,23 +5,23 @@ import java.util.List;
 
 import olof.sjoholm.GameWorld.Actors.PlayerAction;
 
-public class Turns {
+public class Turn {
     private final List<List<PlayerAction>> playerActions = new ArrayList<List<PlayerAction>>();
     private final int turnSize;
 
-    public Turns(int turnSize) {
+    public Turn(int turnSize) {
         this.turnSize = turnSize;
         for (int i = 0; i < turnSize; i++) {
             playerActions.add(new ArrayList<PlayerAction>());
         }
     }
 
-    public void addToTurn(int turn, PlayerAction playerAction) {
-        List<PlayerAction> turnActions = this.playerActions.get(turn);
+    public void addToRound(int round, PlayerAction playerAction) {
+        List<PlayerAction> turnActions = this.playerActions.get(round);
         turnActions.add(playerAction);
     }
 
-    public List<PlayerAction> getTurn(int turn) {
+    public List<PlayerAction> getRound(int turn) {
         return playerActions.get(turn);
     }
 

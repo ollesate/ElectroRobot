@@ -72,9 +72,9 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             players.add(player);
         }
 
-        Turns turns = DebugUtil.generateTurns(players);
-        cardFlowPanel.setTurns(turns);
-        gameBoard.startTurns(turns);
+        Turn turn = DebugUtil.generateTurns(players);
+        cardFlowPanel.setTurns(turn);
+        gameBoard.startTurns(turn);
 
         gameBoard.addListener(new EventListener() {
             @Override
@@ -160,9 +160,9 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             }
         }
 
-        public void setTurns(Turns turns) {
+        public void setTurns(Turn turns) {
             for (int i = 0; i < turns.size(); i++) {
-                List<PlayerAction> turn = turns.getTurn(i);
+                List<PlayerAction> turn = turns.getRound(i);
                 RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + i);
                 roundTitleActor.setHeight(GraphicsUtil.dpToPixels(100));
                 addActor(roundTitleActor);
@@ -289,14 +289,15 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     }
 
     private void onGameBegin() {
-        Turns turns = new Turns(Constants.CARDS_TO_PLAY);
+        Turn turn = new Turn(Constants.CARDS_TO_PLAY);
         for (Player player : getConnectedPlayers()) {
             List<BoardAction> cards = cardsToPlay.get(player);
             for (int i = 0; i < Constants.CARDS_TO_PLAY; i++) {
-                turns.addToTurn(i, new PlayerAction(player, cards.get(i)));
+                turn.addToRound(i, new PlayerAction(player, cards.get(i)));
             }
         }
-        gameBoard.startTurns(turns);
+        gameBoard.startTurns(turn);
+        cardFlowPanel.setTurns(turn);
     }
 
     private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();

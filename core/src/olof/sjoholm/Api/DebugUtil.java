@@ -15,16 +15,16 @@ import olof.sjoholm.Utils.Constants;
 
 public class DebugUtil {
 
-    public static Turns generateTurns(List<Player> players) {
-        Turns turns = new Turns(Constants.CARDS_TO_PLAY);
+    public static Turn generateTurns(List<Player> players) {
+        Turn turn = new Turn(Constants.CARDS_TO_PLAY);
 
         for (Player player : players) {
             List<BoardAction> cards = CardGenerator.generateList(Constants.CARDS_TO_PLAY);
             for (int i = 0; i < cards.size(); i++) {
-                turns.addToTurn(i, new PlayerAction(player, cards.get(i)));
+                turn.addToRound(i, new PlayerAction(player, cards.get(i)));
             }
         }
-        return turns;
+        return turn;
     }
 
     public static Player getPlayer(int i) {
