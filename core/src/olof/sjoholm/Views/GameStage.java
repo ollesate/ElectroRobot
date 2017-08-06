@@ -33,6 +33,10 @@ public class GameStage extends Stage {
         return gameBoard.getActorsAt(x, y);
     }
 
+    public List<GameBoardActor> getActors(float x, float y, float width, float height) {
+        return gameBoard.getActors(x, y, width, height);
+    }
+
     public boolean isWithinBounds(int x, int y) {
         return gameBoard.getLevel().isWithinBounds(x, y);
     }

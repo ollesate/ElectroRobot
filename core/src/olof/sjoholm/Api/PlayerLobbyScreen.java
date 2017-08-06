@@ -282,7 +282,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
         }
 
         private Drawable getDrawable(Color color) {
-            MyDrawable myDrawable = new MyDrawable(Textures.background);
+            MyDrawable myDrawable = new MyDrawable(Textures.BACKGROUND);
             myDrawable.setColor(color);
             return myDrawable;
         }
@@ -292,7 +292,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
         private final Color swatchColor;
 
         public Swatch(Color swatchColor) {
-            super(new TextureDrawable(Textures.background));
+            super(new TextureDrawable(Textures.BACKGROUND));
             this.swatchColor = swatchColor;
             setColor(swatchColor);
         }

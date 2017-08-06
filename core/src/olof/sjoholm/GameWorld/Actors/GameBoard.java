@@ -217,6 +217,20 @@ public class GameBoard extends Group implements EventListener {
         return actors;
     }
 
+    public List<GameBoardActor> getActors(float x, float y, float width, float height) {
+        List<GameBoardActor> actors = new ArrayList<GameBoardActor>();
+        for (GameBoardActor actor : spawnedActors) {
+            if (actor.getX() + actor.getWidth() < x || actor.getX() > x + width) {
+                continue;
+            }
+            if (actor.getY() + actor.getHeight() < y || actor.getY() > y + height) {
+                continue;
+            }
+            actors.add(actor);
+        }
+        return actors;
+    }
+
     public static Vector2 getBoardPosition(float x, float y) {
         return new Vector2(x / Constants.STEP_SIZE, y / Constants.STEP_SIZE);
     }

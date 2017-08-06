@@ -15,7 +15,7 @@ import olof.sjoholm.Api.Config;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
-import olof.sjoholm.Utils.Direction;
+import olof.sjoholm.Utils.Movement;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.GameStage;
@@ -55,12 +55,12 @@ public class PlayerToken extends GameBoardActor {
         }
     };
 
-    public Action move(Direction direction, int steps) {
+    public Action move(Movement movement, int steps) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
         if (steps == 0) {
             return Actions.delay(Constants.MOVE_STEP_DELAY / playSpeed);
         }
-        MoveAction moveAction = new MoveAction(direction, steps, playSpeed);
+        MoveAction moveAction = new MoveAction(movement, steps, playSpeed);
         moveAction.setPlayerToken(this);
         return moveAction;
     }
@@ -181,7 +181,7 @@ public class PlayerToken extends GameBoardActor {
     public static class MoveAction extends Action {
         private static final float MOVE_DURATION = Constants.MOVE_STEP_DURATION;
 
-        private final Direction direction;
+        private final Movement movement;
         private final int steps;
         private final Action waitAction;
         private PlayerToken playerToken;
@@ -190,9 +190,9 @@ public class PlayerToken extends GameBoardActor {
         private GameStage gameStage;
         private float stepDuration;
 
-        public MoveAction(Direction direction, int steps, float speedModifier) {
+        public MoveAction(Movement movement, int steps, float speedModifier) {
             stepDuration = MOVE_DURATION / speedModifier;
-            this.direction = direction;
+            this.movement = movement;
             this.steps = steps;
             currentStep = 0;
             waitAction = Actions.delay(Constants.MOVE_STEP_DELAY / speedModifier);
@@ -228,7 +228,7 @@ public class PlayerToken extends GameBoardActor {
         }
 
         private Action getNextMovement() {
-            Vector2 movementDir = playerToken.getMovementVector(direction);
+            Vector2 movementDir = playerToken.getMovementVector(movement);
             Vector2 pos = GameBoard.getBoardPosition(playerToken.getX(), playerToken.getY());
             List<GameBoardActor> actorsAt = gameStage.getActorsAt((int) (pos.x + movementDir.x),
                     (int) (pos.y + movementDir.y));
@@ -294,10 +294,10 @@ public class PlayerToken extends GameBoardActor {
         }
     }
 
-    private Vector2 getMovementVector(Direction direction) {
+    private Vector2 getMovementVector(Movement movement) {
         Vector2 currentDirection = getDirection();
         Vector2 movementVector;
-        switch (direction) {
+        switch (movement) {
             case FORWARD:
                 movementVector = new Vector2(currentDirection);
                 break;
@@ -311,7 +311,7 @@ public class PlayerToken extends GameBoardActor {
                 movementVector = new Vector2(currentDirection).rotate90(-1);
                 break;
             default:
-                throw new IllegalArgumentException("Illegal direction " + direction);
+                throw new IllegalArgumentException("Illegal direction " + movement);
         }
         movementVector.x = Math.round(movementVector.x);
         movementVector.y = Math.round(movementVector.y);
@@ -328,13 +328,13 @@ public class PlayerToken extends GameBoardActor {
 
     private static class MoveDirectionAction extends RelativeAction {
         private final GameBoardActor actor;
-        private final Direction direction;
+        private final Movement movement;
         private final float speed;
         private Action moveByAction;
 
-        public MoveDirectionAction(GameBoardActor actor, Direction direction, float speed) {
+        public MoveDirectionAction(GameBoardActor actor, Movement movement, float speed) {
             this.actor = actor;
-            this.direction = direction;
+            this.movement = movement;
             this.speed = speed;
         }
 
@@ -347,7 +347,7 @@ public class PlayerToken extends GameBoardActor {
                     MathUtils.sinDeg(actor.getRotation())
             );
             Vector2 newDirection;
-            switch (direction) {
+            switch (movement) {
                 case FORWARD:
                     newDirection = new Vector2(currentDir);
                     break;
@@ -361,10 +361,10 @@ public class PlayerToken extends GameBoardActor {
                     newDirection = new Vector2(currentDir).rotate90(-1);
                     break;
                 default:
-                    throw new IllegalArgumentException("Illegal direction " + direction);
+                    throw new IllegalArgumentException("Illegal direction " + movement);
             }
 
-            Logger.d("Current direction " + currentDir + " -> " + direction + " -> " + newDirection);
+            Logger.d("Current direction " + currentDir + " -> " + movement + " -> " + newDirection);
             Vector2 tileMovement = new Vector2(newDirection.x, newDirection.y).scl(Constants.STEP_SIZE);
             // Rounding
             newDirection.x = Math.round(newDirection.x);

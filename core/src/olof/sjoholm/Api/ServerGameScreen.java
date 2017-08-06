@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
@@ -38,7 +40,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     private boolean paused;
     private final GameBoard gameBoard;
     private final CardFlowPanel cardFlowPanel;
-    private final Turn currentTurn;
+    private Turn currentTurn;
+    private final Missile missile;
 
     public enum GamePhase {
         LOBBY,
@@ -72,10 +75,10 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             gameBoard.initializePlayer(spawnPoint, player);
             players.add(player);
         }
-
-        currentTurn = DebugUtil.generateTurns(players);
-        cardFlowPanel.setTurns(currentTurn);
-        gameBoard.startTurns(currentTurn);
+//
+//        currentTurn = DebugUtil.generateTurns(players);
+//        cardFlowPanel.setTurns(currentTurn);
+//        gameBoard.startTurns(currentTurn);
 
         gameBoard.addListener(new EventListener() {
             @Override
@@ -83,10 +86,31 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
                 return false;
             }
         });
+
+        missile = new Missile(4f, Direction.UP, 4f);
+        missile.setColor(Color.RED);
+        missile.setPosition(100f, 100f);
+
+
+        Logger.d("Get pos " + missile.getX() + " " + missile.getY());
+        gameBoard.addActor(missile);
+
+        gameStage.addListener(new InputListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                missile.setPosition(x, y, Align.center);
+            }
+        });
     }
 
     private Actor getCard(Color color, final String col) {
-        DrawableActor drawableActor = new DrawableActor(new TextureDrawable(Textures.background)) {
+        DrawableActor drawableActor = new DrawableActor(new TextureDrawable(Textures.BACKGROUND)) {
             @Override
             public String toString() {
                 return col;
@@ -115,7 +139,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
                 addActor(nameLabel);
                 cardLabel = new Label(cardText, style);
                 addActor(cardLabel);
-                background = new TextureDrawable(Textures.background);
+                background = new TextureDrawable(Textures.BACKGROUND);
             }
 
             @Override

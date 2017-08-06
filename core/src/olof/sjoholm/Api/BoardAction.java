@@ -1,13 +1,11 @@
 package olof.sjoholm.Api;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.utils.Json;
 
 import java.io.Serializable;
 
 import olof.sjoholm.GameWorld.Actors.PlayerToken;
-import olof.sjoholm.Net.Both.Envelope;
-import olof.sjoholm.Utils.Direction;
+import olof.sjoholm.Utils.Movement;
 import olof.sjoholm.Utils.Rotation;
 
 public abstract class BoardAction implements Serializable {
@@ -35,7 +33,7 @@ public abstract class BoardAction implements Serializable {
 
         @Override
         public Action getAction(PlayerToken playerToken) {
-            return playerToken.move(Direction.FORWARD, steps);
+            return playerToken.move(Movement.FORWARD, steps);
         }
 
         @Override

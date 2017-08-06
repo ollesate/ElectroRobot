@@ -1,26 +1,29 @@
 package olof.sjoholm.GameWorld.Assets;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public class Textures {
     public static SpriteSheetRegion TILE;
-    public static Texture spritesheet;
-    public static Texture background;
+    public static TextureRegion MISSILE;
+    public static Texture SPRITE_SHEET;
+    public static Texture BACKGROUND;
 
     private Textures() {
     }
 
     public static void initialize() {
-        spritesheet = new Texture("textures/spritesheet.png");
+        SPRITE_SHEET = new Texture("textures/spritesheet.png");
         
-        TILE = new SpriteSheetRegion(spritesheet, 1, 0, 32, 32);
+        TILE = new SpriteSheetRegion(SPRITE_SHEET, 1, 0, 32, 32);
+        MISSILE = new TextureRegion(SPRITE_SHEET, 9, 4 * 32 + 13, 14, 5);
 
-        background = new Texture("textures/background.png");
+        BACKGROUND = new Texture("textures/background.png");
     }
 
     public static void dispose() {
-        spritesheet.dispose();
-        background.dispose();
+        SPRITE_SHEET.dispose();
+        BACKGROUND.dispose();
     }
 }

@@ -5,12 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Interfaces.Drawable;
-
-import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 
 
 public class TankAnimation implements Drawable {
@@ -35,7 +31,7 @@ public class TankAnimation implements Drawable {
         int x = (int) (frame * regionSize);
         int y = (int) (9 * regionSize);
         return new TextureRegion(
-                Textures.spritesheet,
+                Textures.SPRITE_SHEET,
                 x,
                 y,
                 size,

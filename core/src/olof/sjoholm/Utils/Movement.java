@@ -1,6 +1,6 @@
 package olof.sjoholm.Utils;
 
-public enum Direction {
+public enum Movement {
 
     FORWARD(0, 1),
 
@@ -10,7 +10,7 @@ public enum Direction {
 
     BACKWARDS(0, -1);
 
-    Direction(int x, int y) {
+    Movement(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -19,8 +19,8 @@ public enum Direction {
 
     public int y;
 
-    public static Direction random() {
-        int rand = (int)(Math.random() * Direction.values().length);
-        return Direction.values()[rand];
+    public static Movement random() {
+        int rand = (int)(Math.random() * Movement.values().length);
+        return Movement.values()[rand];
     }
 }

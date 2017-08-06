@@ -79,7 +79,7 @@ public class HandStage extends Stage {
         private float currentDuration;
 
         public LoadingBar() {
-            background = new DrawableActor(new TextureDrawable(Textures.background));
+            background = new DrawableActor(new TextureDrawable(Textures.BACKGROUND));
             background.setColor(Color.OLIVE);
             addActor(background);
         }
@@ -122,7 +122,7 @@ public class HandStage extends Stage {
         private DrawableActor background;
 
         public CardActor(String text) {
-            background = new DrawableActor(new TextureDrawable(Textures.background));
+            background = new DrawableActor(new TextureDrawable(Textures.BACKGROUND));
             addActor(background);
 
             BitmapFont font = Fonts.get(Fonts.FONT_20);
