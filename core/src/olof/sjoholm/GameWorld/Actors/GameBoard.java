@@ -17,8 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import olof.sjoholm.Api.BoardAction;
-import olof.sjoholm.Api.ServerGameScreen;
-import olof.sjoholm.Api.ServerGameScreen.Turns;
+import olof.sjoholm.Api.Turns;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Levels.Level;

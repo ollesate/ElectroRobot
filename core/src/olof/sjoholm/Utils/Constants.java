@@ -18,4 +18,8 @@ public class Constants {
     public static float CARD_STEP_DURATION = 1f;
     public static float CARD_STEP_DELAY = 1f;
     public static float CARD_NEXT_PLAYER = 2f;
+
+    public static class Ui {
+
+    }
 }

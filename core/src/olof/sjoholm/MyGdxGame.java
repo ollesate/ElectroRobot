@@ -14,7 +14,7 @@ import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.LoginScreen;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 
 	@Override
 	public void create () {
@@ -23,8 +23,8 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		Skins.initialize();
 		Fonts.initialize();
 		if (debug) {
-			PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
-			screenHandler.showScreen(PlayerScreenHandler.GAME);
+			ServerScreenHandler serverScreenHandler = new ServerScreenHandler(this);
+			serverScreenHandler.showScreen(ServerScreenHandler.GAME);
 		} else {
 			setScreen(new LoginScreen(this));
 		}
