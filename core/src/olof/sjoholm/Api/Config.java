@@ -11,6 +11,7 @@ public class Config {
     public static final String CARD_DELAY_NEXT = "CARD_DELAY_NEXT";
     public static final String CARD_STEP_DURATION = "CARD_STEP_DURATION";
     public static final String CARD_STEP_DELAY = "CARD_STEP_DELAY";
+    public static final String PLAY_SPEED = "PLAY_SPEED";
 
     private static final Config sConfig = new Config();
 
@@ -23,6 +24,7 @@ public class Config {
         mDefaultValues.put(CARD_DELAY_NEXT, 2f);
         mDefaultValues.put(CARD_STEP_DURATION, 0.5);
         mDefaultValues.put(CARD_STEP_DELAY, 1f);
+        mDefaultValues.put(PLAY_SPEED, 1f);
         mConfigs = new HashMap<String, Object>(mDefaultValues);
     }
 

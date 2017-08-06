@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.util.List;
 
+import olof.sjoholm.Api.Config;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
@@ -55,10 +56,11 @@ public class PlayerToken extends GameBoardActor {
     };
 
     public Action move(Direction direction, int steps) {
+        float playSpeed = Config.get(Config.PLAY_SPEED);
         if (steps == 0) {
-            return Actions.delay(stepDelay);
+            return Actions.delay(Constants.MOVE_STEP_DELAY / playSpeed);
         }
-        MoveAction moveAction = new MoveAction(direction, steps);
+        MoveAction moveAction = new MoveAction(direction, steps, playSpeed);
         moveAction.setPlayerToken(this);
         return moveAction;
     }
@@ -75,14 +77,16 @@ public class PlayerToken extends GameBoardActor {
     };
 
     public Action rotate(Rotation rotation) {
+        float playSpeed = Config.get(Config.PLAY_SPEED);
+
         return Actions.sequence(
                 Actions.rotateBy(
                         rotation.degrees,
-                        stepSpeed * rotation.duration,
+                        stepSpeed / playSpeed * rotation.duration,
                         Interpolation.linear
                 ),
                 roundAction,
-                Actions.delay(stepDelay)
+                Actions.delay(Constants.MOVE_STEP_DELAY / playSpeed)
         );
     }
 
@@ -136,8 +140,10 @@ public class PlayerToken extends GameBoardActor {
         private final Vector2 direction;
         private boolean animate;
         private Action moveByAction;
+        private final float duration;
 
-        public MoveTileAction(PlayerToken actor, Vector2 direction, boolean animate) {
+        public MoveTileAction(PlayerToken actor, Vector2 direction, boolean animate, float duration) {
+            this.duration = duration;
             this.actor = actor;
             this.direction = direction;
             this.animate = animate;
@@ -148,7 +154,7 @@ public class PlayerToken extends GameBoardActor {
             SequenceAction sequenceAction = new SequenceAction();
             sequenceAction.setActor(actor);
             MoveByAction moveAction = Actions.moveBy(
-                    direction.x * Constants.STEP_SIZE, direction.y * Constants.STEP_SIZE, 1f);
+                    direction.x * Constants.STEP_SIZE, direction.y * Constants.STEP_SIZE, duration);
             moveAction.setActor(actor);
             if (animate) {
                 sequenceAction.addAction(actor.animationResumeAction);
@@ -173,6 +179,8 @@ public class PlayerToken extends GameBoardActor {
     }
 
     public static class MoveAction extends Action {
+        private static final float MOVE_DURATION = Constants.MOVE_STEP_DURATION;
+
         private final Direction direction;
         private final int steps;
         private final Action waitAction;
@@ -180,12 +188,14 @@ public class PlayerToken extends GameBoardActor {
         private int currentStep;
         private Action movementAction;
         private GameStage gameStage;
+        private float stepDuration;
 
-        public MoveAction(Direction direction, int steps) {
+        public MoveAction(Direction direction, int steps, float speedModifier) {
+            stepDuration = MOVE_DURATION / speedModifier;
             this.direction = direction;
             this.steps = steps;
             currentStep = 0;
-            waitAction = Actions.delay(1f);
+            waitAction = Actions.delay(Constants.MOVE_STEP_DELAY / speedModifier);
         }
 
         public void setPlayerToken(PlayerToken playerToken) {
@@ -232,10 +242,9 @@ public class PlayerToken extends GameBoardActor {
                 boolean freeSpace = gameStage.isWithinBounds(x, y);
                 boolean emptySpot = gameStage.getActorsAt(x, y).isEmpty();
                 if (freeSpace && emptySpot) {
-                    return Actions.parallel(
-                            new MoveTileAction(playerToken, movementDir, true),
-                            new MoveTileAction(blockingPlayer, movementDir, false)
-                    );
+                    MoveTileAction moveSelf = new MoveTileAction(playerToken, movementDir, true, stepDuration);
+                    MoveTileAction moveOther = new MoveTileAction(blockingPlayer, movementDir, false, stepDuration);
+                    return Actions.parallel(moveSelf, moveOther);
                 } else {
                     return new Animate(playerToken, 1f);
                 }
@@ -245,7 +254,8 @@ public class PlayerToken extends GameBoardActor {
             int y = (int)(pos.y + movementDir.y);
             boolean canMoveNextStep = gameStage.isWithinBounds(x, y);
             if (canMoveNextStep) {
-                return new MoveTileAction(playerToken, movementDir, true);
+                MoveTileAction move = new MoveTileAction(playerToken, movementDir, true, stepDuration);
+                return move;
             } else {
                 return new Animate(playerToken, 1f);
             }

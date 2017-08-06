@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Api.Config;
 import olof.sjoholm.Api.Turns;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
@@ -159,6 +160,7 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public void startTurns(Turns turns) {
+        float playSpeed = Config.get(Config.PLAY_SPEED);
         SequenceAction sequence = new SequenceAction();
         for (int i = 0; i < turns.size(); i++) {
             for (PlayerAction playerAction : turns.getTurn(i)) {
@@ -172,15 +174,7 @@ public class GameBoard extends Group implements EventListener {
                 sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
                 sequence.addAction(new ActionWrapper(playerToken, boardAction));
                 sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
-
-                sequence.addAction(new Action() {
-                    @Override
-                    public boolean act(float delta) {
-                        Logger.d("End of turn, wait 5 seconds");
-                        return true;
-                    }
-                });
-                sequence.addAction(new DelayAction(5f));
+                sequence.addAction(new DelayAction(Constants.CARD_POST_DELAY / playSpeed));
             }
         }
         addAction(sequence);

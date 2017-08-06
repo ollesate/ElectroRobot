@@ -6,6 +6,11 @@ public class Constants {
     public static final int WORLD_HEIGHT = 1080;
     public static float STEP_SIZE = 150f;
 
+    public static final float MOVE_STEP_DURATION = 1f;
+    public static final float MOVE_STEP_DELAY = 0.5f;
+    public static final float CARD_POST_DELAY = 1.5f;
+
+
     public static int CARDS_TO_DEAL = 9;
     public static int CARDS_TO_PLAY = 5;
 
