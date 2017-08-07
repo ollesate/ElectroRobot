@@ -8,10 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.List;
 
 import olof.sjoholm.Api.Config;
+import olof.sjoholm.Api.Missile;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Utils.Constants;
@@ -108,6 +110,13 @@ public class PlayerToken extends GameBoardActor {
 
     public void setSpawnPoint(SpawnPoint spawnPoint) {
         this.spawnPoint = spawnPoint;
+    }
+
+    public void shoot() {
+        Missile missile = new Missile(4f, Constants.MISSILE_SPEED, getRotation());
+        missile.setOwner(this);
+        missile.setPosition(getX(Align.center) + getWidth() / 2, getY(Align.center), Align.center);
+        getParent().addActorBefore(this, missile);
     }
 
     public abstract static class RelativeAction extends Action {

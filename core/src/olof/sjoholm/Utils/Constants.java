@@ -25,6 +25,8 @@ public class Constants {
     public static float CARD_STEP_DELAY = 1f;
     public static float CARD_NEXT_PLAYER = 2f;
 
+    public static final float MISSILE_SPEED = 750f;
+
     public static class Ui {
 
     }

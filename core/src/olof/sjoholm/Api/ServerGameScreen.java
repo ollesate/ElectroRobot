@@ -24,6 +24,7 @@ import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Actors.PlayerAction;
+import olof.sjoholm.GameWorld.Actors.PlayerToken;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Levels;
@@ -41,7 +42,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     private final GameBoard gameBoard;
     private final CardFlowPanel cardFlowPanel;
     private Turn currentTurn;
-    private final Missile missile;
+    private Missile missile;
 
     public enum GamePhase {
         LOBBY,
@@ -75,6 +76,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             gameBoard.initializePlayer(spawnPoint, player);
             players.add(player);
         }
+        PlayerToken playerToken = gameBoard.playerTokens.get(players.get(0));
+        playerToken.shoot();
 //
 //        currentTurn = DebugUtil.generateTurns(players);
 //        cardFlowPanel.setTurns(currentTurn);
@@ -87,13 +90,13 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             }
         });
 
-        missile = new Missile(4f, Direction.UP, 4f);
-        missile.setColor(Color.RED);
-        missile.setPosition(100f, 100f);
+//        missile = new Missile(4f, Direction.UP, Constants.MISSILE_SPEED);
+//        missile.setColor(Color.RED);
+//        missile.setPosition(100f, 100f);
 
 
-        Logger.d("Get pos " + missile.getX() + " " + missile.getY());
-        gameBoard.addActor(missile);
+//        Logger.d("Get pos " + missile.getX() + " " + missile.getY());
+//        gameBoard.addActor(missile);
 
         gameStage.addListener(new InputListener() {
 

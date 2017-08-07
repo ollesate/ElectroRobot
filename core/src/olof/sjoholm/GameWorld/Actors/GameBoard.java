@@ -32,7 +32,7 @@ public class GameBoard extends Group implements EventListener {
 
     // TODO: extract away this. Would be cool to handle in base class.
     private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
-    private Map<Player, PlayerToken> playerTokens = new HashMap<Player, PlayerToken>();
+    public Map<Player, PlayerToken> playerTokens = new HashMap<Player, PlayerToken>();
     private int tileSize;
     private Level level;
 
