@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Align;
 import java.util.List;
 
 import olof.sjoholm.Api.Config;
+import olof.sjoholm.Api.Effects;
 import olof.sjoholm.Api.Missile;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.GameWorld.SpawnPoint;
@@ -114,25 +115,6 @@ public class PlayerToken extends GameBoardActor {
         this.spawnPoint = spawnPoint;
     }
 
-    public final RelativeAction shootAction = new RelativeAction() {
-        private Missile missile;
-
-        @Override
-        public void begin() {
-            missile = new Missile(4f, Constants.MISSILE_SPEED, getRotation());
-            missile.setOwner(PlayerToken.this);
-            missile.setPosition(getX(Align.center) + getWidth() / 2,
-                    getY(Align.center), Align.center);
-            getParent().addActorBefore(PlayerToken.this, missile);
-        }
-
-        @Override
-        public boolean update(float delta) {
-            // We will wait for missile to die.
-            return missile.getStage() == null;
-        }
-    };
-
     public Action getShootAction() {
         return new ShootAction(this);
     }
@@ -147,12 +129,18 @@ public class PlayerToken extends GameBoardActor {
 
         @Override
         public void begin() {
+            Vector2 muzzleOffset = new Vector2(playerToken.getDirection())
+                    .scl(playerToken.getWidth(), playerToken.getHeight())
+                    .scl(0.5f);
+
+            float muzzleX = playerToken.getX(Align.center) + muzzleOffset.x;
+            float muzzleY = playerToken.getY(Align.center) + muzzleOffset.y;
+
             missile = new Missile(4f, Constants.MISSILE_SPEED, playerToken.getRotation());
             missile.setOwner(playerToken);
-            float x = playerToken.getX(Align.center) + playerToken.getWidth() / 2;
-            float y = playerToken.getY(Align.center);
-            missile.setPosition(x, y, Align.center);
+            missile.setPosition(muzzleX, muzzleY, Align.center);
             playerToken.getParent().addActorBefore(playerToken, missile);
+            playerToken.getParent().addActor(Effects.MUZZLE.create(muzzleX, muzzleY));
         }
 
         @Override

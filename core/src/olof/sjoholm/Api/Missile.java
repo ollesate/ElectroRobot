@@ -42,7 +42,7 @@ public class Missile extends Actor {
             actualHeight = getWidth();
         }
 
-        float distance = 4000f;
+        float distance = 1000f;
         addAction(Actions.sequence(
                 Actions.moveBy(direction.dirX * distance, direction.dirY * distance, distance / speed),
                 Actions.removeActor()
