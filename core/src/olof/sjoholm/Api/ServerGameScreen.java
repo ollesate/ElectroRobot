@@ -8,8 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
@@ -24,7 +22,6 @@ import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Actors.PlayerAction;
-import olof.sjoholm.GameWorld.Actors.PlayerToken;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Levels;
@@ -42,7 +39,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     private final GameBoard gameBoard;
     private final CardFlowPanel cardFlowPanel;
     private Turn currentTurn;
-    private Missile missile;
 
     public enum GamePhase {
         LOBBY,
@@ -68,48 +64,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 
         cardFlowPanel = new CardFlowPanel();
         gameStage.addActor(cardFlowPanel);
-
-        List<Player> players = new ArrayList<Player>();
-        for (int i = 0; i < 4; i++) {
-            Player player = DebugUtil.getPlayer(i);
-            SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
-            gameBoard.initializePlayer(spawnPoint, player);
-            players.add(player);
-        }
-        PlayerToken playerToken = gameBoard.playerTokens.get(players.get(0));
-        playerToken.shoot();
-//
-//        currentTurn = DebugUtil.generateTurns(players);
-//        cardFlowPanel.setTurns(currentTurn);
-//        gameBoard.startTurns(currentTurn);
-
-        gameBoard.addListener(new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                return false;
-            }
-        });
-
-//        missile = new Missile(4f, Direction.UP, Constants.MISSILE_SPEED);
-//        missile.setColor(Color.RED);
-//        missile.setPosition(100f, 100f);
-
-
-//        Logger.d("Get pos " + missile.getX() + " " + missile.getY());
-//        gameBoard.addActor(missile);
-
-        gameStage.addListener(new InputListener() {
-
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                missile.setPosition(x, y, Align.center);
-            }
-        });
     }
 
     private Actor getCard(Color color, final String col) {
@@ -188,13 +142,13 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             }
         }
 
-        public void setTurns(Turn turns) {
-            for (int i = 0; i < turns.size(); i++) {
-                List<PlayerAction> turn = turns.getRound(i);
+        public void setTurn(Turn turn) {
+            for (int i = 0; i < turn.size(); i++) {
+                List<PlayerAction> round = turn.getRound(i);
                 RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + (i + 1));
                 roundTitleActor.setHeight(GraphicsUtil.dpToPixels(100));
                 addActor(roundTitleActor);
-                for (PlayerAction playerAction : turn) {
+                for (PlayerAction playerAction : round) {
                     add(playerAction);
                 }
             }
@@ -225,6 +179,21 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     public void show() {
         super.show();
         Gdx.input.setInputProcessor(gameStage);
+        debugStartTurn();
+    }
+
+    private void debugStartTurn() {
+        List<Player> players = new ArrayList<Player>();
+        for (int i = 0; i < 3; i++) {
+            Player player = DebugUtil.getPlayer(i);
+            players.add(player);
+            SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
+            gameBoard.initializePlayer(spawnPoint, player);
+        }
+        Turn turn = DebugUtil.generateTurns(players);
+        gameBoard.startTurn(turn);
+        cardFlowPanel.setTurn(turn);
+        currentTurn = turn;
     }
 
     @Override
@@ -324,8 +293,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
                 turn.addToRound(i, new PlayerAction(player, cards.get(i)));
             }
         }
-        gameBoard.startTurns(turn);
-        cardFlowPanel.setTurns(turn);
+        gameBoard.startTurn(turn);
+        cardFlowPanel.setTurn(turn);
     }
 
     private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();

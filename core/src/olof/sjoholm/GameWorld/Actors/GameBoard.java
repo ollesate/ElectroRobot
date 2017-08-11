@@ -4,7 +4,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.awt.Point;
@@ -158,7 +160,7 @@ public class GameBoard extends Group implements EventListener {
         addAction(sequence);
     }
 
-    public void startTurns(Turn turn) {
+    public void startTurn(Turn turn) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
         SequenceAction sequence = new SequenceAction();
         for (int i = 0; i < turn.size(); i++) {
@@ -175,6 +177,12 @@ public class GameBoard extends Group implements EventListener {
                 sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
                 sequence.addAction(new DelayAction(Constants.CARD_POST_DELAY / playSpeed));
             }
+            // Let all players shoot
+            ParallelAction allShootAction = new ParallelAction();
+            for (PlayerToken playerToken : playerTokens.values()) {
+                allShootAction.addAction(playerToken.getShootAction());
+            }
+            sequence.addAction(allShootAction);
         }
         addAction(sequence);
     }

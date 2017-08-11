@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RemoveAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RemoveActorAction;
 import com.badlogic.gdx.utils.Align;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor;
 import olof.sjoholm.GameWorld.Actors.PlayerToken;
 import olof.sjoholm.GameWorld.Assets.Textures;
+import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.GameStage;
 
 public class Missile extends Actor {
@@ -40,7 +43,10 @@ public class Missile extends Actor {
         }
 
         float distance = 4000f;
-        addAction(Actions.moveBy(direction.dirX * distance, direction.dirY * distance, distance / speed));
+        addAction(Actions.sequence(
+                Actions.moveBy(direction.dirX * distance, direction.dirY * distance, distance / speed),
+                Actions.removeActor()
+        ));
     }
 
     @Override
@@ -59,11 +65,16 @@ public class Missile extends Actor {
     public void act(float delta) {
         super.act(delta);
         if (getStage() instanceof GameStage) {
-            // TODO: Not good logic, works for now until trigonometric collision code with rotated rectangles.
-            // OR NOT! All shots will be horizontal or vertial. Either radius check.
             GameStage stage = (GameStage) getStage();
-            List<GameBoardActor> actors = stage.getActors(getX(), getY(), getWidth(), getHeight());
-            setColor(actors.size() > 0 ? Color.RED : Color.WHITE);
+            List<GameBoardActor> actors = stage.getActors(getX(), getY(), actualWidth, actualHeight);
+            for (GameBoardActor actor : actors) {
+                if (!actor.equals(owner)) {
+                    if (actor instanceof PlayerToken) {
+                        ((PlayerToken) actor).damage(1);
+                        addAction(new RemoveActorAction());
+                    }
+                }
+            }
         }
     }
 

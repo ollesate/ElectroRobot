@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RemoveActorAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 
@@ -27,6 +28,7 @@ public class PlayerToken extends GameBoardActor {
     private float stepSpeed = 1.0f;
     private TankAnimation tankAnimation;
     private SpawnPoint spawnPoint;
+    private int currentHealth = Constants.MAX_HEALTH;
 
     {
         setOrigin(getWidth() / 2, getHeight() / 2);
@@ -112,27 +114,50 @@ public class PlayerToken extends GameBoardActor {
         this.spawnPoint = spawnPoint;
     }
 
-    public void shoot() {
-        Missile missile = new Missile(4f, Constants.MISSILE_SPEED, getRotation());
-        missile.setOwner(this);
-        missile.setPosition(getX(Align.center) + getWidth() / 2, getY(Align.center), Align.center);
-        getParent().addActorBefore(this, missile);
-    }
-
-    public abstract static class RelativeAction extends Action {
-        private boolean hasBegun;
-
-        public abstract void begin();
-
-        public abstract boolean update(float delta);
+    public final RelativeAction shootAction = new RelativeAction() {
+        private Missile missile;
 
         @Override
-        public boolean act(float delta) {
-            if (!hasBegun) {
-                begin();
-                hasBegun = true;
-            }
-            return update(delta);
+        public void begin() {
+            missile = new Missile(4f, Constants.MISSILE_SPEED, getRotation());
+            missile.setOwner(PlayerToken.this);
+            missile.setPosition(getX(Align.center) + getWidth() / 2,
+                    getY(Align.center), Align.center);
+            getParent().addActorBefore(PlayerToken.this, missile);
+        }
+
+        @Override
+        public boolean update(float delta) {
+            // We will wait for missile to die.
+            return missile.getStage() == null;
+        }
+    };
+
+    public Action getShootAction() {
+        return new ShootAction(this);
+    }
+
+    private static class ShootAction extends RelativeAction {
+        private final PlayerToken playerToken;
+        private Missile missile;
+
+        public ShootAction(PlayerToken playerToken) {
+            this.playerToken = playerToken;
+        }
+
+        @Override
+        public void begin() {
+            missile = new Missile(4f, Constants.MISSILE_SPEED, playerToken.getRotation());
+            missile.setOwner(playerToken);
+            float x = playerToken.getX(Align.center) + playerToken.getWidth() / 2;
+            float y = playerToken.getY(Align.center);
+            missile.setPosition(x, y, Align.center);
+            playerToken.getParent().addActorBefore(playerToken, missile);
+        }
+
+        @Override
+        public boolean update(float delta) {
+            return missile.getParent() == null;
         }
     }
 
@@ -431,5 +456,12 @@ public class PlayerToken extends GameBoardActor {
                 animationPauseAction,
                 Actions.delay(stepDelay)
         );
+    }
+
+    public void damage(int damage) {
+        currentHealth -= damage;
+        if (currentHealth <= 0) {
+            addAction(new RemoveActorAction());
+        }
     }
 }
