@@ -1,6 +1,5 @@
 package olof.sjoholm;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -12,5 +11,7 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new MyGdxGame(), config);
+
+		GameConfig.setServer(getResources().getBoolean(R.bool.isServer));
 	}
 }

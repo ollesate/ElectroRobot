@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.Api.Fonts;
-import olof.sjoholm.Api.PlayerLobbyScreen;
 import olof.sjoholm.Api.PlayerScreenHandler;
 import olof.sjoholm.Api.ServerScreenHandler;
 import olof.sjoholm.GameWorld.Assets.Textures;
@@ -26,6 +25,8 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 			ServerScreenHandler serverScreenHandler = new ServerScreenHandler(this);
 			serverScreenHandler.showScreen(ServerScreenHandler.GAME);
 		} else {
+
+			// TODO: Set screen depending on if we are server or player.
 			setScreen(new LoginScreen(this));
 		}
 	}
