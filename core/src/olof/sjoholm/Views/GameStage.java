@@ -4,7 +4,6 @@ package olof.sjoholm.Views;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -44,7 +43,7 @@ public class GameStage extends Stage {
         addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                addActor(Effects.MUZZLE.create(x, y));
+                addActor(Effects.Explosion.create(x, y));
                 return true;
             }
         });

@@ -140,7 +140,7 @@ public class PlayerToken extends GameBoardActor {
             missile.setOwner(playerToken);
             missile.setPosition(muzzleX, muzzleY, Align.center);
             playerToken.getParent().addActorBefore(playerToken, missile);
-            playerToken.getParent().addActor(Effects.MUZZLE.create(muzzleX, muzzleY));
+            playerToken.getParent().addActor(Effects.Muzzle.create(muzzleX, muzzleY));
         }
 
         @Override

@@ -72,6 +72,7 @@ public class Missile extends Actor {
                     if (actor instanceof PlayerToken) {
                         ((PlayerToken) actor).damage(1);
                         addAction(new RemoveActorAction());
+                        getParent().addActor(Effects.Explosion.create(getX(), getY()));
                     }
                 }
             }
