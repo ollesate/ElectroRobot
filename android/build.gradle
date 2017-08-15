@@ -19,6 +19,14 @@ android {
         minSdkVersion 9
         targetSdkVersion 24
     }
+    productFlavors {
+        player {
+
+        }
+        server {
+
+        }
+    }
 }
 
 

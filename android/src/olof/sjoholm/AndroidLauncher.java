@@ -1,5 +1,6 @@
 package olof.sjoholm;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
