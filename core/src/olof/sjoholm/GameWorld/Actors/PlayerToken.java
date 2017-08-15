@@ -27,12 +27,11 @@ import olof.sjoholm.Views.GameStage;
 public class PlayerToken extends GameBoardActor {
     private float stepDelay = .5f;
     private float stepSpeed = 1.0f;
-    private TankAnimation tankAnimation;
+    private final TankAnimation tankAnimation = new TankAnimation();;
     private SpawnPoint spawnPoint;
     private int currentHealth = Constants.MAX_HEALTH;
 
-    {
-        tankAnimation = new TankAnimation();
+    public PlayerToken() {
         setDrawable(tankAnimation);
     }
 

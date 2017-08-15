@@ -128,6 +128,7 @@ public class GameBoard extends Group implements EventListener {
         occupiedSpawnPoints.add(spawnPoint);
 
         PlayerToken playerToken = new PlayerToken();
+        playerToken.setSize(tileSize, tileSize);
         playerToken.setX(spawnPoint.x * Constants.STEP_SIZE);
         playerToken.setY(spawnPoint.y * Constants.STEP_SIZE);
         playerToken.setColor(player.getColor());

@@ -1,8 +1,10 @@
 package olof.sjoholm.Api;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.utils.Align;
 
 public class Effects {
 
@@ -51,6 +53,20 @@ public class Effects {
             effects.addActor(BLACK_SMOKE.create());
             effects.addActor(FIRE.create());
             return effects;
+        }
+
+        public static Action explodeAt(final Actor targetActor) {
+            return new Action() {
+                @Override
+                public boolean act(float delta) {
+                    Group parent = targetActor.getParent();
+                    if (parent != null) {
+                        parent.addActor(create(targetActor.getX(Align.center),
+                                targetActor.getY(Align.center)));
+                    }
+                    return true;
+                }
+            };
         }
     }
 }
