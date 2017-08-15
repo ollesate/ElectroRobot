@@ -32,14 +32,6 @@ public class GameStage extends Stage {
         getRoot().setWidth(Constants.WORLD_WIDTH);
         getRoot().setHeight(Constants.WORLD_HEIGHT);
 
-
-        final ParticleEffect particleEffect = new ParticleEffect()
-                .particles(20)
-                .color(Color.WHITE)
-                .size(15f)
-                .duration(.15f, .3f)
-                .speed(50f, 100f);
-
         addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
