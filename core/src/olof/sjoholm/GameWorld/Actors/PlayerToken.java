@@ -32,9 +32,6 @@ public class PlayerToken extends GameBoardActor {
     private int currentHealth = Constants.MAX_HEALTH;
 
     {
-        setOrigin(getWidth() / 2, getHeight() / 2);
-        // TODO: remove one if this?
-        setOrigin(olof.sjoholm.Utils.Constants.STEP_SIZE / 2, olof.sjoholm.Utils.Constants.STEP_SIZE / 2);
         tankAnimation = new TankAnimation();
         setDrawable(tankAnimation);
     }
