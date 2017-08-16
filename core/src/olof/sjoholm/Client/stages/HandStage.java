@@ -26,8 +26,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.smartcardio.Card;
-
 import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.Api.ColorUtils;
 import olof.sjoholm.Api.Fonts;
@@ -37,7 +35,6 @@ import olof.sjoholm.Api.Palette;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Utils.Constants;
-import olof.sjoholm.Utils.Logger;
 
 
 public class HandStage extends Stage {
@@ -204,13 +201,14 @@ public class HandStage extends Stage {
     }
 
     private static class HandGroup extends Group {
+        private final Set<CardActor> lockedCards = new HashSet<CardActor>();
         private final List<CardActor> cardActors = new ArrayList<CardActor>();
         private float spacing;
         private float itemHeight;
         private Color selectedColor;
         private Color activeColor;
+
         private Color consumedColor;
-        private boolean isCardsLocked;
 
         public void addCard(final CardActor actor) {
             cardActors.add(actor);
@@ -263,23 +261,20 @@ public class HandStage extends Stage {
         public void consumedColor(Color consumedColor) {
             this.consumedColor = consumedColor;
         }
-
         private static class DraggedCard {
             public final CardActor fake;
-            public final float initialY;
 
+            public final float initialY;
             public DraggedCard(CardActor fake, float initialY) {
                 this.fake = fake;
                 this.initialY = initialY;
             }
+
         }
 
         private Map<CardActor, DraggedCard> draggedCards = new HashMap<CardActor, DraggedCard>();
 
         private boolean onCardPressed(CardActor card, float x, float y) {
-            if (isCardsLocked) {
-                return false;
-            }
             if (lockedCards.contains(card)) {
                 return false;
             }
@@ -305,9 +300,6 @@ public class HandStage extends Stage {
         }
 
         private void onCardDragged(CardActor card, float x, float y) {
-            if (isCardsLocked) {
-                return;
-            }
             if (lockedCards.contains(card)) {
                 return;
             }
@@ -318,6 +310,9 @@ public class HandStage extends Stage {
 
             for (CardActor other : cardActors) {
                 if (card.equals(other)) {
+                    continue;
+                }
+                if (lockedCards.contains(other)) {
                     continue;
                 }
 
@@ -351,23 +346,20 @@ public class HandStage extends Stage {
 
         public void lockCards() {
             setColor(ColorUtils.alpha(Color.WHITE, Constants.ALPHA_DISABLED));
-            isCardsLocked = true;
+            lockedCards.addAll(cardActors);
             // Drop cards if currently dragged.
             for (CardActor actor : draggedCards.keySet()) {
                 onCardReleased(actor);
             }
         }
 
-        private final Set<CardActor> lockedCards = new HashSet<CardActor>();
-
-        public void lockCards(CardActor card) {
+        public void lockCard(CardActor card) {
             lockedCards.add(card);
         }
 
         public void unlockCards() {
             lockedCards.clear();
             setColor(new Color(1f, 1f, 1f, Constants.ALPHA_ENABLED));
-            isCardsLocked = false;
         }
     }
 
@@ -398,7 +390,7 @@ public class HandStage extends Stage {
         for (Pair<BoardAction, CardActor> pair : cardActors) {
             if (pair.key.getId() == boardAction.getId()) {
                 CardActor card = pair.value;
-                handGroup.lockCards(card);
+                handGroup.lockCard(card);
                 card.setColor(Color.BLACK, Color.WHITE);
             }
         }

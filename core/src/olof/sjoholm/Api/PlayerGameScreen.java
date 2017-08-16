@@ -55,7 +55,7 @@ public class PlayerGameScreen extends PlayerScreen {
     public void resize(int width, int height) {
         Logger.d("Resize " + width + " " + height);
         handStage.resize(width, height);
-
+        handStage.lockCards();
         handStage.blockCards(3);
     }
 
