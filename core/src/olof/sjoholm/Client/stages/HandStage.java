@@ -19,10 +19,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.smartcardio.Card;
 
 import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.Api.ColorUtils;
@@ -276,6 +280,9 @@ public class HandStage extends Stage {
             if (isCardsLocked) {
                 return false;
             }
+            if (lockedCards.contains(card)) {
+                return false;
+            }
             card.setVisible(false);
 
             DraggedCard draggedCard = new DraggedCard(card.copy(), y);
@@ -299,6 +306,9 @@ public class HandStage extends Stage {
 
         private void onCardDragged(CardActor card, float x, float y) {
             if (isCardsLocked) {
+                return;
+            }
+            if (lockedCards.contains(card)) {
                 return;
             }
             DraggedCard draggedCard = draggedCards.get(card);
@@ -348,7 +358,14 @@ public class HandStage extends Stage {
             }
         }
 
+        private final Set<CardActor> lockedCards = new HashSet<CardActor>();
+
+        public void lockCards(CardActor card) {
+            lockedCards.add(card);
+        }
+
         public void unlockCards() {
+            lockedCards.clear();
             setColor(new Color(1f, 1f, 1f, Constants.ALPHA_ENABLED));
             isCardsLocked = false;
         }
@@ -380,7 +397,9 @@ public class HandStage extends Stage {
     private void block(BoardAction boardAction) {
         for (Pair<BoardAction, CardActor> pair : cardActors) {
             if (pair.key.getId() == boardAction.getId()) {
-                pair.value.setColor(Color.BLACK, Color.WHITE);
+                CardActor card = pair.value;
+                handGroup.lockCards(card);
+                card.setColor(Color.BLACK, Color.WHITE);
             }
         }
     }
