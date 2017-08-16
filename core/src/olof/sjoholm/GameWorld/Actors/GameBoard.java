@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
@@ -183,6 +182,7 @@ public class GameBoard extends Group implements EventListener {
             for (PlayerToken playerToken : playerTokens.values()) {
                 allShootAction.addAction(playerToken.getShootAction());
             }
+            sequence.addAction(new FireEventAction(new AllPlayersShootAction()));
             sequence.addAction(allShootAction);
         }
         addAction(sequence);
@@ -268,5 +268,9 @@ public class GameBoard extends Group implements EventListener {
                 badge.setText(player.getName());
             }
         }
+    }
+
+    public static class AllPlayersShootAction extends Event {
+
     }
 }
