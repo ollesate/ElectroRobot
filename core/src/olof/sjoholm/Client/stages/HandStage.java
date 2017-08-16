@@ -25,6 +25,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import olof.sjoholm.Api.BoardAction;
+import olof.sjoholm.Api.ColorUtils;
 import olof.sjoholm.Api.Fonts;
 import olof.sjoholm.Api.GraphicsUtil;
 import olof.sjoholm.Api.Pair;
@@ -32,6 +33,7 @@ import olof.sjoholm.Api.Palette;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Utils.Constants;
+import olof.sjoholm.Utils.Logger;
 
 
 public class HandStage extends Stage {
@@ -174,6 +176,11 @@ public class HandStage extends Stage {
 
             setX(x);
             setY(y);
+        }
+
+        public void setColor(Color backgroundColor, Color textColor) {
+            this.setColor(backgroundColor);
+            label.setColor(textColor);
         }
 
         @Override
@@ -333,7 +340,7 @@ public class HandStage extends Stage {
         }
 
         public void lockCards() {
-            setColor(new Color(1f, 1f, 1f, Constants.ALPHA_DISABLED));
+            setColor(ColorUtils.alpha(Color.WHITE, Constants.ALPHA_DISABLED));
             isCardsLocked = true;
             // Drop cards if currently dragged.
             for (CardActor actor : draggedCards.keySet()) {
@@ -365,7 +372,15 @@ public class HandStage extends Stage {
     public void deselect(BoardAction boardAction) {
         for (Pair<BoardAction, CardActor> pair : cardActors) {
             if (pair.key.getId() == boardAction.getId()) {
-                pair.value.setColor(COLOR_CONSUMED);
+                pair.value.setColor(COLOR_CONSUMED, Color.BLACK);
+            }
+        }
+    }
+
+    private void block(BoardAction boardAction) {
+        for (Pair<BoardAction, CardActor> pair : cardActors) {
+            if (pair.key.getId() == boardAction.getId()) {
+                pair.value.setColor(Color.BLACK, Color.WHITE);
             }
         }
     }
@@ -374,7 +389,7 @@ public class HandStage extends Stage {
         handGroup.sizeChanged();
     }
 
-    public List<BoardAction> getCards() {
+    public List<BoardAction> getSortedCards() {
         // Sort cards by y.
         SortedMap<Float, BoardAction> sortedMap = new TreeMap<Float, BoardAction>(Collections.reverseOrder());
         for (Pair<BoardAction, CardActor> pair : cardActors) {
@@ -385,5 +400,14 @@ public class HandStage extends Stage {
 
     public void lockCards() {
         handGroup.lockCards();
+    }
+
+    public void blockCards(int blockedCards) {
+        List<BoardAction> cards = getSortedCards();
+
+        for (int i = cards.size() - blockedCards; i < cards.size(); i++) {
+            BoardAction boardAction = cards.get(i);
+            block(boardAction);
+        }
     }
 }

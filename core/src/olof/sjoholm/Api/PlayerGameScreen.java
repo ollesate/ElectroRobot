@@ -2,8 +2,11 @@ package olof.sjoholm.Api;
 
 import com.badlogic.gdx.Gdx;
 
+import java.util.List;
+
 import olof.sjoholm.Client.stages.HandStage;
 import olof.sjoholm.Net.Both.Envelope;
+import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
 public class PlayerGameScreen extends PlayerScreen {
@@ -12,6 +15,34 @@ public class PlayerGameScreen extends PlayerScreen {
     public PlayerGameScreen() {
         super();
         handStage = new HandStage();
+        final List<BoardAction> list = CardGenerator.generateList(Constants.CARDS_TO_DEAL);
+        for (BoardAction boardAction : list) {
+            handStage.addCard(boardAction);
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                BoardAction prev = null;
+                for (BoardAction boardAction : list) {
+
+                    if (prev != null) {
+                        handStage.deselect(prev);
+                    }
+                    prev = boardAction;
+                    handStage.select(boardAction);
+
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+                handStage.deselect(prev);
+
+            }
+        }).start();
     }
 
     @Override
@@ -24,6 +55,8 @@ public class PlayerGameScreen extends PlayerScreen {
     public void resize(int width, int height) {
         Logger.d("Resize " + width + " " + height);
         handStage.resize(width, height);
+
+        handStage.blockCards(3);
     }
 
     @Override
@@ -70,7 +103,7 @@ public class PlayerGameScreen extends PlayerScreen {
             // Card deactivated.
             handStage.deselect(((Envelope.OnCardDeactivated) envelope).boardAction);
         } else if (envelope instanceof Envelope.OnCardPhaseEnded) {
-            send(new Envelope.SendCards(handStage.getCards()));
+            send(new Envelope.SendCards(handStage.getSortedCards()));
             handStage.lockCards();
         }
     }

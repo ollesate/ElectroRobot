@@ -9,6 +9,9 @@ import olof.sjoholm.Utils.Rotation;
 
 public class CardGenerator {
 
+    private CardGenerator() {
+    }
+
     public static List<BoardAction> generateList(int nrOfCards) {
         RandomGenerator<BoardActionFactory> factories = new RandomGenerator<BoardActionFactory>();
         factories.add(2, new RotateFactory());

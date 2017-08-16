@@ -22,8 +22,8 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		Skins.initialize();
 		Fonts.initialize();
 		if (debug) {
-			ServerScreenHandler serverScreenHandler = new ServerScreenHandler(this);
-			serverScreenHandler.showScreen(ServerScreenHandler.GAME);
+			PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
+			screenHandler.showScreen(ServerScreenHandler.GAME);
 		} else {
 
 			// TODO: Set screen depending on if we are server or player.
