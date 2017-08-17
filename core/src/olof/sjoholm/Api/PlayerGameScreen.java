@@ -11,38 +11,11 @@ import olof.sjoholm.Utils.Logger;
 
 public class PlayerGameScreen extends PlayerScreen {
     private final HandStage handStage;
+    private int damage;
 
     public PlayerGameScreen() {
         super();
         handStage = new HandStage();
-        final List<BoardAction> list = CardGenerator.generateList(Constants.CARDS_TO_DEAL);
-        for (BoardAction boardAction : list) {
-            handStage.addCard(boardAction);
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                BoardAction prev = null;
-                for (BoardAction boardAction : list) {
-
-                    if (prev != null) {
-                        handStage.deselect(prev);
-                    }
-                    prev = boardAction;
-                    handStage.select(boardAction);
-
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-
-                    }
-                }
-                handStage.deselect(prev);
-
-            }
-        }).start();
     }
 
     @Override
@@ -55,8 +28,6 @@ public class PlayerGameScreen extends PlayerScreen {
     public void resize(int width, int height) {
         Logger.d("Resize " + width + " " + height);
         handStage.resize(width, height);
-        handStage.lockCards();
-        handStage.blockCards(3);
     }
 
     @Override
@@ -88,10 +59,8 @@ public class PlayerGameScreen extends PlayerScreen {
         Logger.d("Player receive message " + envelope);
         if (envelope instanceof Envelope.SendCards) {
             // Received cards.
-            for (BoardAction card : ((Envelope.SendCards) envelope).cards) {
-                handStage.addCard(card);
-            }
-            handStage.update();
+            handStage.update(((Envelope.SendCards) envelope).cards);
+            handStage.blockCards(damage);
         } else if (envelope instanceof Envelope.StartCountdown) {
             // Start a countdown.
             float coolDown = ((Envelope.StartCountdown) envelope).time;
@@ -103,8 +72,13 @@ public class PlayerGameScreen extends PlayerScreen {
             // Card deactivated.
             handStage.deselect(((Envelope.OnCardDeactivated) envelope).boardAction);
         } else if (envelope instanceof Envelope.OnCardPhaseEnded) {
+            // Card phase ended
             send(new Envelope.SendCards(handStage.getSortedCards()));
             handStage.lockCards();
+        } else if (envelope instanceof Envelope.Damaged) {
+            // Damaged
+            damage = ((Envelope.Damaged) envelope).damage;
+            handStage.blockCards(damage);
         }
     }
 }

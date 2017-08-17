@@ -35,6 +35,7 @@ import olof.sjoholm.Api.Palette;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.Utils.Constants;
+import olof.sjoholm.Utils.Logger;
 
 
 public class HandStage extends Stage {
@@ -235,6 +236,12 @@ public class HandStage extends Stage {
         }
 
         @Override
+        public void clear() {
+            super.clear();
+            cardActors.clear();
+        }
+
+        @Override
         protected void sizeChanged() {
             super.sizeChanged();
             float yPos = -itemHeight;
@@ -363,13 +370,6 @@ public class HandStage extends Stage {
         }
     }
 
-    public void addCard(BoardAction boardAction) {
-        final CardActor actor = new CardActor(boardAction.getText());
-        handGroup.addCard(actor);
-
-        cardActors.add(new Pair<BoardAction, CardActor>(boardAction, actor));
-    }
-
     public void select(BoardAction boardAction) {
         for (Pair<BoardAction, CardActor> pair : cardActors) {
             if (pair.key.getId() == boardAction.getId()) {
@@ -396,7 +396,23 @@ public class HandStage extends Stage {
         }
     }
 
-    public void update() {
+    public void clean() {
+        cardActors.clear();
+        handGroup.clear();
+    }
+
+    public void update(List<BoardAction> boardActions) {
+        // Clean
+        handGroup.unlockCards();
+        cardActors.clear();
+        handGroup.clear();
+
+        for (BoardAction boardAction : boardActions) {
+            CardActor actor = new CardActor(boardAction.getText());
+            handGroup.addCard(actor);
+            cardActors.add(new Pair<BoardAction, CardActor>(boardAction, actor));
+        }
+
         handGroup.sizeChanged();
     }
 

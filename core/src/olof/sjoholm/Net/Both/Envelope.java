@@ -150,4 +150,12 @@ public class Envelope implements Serializable {
     public static class UnReadyMyCards extends Envelope {
 
     }
+
+    public static class Damaged extends Envelope {
+        public final int damage;
+
+        public Damaged(int damage) {
+            this.damage = damage;
+        }
+    }
 }
