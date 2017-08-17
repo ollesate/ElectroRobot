@@ -151,10 +151,10 @@ public class Envelope implements Serializable {
 
     }
 
-    public static class Damaged extends Envelope {
+    public static class UpdateDamage extends Envelope {
         public final int damage;
 
-        public Damaged(int damage) {
+        public UpdateDamage(int damage) {
             this.damage = damage;
         }
     }

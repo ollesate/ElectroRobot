@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
@@ -18,6 +19,7 @@ import olof.sjoholm.Api.Effects;
 import olof.sjoholm.Api.Missile;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.GameWorld.SpawnPoint;
+import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Movement;
 import olof.sjoholm.Utils.Logger;
@@ -29,7 +31,9 @@ public class PlayerToken extends GameBoardActor {
     private float stepSpeed = 1.0f;
     private final TankAnimation tankAnimation = new TankAnimation();;
     private SpawnPoint spawnPoint;
-    private int currentHealth = Constants.MAX_HEALTH;
+    private final int maxHealth = Constants.MAX_HEALTH;
+    private int currentHealth = maxHealth;
+    private Player player;
 
     public PlayerToken() {
         setDrawable(tankAnimation);
@@ -113,6 +117,14 @@ public class PlayerToken extends GameBoardActor {
 
     public Action getShootAction() {
         return new ShootAction(this);
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     private static class ShootAction extends RelativeAction {
@@ -446,6 +458,17 @@ public class PlayerToken extends GameBoardActor {
         currentHealth -= damage;
         if (currentHealth <= 0) {
             addAction(new RemoveActorAction());
+        }
+        fire(new DamagedEvent(maxHealth, currentHealth));
+    }
+
+    public static class DamagedEvent extends Event {
+        public final int maxHealth;
+        public final int healthLeft;
+
+        public DamagedEvent(int maxHealth, int healthLeft) {
+            this.maxHealth = maxHealth;
+            this.healthLeft = healthLeft;
         }
     }
 }

@@ -132,6 +132,7 @@ public class GameBoard extends Group implements EventListener {
         playerToken.setY(spawnPoint.y * Constants.STEP_SIZE);
         playerToken.setColor(player.getColor());
         playerToken.setSpawnPoint(spawnPoint);
+        playerToken.setPlayer(player);
         addActor(playerToken);
 
         Badge badge = new Badge(playerToken, player.getName());

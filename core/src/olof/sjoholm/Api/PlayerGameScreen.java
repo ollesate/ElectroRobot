@@ -2,11 +2,8 @@ package olof.sjoholm.Api;
 
 import com.badlogic.gdx.Gdx;
 
-import java.util.List;
-
 import olof.sjoholm.Client.stages.HandStage;
 import olof.sjoholm.Net.Both.Envelope;
-import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
 public class PlayerGameScreen extends PlayerScreen {
@@ -75,9 +72,9 @@ public class PlayerGameScreen extends PlayerScreen {
             // Card phase ended
             send(new Envelope.SendCards(handStage.getSortedCards()));
             handStage.lockCards();
-        } else if (envelope instanceof Envelope.Damaged) {
-            // Damaged
-            damage = ((Envelope.Damaged) envelope).damage;
+        } else if (envelope instanceof Envelope.UpdateDamage) {
+            // Update damage
+            damage = ((Envelope.UpdateDamage) envelope).damage;
             handStage.blockCards(damage);
         }
     }

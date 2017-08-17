@@ -101,8 +101,6 @@ public class Missile extends Actor {
 
         float distance = pos.sub(selfPos).len();
 
-        Logger.d("Distance " + distance);
-
         addAction(Actions.sequence(
                 Actions.moveBy(direction.dirX * distance, direction.dirY * distance, distance / speed),
                 Effects.Explosion.explodeAt(this),

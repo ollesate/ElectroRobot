@@ -20,6 +20,7 @@ import olof.sjoholm.GameWorld.Actors.GameBoard.AllPlayersShootAction;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Actors.PlayerAction;
+import olof.sjoholm.GameWorld.Actors.PlayerToken;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Levels;
@@ -252,6 +253,12 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             }
         } else if (event instanceof AllPlayersShootAction) {
             cardFlowPanel.next();
+        } else if (event instanceof PlayerToken.DamagedEvent) {
+            // Player got damaged
+            PlayerToken.DamagedEvent damagedEvent = (PlayerToken.DamagedEvent) event;
+            int damaged = damagedEvent.maxHealth - damagedEvent.healthLeft;
+            PlayerToken playerToken = (PlayerToken) event.getTarget();
+            send(playerToken.getPlayer(), new Envelope.UpdateDamage(damaged));
         }
         return false;
     }
