@@ -29,7 +29,6 @@ import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
 public class GameBoard extends Group implements EventListener {
-    private final List<GameBoardActor> movingActors = new ArrayList<GameBoardActor>();
     private Set<SpawnPoint> occupiedSpawnPoints = new HashSet<SpawnPoint>();
 
     // TODO: extract away this. Would be cool to handle in base class.
@@ -146,23 +145,7 @@ public class GameBoard extends Group implements EventListener {
     @Override
     public boolean handle(Event e) {
         Logger.d("Event " + e);
-        if (e instanceof OnStartActionEvent) {
-            // On start action
-            OnStartActionEvent event = (OnStartActionEvent) e;
-            PlayerToken playerToken = playerTokens.get(event.player);
-            if (playerToken == null) {
-                // TODO: handle player died. Should be possible?
-            }
-            movingActors.add(playerToken);
-        } else if (e instanceof OnEndActionEvent) {
-            // On end action
-            OnEndActionEvent event = (OnEndActionEvent) e;
-            PlayerToken playerToken = playerTokens.get(event.player);
-            if (playerToken == null) {
-                // TODO: handle player died. Should be possible?
-            }
-            movingActors.add(playerToken);
-        } else if (e instanceof PlayerToken.Destroyed) {
+        if (e instanceof PlayerToken.Destroyed) {
             playerTokens.values().remove(((PlayerToken.Destroyed) e).playerToken);
         }
         return false;
