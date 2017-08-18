@@ -30,6 +30,7 @@ import olof.sjoholm.Utils.Logger;
 
 public class GameBoard extends Group implements EventListener {
     private Set<SpawnPoint> occupiedSpawnPoints = new HashSet<SpawnPoint>();
+    private List<Badge> badges = new ArrayList<Badge>();
 
     // TODO: extract away this. Would be cool to handle in base class.
     private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
@@ -46,15 +47,6 @@ public class GameBoard extends Group implements EventListener {
         this.level = level;
         clearChildren(); // TODO: why?
         level.create(this, tileSize);
-    }
-
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-
-        for (Badge badge : badges) {
-            badge.update();
-        }
     }
 
     private Point getLeftDownTilePos(PlayerToken playerToken) {
@@ -105,8 +97,6 @@ public class GameBoard extends Group implements EventListener {
         playerTokens.put(player, playerToken);
         spawnedActors.add(playerToken);
     }
-
-    private List<Badge> badges = new ArrayList<Badge>();
 
     public void startTurn(Turn turn) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
@@ -189,13 +179,6 @@ public class GameBoard extends Group implements EventListener {
         removeActor(playerToken);
         SpawnPoint spawnPoint = playerToken.getSpawnPoint();
         occupiedSpawnPoints.remove(spawnPoint);
-        Badge badgeToRemove = null;
-        for (Badge badge : badges) {
-            if (badge.getTarget().equals(playerToken)) {
-                badgeToRemove = badge;
-            }
-        }
-        removeActor(badgeToRemove);
     }
 
     public void updatePlayer(Player player) {
