@@ -2,7 +2,6 @@ package olof.sjoholm.Views;
 
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -13,9 +12,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.List;
 
 import olof.sjoholm.Api.Effects;
-import olof.sjoholm.Api.ParticleEffect;
 import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor;
+import olof.sjoholm.GameWorld.TileType;
 import olof.sjoholm.Utils.Constants;
 
 
@@ -51,5 +50,9 @@ public class GameStage extends Stage {
 
     public boolean isWithinBounds(int x, int y) {
         return gameBoard.getLevel().isWithinBounds(x, y);
+    }
+
+    public TileType getTile(int x, int y) {
+        return gameBoard.getLevel().getTile(x, y);
     }
 }

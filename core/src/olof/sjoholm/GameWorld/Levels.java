@@ -15,14 +15,14 @@ public class Levels {
                         {0, 0, 0, 0, 0, 0, 0, 0},
                         {0, 1, 0, 0, 0, 0, 1, 0},
                         {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 1, 0, 0, 0, 0, 1, 0},
+                        {0, 1, 0, -1, -1, 0, 1, 0},
                         {0, 0, 0, 0, 0, 0, 0, 0},
                 }
         );
     }
 
     public static class Level {
-        public static final int OUT_OF_BOUNDS = -1;
+        public static final int OUT_OF_BOUNDS = -2;
         public static final int FLOOR = 0;
         public static final int SPAWN = 1;
 
@@ -62,10 +62,17 @@ public class Levels {
         }
 
         public int get(int x, int y) {
-            if (isWithinBounds(x, y)) {
-                return tileArray[y][x];
+            int invertedY = height - y - 1;
+
+            if (isWithinBounds(x, invertedY)) {
+                return tileArray[invertedY][x];
             }
             return OUT_OF_BOUNDS;
+        }
+
+        public TileType getTile(int x, int y) {
+            int id = get(x, y);
+            return TileType.fromId(id);
         }
 
         public boolean isWithinBounds(int x, int y) {

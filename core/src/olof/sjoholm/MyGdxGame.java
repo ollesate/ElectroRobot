@@ -22,7 +22,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		Skins.initialize();
 		Fonts.initialize();
 		if (debug) {
-			PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
+			ServerScreenHandler screenHandler = new ServerScreenHandler(this);
 			screenHandler.showScreen(ServerScreenHandler.GAME);
 		} else {
 

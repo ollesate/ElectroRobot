@@ -9,9 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RemoveActorAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 
+import java.awt.Point;
 import java.util.List;
 
 import olof.sjoholm.Api.Config;
@@ -19,6 +21,7 @@ import olof.sjoholm.Api.Effects;
 import olof.sjoholm.Api.Missile;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
 import olof.sjoholm.GameWorld.SpawnPoint;
+import olof.sjoholm.GameWorld.TileType;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Movement;
@@ -166,42 +169,63 @@ public class PlayerToken extends GameBoardActor {
     }
 
     public static class MoveTileAction extends RelativeAction {
-        private final PlayerToken actor;
+        private final PlayerToken token;
         private final Vector2 direction;
         private boolean animate;
         private Action moveByAction;
         private final float duration;
+        private final Action fallAnimation;
 
         public MoveTileAction(PlayerToken actor, Vector2 direction, boolean animate, float duration) {
             this.duration = duration;
-            this.actor = actor;
+            this.token = actor;
             this.direction = direction;
             this.animate = animate;
+
+            fallAnimation = Actions.sequence(Actions.scaleTo(0, 0, 1f), Actions.removeActor());
+            fallAnimation.setActor(actor);
         }
 
         @Override
         public void begin() {
             SequenceAction sequenceAction = new SequenceAction();
-            sequenceAction.setActor(actor);
+            sequenceAction.setActor(token);
             MoveByAction moveAction = Actions.moveBy(
                     direction.x * Constants.STEP_SIZE, direction.y * Constants.STEP_SIZE, duration);
-            moveAction.setActor(actor);
+            moveAction.setActor(token);
             if (animate) {
-                sequenceAction.addAction(actor.animationResumeAction);
+                sequenceAction.addAction(token.animationResumeAction);
                 sequenceAction.addAction(moveAction);
-                sequenceAction.addAction(actor.animationPauseAction);
+                sequenceAction.addAction(token.animationPauseAction);
             } else {
                 sequenceAction.addAction(moveAction);
             }
             moveByAction = sequenceAction;
         }
 
+        boolean fallToDeath;
+
         @Override
         public boolean update(float delta) {
+            if (token.getParent() == null) {
+                return true;
+            }
+
+            if (fallToDeath) {
+                return fallAnimation.act(delta);
+            }
+
             boolean finished = moveByAction.act(delta);
             if (finished) {
-                actor.setX(Math.round(actor.getX()));
-                actor.setY(Math.round(actor.getY()));
+                token.setX(Math.round(token.getX()));
+                token.setY(Math.round(token.getY()));
+
+                Vector2 pos = token.getGameBoardPosition();
+                TileType tile = token.getStage().getTile((int) pos.x, (int) pos.y);
+                if (TileType.PIT == tile) {
+                    fallToDeath = true;
+                    return false;
+                }
                 return true;
             }
             return false;
@@ -284,8 +308,7 @@ public class PlayerToken extends GameBoardActor {
             int y = (int)(pos.y + movementDir.y);
             boolean canMoveNextStep = gameStage.isWithinBounds(x, y);
             if (canMoveNextStep) {
-                MoveTileAction move = new MoveTileAction(playerToken, movementDir, true, stepDuration);
-                return move;
+                return new MoveTileAction(playerToken, movementDir, true, stepDuration);
             } else {
                 return new Animate(playerToken, 1f);
             }
@@ -470,5 +493,15 @@ public class PlayerToken extends GameBoardActor {
             this.maxHealth = maxHealth;
             this.healthLeft = healthLeft;
         }
+    }
+
+    public Vector2 getGameBoardPosition() {
+        return GameBoard.getBoardPosition(getX(), getY());
+    }
+
+    @Override
+    public boolean remove() {
+        clear();
+        return super.remove();
     }
 }
