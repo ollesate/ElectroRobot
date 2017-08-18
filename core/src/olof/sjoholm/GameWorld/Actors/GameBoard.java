@@ -52,43 +52,6 @@ public class GameBoard extends Group implements EventListener {
     public void act(float delta) {
         super.act(delta);
 
-        for (GameBoardActor movingActor : movingActors) {
-            // TODO: Can we remove this?
-            if (true) continue;
-            PlayerToken playerToken = (PlayerToken) movingActor;
-            Vector2 dir = playerToken.getDirection();
-            Vector2 pos = new Vector2(playerToken.getX(), playerToken.getY());
-
-            Point leftDownTile = getLeftDownTilePos(playerToken);
-            int actualX, actualY;
-            if (dir.x < 0) {
-                actualX = leftDownTile.x + 1;
-            } else {
-                actualX = leftDownTile.x;
-            }
-            if (dir.y < 0) {
-                actualY = leftDownTile.y + 1;
-            } else {
-                actualY = leftDownTile.y;
-            }
-            Point fromTile = new Point(actualX, actualY);
-            Point toTile = new Point((int)(fromTile.x + dir.x), (int)(fromTile.y + dir.y));
-            boolean isBlocked = false;
-            if (Math.abs(dir.y) > 0 && Math.abs(pos.y % Constants.STEP_SIZE) > 0) {
-                if (!level.isWithinBounds(toTile.x, toTile.y)) {
-                    isBlocked = true;
-                }
-            } else if (Math.abs(dir.x) > 0 && Math.abs(pos.x % Constants.STEP_SIZE) > 0) {
-                if (!level.isWithinBounds(toTile.x, toTile.y)) {
-                    isBlocked = true;
-                }
-            }
-            if (isBlocked) {
-                playerToken.setX(fromTile.x * Constants.STEP_SIZE);
-                playerToken.setY(fromTile.y * Constants.STEP_SIZE);
-            }
-        }
-
         for (Badge badge : badges) {
             badge.update();
         }
