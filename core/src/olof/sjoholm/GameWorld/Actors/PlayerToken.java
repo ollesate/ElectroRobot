@@ -87,7 +87,7 @@ public class PlayerToken extends GameBoardActor {
     public Action rotate(Rotation rotation) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
 
-        return Actions.sequence(
+        SequenceAction sequence = Actions.sequence(
                 Actions.rotateBy(
                         rotation.degrees,
                         stepSpeed / playSpeed * rotation.duration,
@@ -96,6 +96,8 @@ public class PlayerToken extends GameBoardActor {
                 roundAction,
                 Actions.delay(Constants.MOVE_STEP_DELAY / playSpeed)
         );
+        sequence.setActor(this);
+        return sequence;
     }
 
     private Action getWaitSequence(int steps) {
@@ -502,6 +504,15 @@ public class PlayerToken extends GameBoardActor {
     @Override
     public boolean remove() {
         clear();
+        fire(new Destroyed(this));
         return super.remove();
+    }
+
+    public static class Destroyed extends Event {
+        public final PlayerToken playerToken;
+
+        public Destroyed(PlayerToken playerToken) {
+            this.playerToken = playerToken;
+        }
     }
 }

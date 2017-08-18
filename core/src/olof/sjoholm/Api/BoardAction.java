@@ -62,4 +62,17 @@ public abstract class BoardAction implements Serializable {
             return "Rotate " + rotation;
         }
     }
+
+    public static class Shoot extends BoardAction {
+
+        @Override
+        public Action getAction(PlayerToken playerToken) {
+            return playerToken.getShootAction();
+        }
+
+        @Override
+        public String getText() {
+            return "Shoot";
+        }
+    }
 }

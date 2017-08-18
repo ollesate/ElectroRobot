@@ -1,6 +1,7 @@
 package olof.sjoholm.GameWorld.Actors;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -108,43 +109,33 @@ public class GameBoard extends Group implements EventListener {
 
     private List<Badge> badges = new ArrayList<Badge>();
 
-    public void performActions(PlayerAction... playerActions) {
-        SequenceAction sequence = new SequenceAction();
-        for (PlayerAction action : playerActions) {
-            Player player = action.player;
-            BoardAction boardAction = action.boardAction;
-            PlayerToken playerToken = playerTokens.get(player);
-            if (playerToken == null) {
-                // TODO: handle player died
-            }
-            sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
-            sequence.addAction(new ActionWrapper(playerToken, action.boardAction));
-            sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
-        }
-        addAction(sequence);
-    }
-
     public void startTurn(Turn turn) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
         SequenceAction sequence = new SequenceAction();
         for (int i = 0; i < turn.size(); i++) {
+            List<Action> shootActions = new ArrayList<Action>();
+
             for (PlayerAction playerAction : turn.getRound(i)) {
                 Player player = playerAction.player;
                 BoardAction boardAction = playerAction.boardAction;
                 PlayerToken playerToken = playerTokens.get(player);
                 if (playerToken == null) {
                     // TODO: handle player died
+                    throw new IllegalStateException("Player is dead for some reason?");
                 }
 
                 sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
-                sequence.addAction(new ActionWrapper(playerToken, boardAction));
+                sequence.addAction(new DoPlayerAction(this, playerAction));
                 sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
                 sequence.addAction(new DelayAction(Constants.CARD_POST_DELAY / playSpeed));
+
+                shootActions.add(new DoPlayerAction(this, new PlayerAction(player,
+                        new BoardAction.Shoot())));
             }
             // Let all players shoot
             ParallelAction allShootAction = new ParallelAction();
-            for (PlayerToken playerToken : playerTokens.values()) {
-                allShootAction.addAction(playerToken.getShootAction());
+            for (Action shootAction : shootActions) {
+                allShootAction.addAction(shootAction);
             }
             sequence.addAction(new FireEventAction(new AllPlayersShootAction()));
             sequence.addAction(allShootAction);
@@ -171,6 +162,8 @@ public class GameBoard extends Group implements EventListener {
                 // TODO: handle player died. Should be possible?
             }
             movingActors.add(playerToken);
+        } else if (e instanceof PlayerToken.Destroyed) {
+            playerTokens.values().remove(((PlayerToken.Destroyed) e).playerToken);
         }
         return false;
     }
@@ -232,6 +225,10 @@ public class GameBoard extends Group implements EventListener {
                 badge.setText(player.getName());
             }
         }
+    }
+
+    public PlayerToken getPlayerToken(Player player) {
+        return playerTokens.get(player);
     }
 
     public static class AllPlayersShootAction extends Event {

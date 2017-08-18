@@ -1,18 +1,23 @@
 package olof.sjoholm.GameWorld;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public enum TileType {
-    FLOOR(0),
+    FLOOR(0, 1),
     PIT(-1);
 
-    private final int id;
+    private final Set<Integer> ids = new HashSet<Integer>();
 
-    TileType(int id) {
-        this.id = id;
+    TileType(int... ids) {
+        for (int id : ids) {
+            this.ids.add(id);
+        }
     }
 
     public static TileType fromId(int id) {
         for (TileType tile : values()) {
-            if (id == tile.id) {
+            if (tile.ids.contains(id)) {
                 return tile;
             }
         }
