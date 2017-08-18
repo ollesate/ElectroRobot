@@ -30,7 +30,6 @@ import olof.sjoholm.Utils.Logger;
 
 public class GameBoard extends Group implements EventListener {
     private Set<SpawnPoint> occupiedSpawnPoints = new HashSet<SpawnPoint>();
-    private List<Badge> badges = new ArrayList<Badge>();
 
     // TODO: extract away this. Would be cool to handle in base class.
     private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
@@ -90,11 +89,8 @@ public class GameBoard extends Group implements EventListener {
         playerToken.setPlayer(player);
         addActor(playerToken);
 
-        Badge badge = new Badge(playerToken, player.getName());
-        badges.add(badge);
-        addActor(badge);
-
         playerTokens.put(player, playerToken);
+        playerToken.setPlayerName(player.getName());
         spawnedActors.add(playerToken);
     }
 
@@ -185,11 +181,7 @@ public class GameBoard extends Group implements EventListener {
         PlayerToken playerToken = playerTokens.get(player);
         if (playerToken != null) {
             playerToken.setColor(player.getColor());
-        }
-        for (Badge badge : badges) {
-            if (badge.getTarget().equals(playerToken)) {
-                badge.setText(player.getName());
-            }
+            player.setName(player.getName());
         }
     }
 

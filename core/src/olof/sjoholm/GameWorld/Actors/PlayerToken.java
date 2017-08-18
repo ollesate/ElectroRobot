@@ -9,11 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RemoveActorAction;
-import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 
-import java.awt.Point;
 import java.util.List;
 
 import olof.sjoholm.Api.Config;
@@ -24,8 +22,8 @@ import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.GameWorld.TileType;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
-import olof.sjoholm.Utils.Movement;
 import olof.sjoholm.Utils.Logger;
+import olof.sjoholm.Utils.Movement;
 import olof.sjoholm.Utils.Rotation;
 import olof.sjoholm.Views.GameStage;
 
@@ -37,9 +35,11 @@ public class PlayerToken extends GameBoardActor {
     private final int maxHealth = Constants.MAX_HEALTH;
     private int currentHealth = maxHealth;
     private Player player;
+    private Badge badge;
 
     public PlayerToken() {
         setDrawable(tankAnimation);
+        setTransform(false);
     }
 
     @Override
@@ -130,6 +130,16 @@ public class PlayerToken extends GameBoardActor {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void setPlayerName(String name) {
+        if (badge == null) {
+            badge = new Badge();
+            addActor(badge);
+        }
+        badge.setText(name);
+        badge.setSize(badge.getPrefWidth(), badge.getPrefHeight());
+        badge.setPosition((getWidth()) / 2, (getHeight()) / 2, Align.center);
     }
 
     private static class ShootAction extends RelativeAction {

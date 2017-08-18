@@ -14,7 +14,7 @@ import olof.sjoholm.Interfaces.Drawable;
 import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.GameStage;
 
-public class GameBoardActor extends Actor {
+public class GameBoardActor extends Group {
     private Drawable drawable;
 
     public void setDrawable(Drawable drawable) {
@@ -23,11 +23,11 @@ public class GameBoardActor extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
         if (drawable != null) {
             drawable.draw(batch, parentAlpha, getX(), getY(), getWidth(), getHeight(), getScaleX(),
                     getScaleY(), getOriginX(), getOriginY(), getRotation(), getColor());
         }
+        super.draw(batch, parentAlpha);
     }
 
     @Override
