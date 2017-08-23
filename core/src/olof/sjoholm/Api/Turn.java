@@ -6,6 +6,13 @@ import java.util.List;
 import olof.sjoholm.GameWorld.Actors.PlayerAction;
 
 public class Turn {
+    private OnTurnFinishedListener listener;
+
+    public interface OnTurnFinishedListener {
+
+        void onTurnFinished();
+    }
+
     private final List<List<PlayerAction>> playerActions = new ArrayList<List<PlayerAction>>();
     private final int turnSize;
 
@@ -15,6 +22,11 @@ public class Turn {
             playerActions.add(new ArrayList<PlayerAction>());
         }
     }
+
+    public void setFinishedListener(OnTurnFinishedListener listener) {
+        this.listener = listener;
+    }
+
 
     public void addToRound(int round, PlayerAction playerAction) {
         List<PlayerAction> turnActions = this.playerActions.get(round);
@@ -52,5 +64,11 @@ public class Turn {
             }
         }
         return -1;
+    }
+
+    public void finished() {
+        if (listener != null) {
+            listener.onTurnFinished();
+        }
     }
 }

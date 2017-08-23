@@ -84,6 +84,11 @@ public class CardFlowPanel extends LinearLayout {
     }
 
     public void setTurn(Turn turn) {
+        clear();
+        cardActors.clear();
+
+        currentCardIndex = -1;
+
         for (int i = 0; i < turn.size(); i++) {
             List<PlayerAction> round = turn.getRound(i);
             RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + (i + 1));
@@ -110,11 +115,6 @@ public class CardFlowPanel extends LinearLayout {
         cardActor.setHeight(GraphicsUtil.dpToPixels(50));
         addActor(cardActor);
         cardActors.add(cardActor);
-    }
-
-    public void start() {
-        currentCardIndex = -1;
-        cardActors.get(0).select();
     }
 
     public void next() {

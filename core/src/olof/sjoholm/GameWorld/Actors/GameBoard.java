@@ -83,20 +83,25 @@ public class GameBoard extends Group implements EventListener {
 
     private SpawnPoint getSpawnPoint(Player player) {
         for (SpawnPoint spawnPoint : spawnPoints) {
-            if (spawnPoint.getOwner().equals(player)) {
+            if (player.equals(spawnPoint.getOwner())) {
                 return spawnPoint;
             }
         }
         throw new IllegalStateException("No spawn point for " + player);
     }
 
-    public void startTurn(Turn turn) {
+    public void startTurn(final Turn turn) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
         SequenceAction sequence = new SequenceAction();
 
         // Spawn dead players again
         for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
+            boolean isDead = entry.getValue() == null;
+            Logger.d(entry.getKey().getName() +  " token is " + (isDead ? "dead" : "alive"));
+
+
             if (entry.getValue() == null) { // Player died
+                Logger.d("Spawn player token");
                 Player player = entry.getKey();
 
                 SpawnPoint spawnPoint = getSpawnPoint(player);
@@ -129,12 +134,19 @@ public class GameBoard extends Group implements EventListener {
             sequence.addAction(new FireEventAction(new AllPlayersShootAction()));
             sequence.addAction(allShootAction);
         }
+        sequence.addAction(new Action() {
+            @Override
+            public boolean act(float delta) {
+                turn.finished();
+                return true;
+            }
+        });
+
         addAction(sequence);
     }
 
     @Override
     public boolean handle(Event e) {
-        Logger.d("Event " + e);
         if (e instanceof PlayerToken.Destroyed) {
             PlayerToken playerToken = ((PlayerToken.Destroyed) e).playerToken;
             cleanPlayerToken(playerToken);
@@ -182,9 +194,7 @@ public class GameBoard extends Group implements EventListener {
     }
 
     private void cleanPlayerToken(PlayerToken playerToken) {
-        playerTokens.values().remove(playerToken);
-        SpawnPoint spawnPoint = getSpawnPoint(playerToken.getPlayer());
-        spawnPoint.setOwner(null);
+        playerTokens.put(playerToken.getPlayer(), null);
         spawnedActors.remove(playerToken);
     }
 

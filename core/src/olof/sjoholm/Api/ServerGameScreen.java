@@ -85,13 +85,35 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     }
 
     private void debugStartTurn() {
-        List<Player> players = new ArrayList<Player>();
-        for (int i = 0; i < 3; i++) {
+        final List<Player> players = new ArrayList<Player>();
+        for (int i = 0; i < 1; i++) {
             Player player = DebugUtil.getPlayer(i);
             players.add(player);
             gameBoard.createPlayerToken(player);
         }
         Turn turn = DebugUtil.generateTurns(players);
+        turn.setFinishedListener(new Turn.OnTurnFinishedListener() {
+            @Override
+            public void onTurnFinished() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.d("Start new turn soon");
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        Turn newTurn = DebugUtil.generateTurns(players);
+
+                        gameBoard.startTurn(newTurn);
+                        cardFlowPanel.setTurn(newTurn);
+                        currentTurn = newTurn;
+                    }
+                }).start();
+            }
+        });
         gameBoard.startTurn(turn);
         cardFlowPanel.setTurn(turn);
         currentTurn = turn;
@@ -228,7 +250,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 
     @Override
     public boolean handle(Event event) {
-        Logger.d("Handle event " + event);
         if (event instanceof OnStartActionEvent) {
             OnStartActionEvent startEvent = (OnStartActionEvent) event;
             Player player = startEvent.player;
