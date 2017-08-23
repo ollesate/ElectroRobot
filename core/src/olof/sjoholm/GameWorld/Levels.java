@@ -1,10 +1,12 @@
 package olof.sjoholm.GameWorld;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import olof.sjoholm.GameWorld.Actors.SpawnPoint;
 import olof.sjoholm.GameWorld.Actors.Tile;
 
 public class Levels {
@@ -31,7 +33,7 @@ public class Levels {
         private final int width;
         private final int height;
 
-        private Level(int [][] tileArray) {
+        private Level(int[][] tileArray) {
             this.tileArray = tileArray;
             width = tileArray[0].length;
             height = tileArray.length;
@@ -46,7 +48,7 @@ public class Levels {
                             break;
                         case SPAWN:
                             addTile(group, tileSize, x, y);
-                            spawnPoints.add(new SpawnPoint(x, y));
+                            addSpawn(group, tileSize, x, y);
                             break;
                     }
 
@@ -55,10 +57,19 @@ public class Levels {
         }
 
         private void addTile(Group group, int tileSize, int x, int y) {
-            Tile tile = new Tile(x, y);
+            Tile tile = new Tile();
+            tile.setX(x * tileSize);
+            tile.setY(y * tileSize);
             tile.setWidth(tileSize);
             tile.setHeight(tileSize);
             group.addActor(tile);
+        }
+
+        private void addSpawn(Group group, int tileSize, int x, int y) {
+            SpawnPoint spawnPoint = new SpawnPoint(tileSize, x, y);
+            spawnPoint.setPosition((x + .5f) * tileSize, (y + .5f) * tileSize, Align.center);
+            group.addActor(spawnPoint);
+            spawnPoints.add(spawnPoint);
         }
 
         public int get(int x, int y) {

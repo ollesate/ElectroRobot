@@ -24,7 +24,6 @@ import olof.sjoholm.GameWorld.Actors.PlayerToken;
 import olof.sjoholm.GameWorld.Assets.TextureDrawable;
 import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Levels;
-import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
@@ -49,7 +48,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
 
     public ServerGameScreen() {
         super();
-        gameBoard = new GameBoard((int) Constants.STEP_SIZE);
+        float tileSize = Constants.STEP_SIZE;
+        gameBoard = new GameBoard((int) tileSize);
         gameStage = new GameStage(gameBoard);
         gameBoard.loadMap(Levels.level1());
         gameBoard.addListener(this);
@@ -89,8 +89,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         for (int i = 0; i < 3; i++) {
             Player player = DebugUtil.getPlayer(i);
             players.add(player);
-            SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
-            gameBoard.initializePlayer(spawnPoint, player);
+            gameBoard.createPlayerToken(player);
         }
         Turn turn = DebugUtil.generateTurns(players);
         gameBoard.startTurn(turn);
@@ -218,8 +217,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         player.setColor(Color.WHITE);
         player.setName("Player " + player.getId());
         // TODO: will throw NPE here.
-        SpawnPoint spawnPoint = gameBoard.getSpawnPoints().get(0);
-        gameBoard.initializePlayer(spawnPoint, player);
+        gameBoard.createPlayerToken(player);
     }
 
     @Override

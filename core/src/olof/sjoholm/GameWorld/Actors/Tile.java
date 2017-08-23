@@ -6,9 +6,7 @@ import olof.sjoholm.Utils.Constants;
 
 public class Tile extends GameBoardActor {
 
-    public Tile(int x, int y) {
-        setX(x * Constants.STEP_SIZE);
-        setY(y * Constants.STEP_SIZE);
+    public Tile() {
         setDrawable(new RegionDrawable(Textures.TILE));
     }
 }

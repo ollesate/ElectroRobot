@@ -18,7 +18,6 @@ import olof.sjoholm.Api.Config;
 import olof.sjoholm.Api.Effects;
 import olof.sjoholm.Api.Missile;
 import olof.sjoholm.GameWorld.Assets.TankAnimation;
-import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.GameWorld.TileType;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;

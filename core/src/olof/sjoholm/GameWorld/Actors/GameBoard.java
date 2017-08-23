@@ -9,13 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import olof.sjoholm.Api.BoardAction;
 import olof.sjoholm.Api.Config;
@@ -23,13 +20,12 @@ import olof.sjoholm.Api.Turn;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Levels.Level;
-import olof.sjoholm.GameWorld.SpawnPoint;
 import olof.sjoholm.Net.Server.Player;
 import olof.sjoholm.Utils.Constants;
 import olof.sjoholm.Utils.Logger;
 
 public class GameBoard extends Group implements EventListener {
-    private Set<SpawnPoint> occupiedSpawnPoints = new HashSet<SpawnPoint>();
+    private List<SpawnPoint> spawnPoints;
 
     // TODO: extract away this. Would be cool to handle in base class.
     private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
@@ -46,68 +42,76 @@ public class GameBoard extends Group implements EventListener {
         this.level = level;
         clearChildren(); // TODO: why?
         level.create(this, tileSize);
+        spawnPoints = level.getSpawnPoints();
     }
 
-    private Point getLeftDownTilePos(PlayerToken playerToken) {
-        Vector2 pos = new Vector2(playerToken.getX(), playerToken.getY());
-
-        int tileY;
-        if (pos.y > 0) {
-            tileY = (int) (pos.y / Constants.STEP_SIZE);
-        } else {
-            tileY = (int) (pos.y / Constants.STEP_SIZE) - 1;
+    public void createPlayerToken(Player player) {
+        SpawnPoint spawnPoint = findSpawnPoint();
+        if (spawnPoint == null) {
+            // TODO?
         }
-
-        int tileX;
-        if (pos.x > 0) {
-            tileX = (int) (pos.x / Constants.STEP_SIZE);
-        } else {
-            tileX = (int) (pos.x / Constants.STEP_SIZE) - 1;
-        }
-        return new Point(tileX, tileY);
+        spawnPlayerToken(player, spawnPoint);
     }
 
-    public List<SpawnPoint> getSpawnPoints() {
-        List<SpawnPoint> availableSpots = new ArrayList<SpawnPoint>();
-        for (SpawnPoint spawnPoint : level.getSpawnPoints()) {
-            if (!occupiedSpawnPoints.contains(spawnPoint)) {
-                availableSpots.add(spawnPoint);
-            }
-        }
-        return availableSpots;
-    }
-
-    public void initializePlayer(SpawnPoint spawnPoint, Player player) {
-        occupiedSpawnPoints.add(spawnPoint);
+    public PlayerToken spawnPlayerToken(Player player, SpawnPoint spawnPoint) {
+        spawnPoint.setOwner(player);
+        spawnPoint.setColor(player.getColor());
 
         PlayerToken playerToken = new PlayerToken();
         playerToken.setSize(tileSize, tileSize);
-        playerToken.setX(spawnPoint.x * Constants.STEP_SIZE);
-        playerToken.setY(spawnPoint.y * Constants.STEP_SIZE);
+        playerToken.setX(spawnPoint.getBoardX() * tileSize);
+        playerToken.setY(spawnPoint.getBoardY() * tileSize);
         playerToken.setColor(player.getColor());
-        playerToken.setSpawnPoint(spawnPoint);
         playerToken.setPlayer(player);
         addActor(playerToken);
 
         playerTokens.put(player, playerToken);
         playerToken.setPlayerName(player.getName());
         spawnedActors.add(playerToken);
+
+        return playerToken;
+    }
+
+    private SpawnPoint findSpawnPoint() {
+        for (SpawnPoint spawnPoint : spawnPoints) {
+            if (spawnPoint.getOwner() == null) {
+                return spawnPoint;
+            }
+        }
+        return null;
+    }
+
+    private SpawnPoint getSpawnPoint(Player player) {
+        for (SpawnPoint spawnPoint : spawnPoints) {
+            if (spawnPoint.getOwner().equals(player)) {
+                return spawnPoint;
+            }
+        }
+        throw new IllegalStateException("No spawn point for " + player);
     }
 
     public void startTurn(Turn turn) {
         float playSpeed = Config.get(Config.PLAY_SPEED);
         SequenceAction sequence = new SequenceAction();
+
+        // Spawn dead players again
+        for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
+            if (entry.getValue() == null) { // Player died
+                Player player = entry.getKey();
+
+                SpawnPoint spawnPoint = getSpawnPoint(player);
+
+                PlayerToken spawnedToken = spawnPlayerToken(player, spawnPoint);
+                entry.setValue(spawnedToken);
+            }
+        }
+
         for (int i = 0; i < turn.size(); i++) {
             List<Action> shootActions = new ArrayList<Action>();
 
             for (PlayerAction playerAction : turn.getRound(i)) {
                 Player player = playerAction.player;
                 BoardAction boardAction = playerAction.boardAction;
-                PlayerToken playerToken = playerTokens.get(player);
-                if (playerToken == null) {
-                    // TODO: handle player died
-                    throw new IllegalStateException("Player is dead for some reason?");
-                }
 
                 sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
                 sequence.addAction(new DoPlayerAction(this, playerAction));
@@ -132,7 +136,8 @@ public class GameBoard extends Group implements EventListener {
     public boolean handle(Event e) {
         Logger.d("Event " + e);
         if (e instanceof PlayerToken.Destroyed) {
-            playerTokens.values().remove(((PlayerToken.Destroyed) e).playerToken);
+            PlayerToken playerToken = ((PlayerToken.Destroyed) e).playerToken;
+            cleanPlayerToken(playerToken);
         }
         return false;
     }
@@ -173,8 +178,14 @@ public class GameBoard extends Group implements EventListener {
     public void removePlayer(Player player) {
         PlayerToken playerToken = playerTokens.get(player);
         removeActor(playerToken);
-        SpawnPoint spawnPoint = playerToken.getSpawnPoint();
-        occupiedSpawnPoints.remove(spawnPoint);
+        cleanPlayerToken(playerToken);
+    }
+
+    private void cleanPlayerToken(PlayerToken playerToken) {
+        playerTokens.values().remove(playerToken);
+        SpawnPoint spawnPoint = getSpawnPoint(playerToken.getPlayer());
+        spawnPoint.setOwner(null);
+        spawnedActors.remove(playerToken);
     }
 
     public void updatePlayer(Player player) {
