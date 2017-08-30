@@ -13,7 +13,7 @@ import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.LoginScreen;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	@Override
 	public void create () {
@@ -25,9 +25,13 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 			ServerScreenHandler screenHandler = new ServerScreenHandler(this);
 			screenHandler.showScreen(ServerScreenHandler.GAME);
 		} else {
-
-			// TODO: Set screen depending on if we are server or player.
-			setScreen(new LoginScreen(this));
+            if (GameConfig.isServer()) {
+                ServerScreenHandler screenHandler = new ServerScreenHandler(this);
+                screenHandler.showScreen(ServerScreenHandler.GAME);
+            } else {
+                PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
+                screenHandler.showScreen(PlayerScreenHandler.GAME);
+            }
 		}
 	}
 

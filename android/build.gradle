@@ -21,10 +21,10 @@ android {
     }
     productFlavors {
         player {
-
+            resValue "string", "app_name", "ElectroRobot Player"
         }
         server {
-
+            resValue "string", "app_name", "ElectroRobot Server"
         }
     }
 }
