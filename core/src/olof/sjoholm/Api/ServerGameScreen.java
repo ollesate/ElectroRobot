@@ -31,7 +31,7 @@ import olof.sjoholm.Utils.Logger;
 import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
-public class ServerGameScreen extends ServerScreen implements EventListener {
+public class ServerGameScreen extends ServerScreen implements EventListener, Turn.OnTurnFinishedListener {
     private final GameStage gameStage;
     private boolean paused;
     private final GameBoard gameBoard;
@@ -41,9 +41,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
     public enum GamePhase {
         LOBBY,
         CARD,
-        GAME
+        GAME;
     }
-
     private GamePhase gamePhase = GamePhase.LOBBY;
 
     public ServerGameScreen() {
@@ -53,9 +52,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         gameStage = new GameStage(gameBoard);
         gameBoard.loadMap(Levels.level1());
         gameBoard.addListener(this);
-
-        CountDownText countDownText = new CountDownText();
-
 
         gameStage.addActor(gameBoard);
 
@@ -171,23 +167,32 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             }
             Logger.d("all players ready? " + allReady + " " + getConnectedPlayers().size());
             if (allReady) {
-                float delay = Config.get(Config.CARD_WAIT);
-                for (Player connectedPlayer : getConnectedPlayers()) {
-                    send(connectedPlayer, new Envelope.StartGame());
-                    send(connectedPlayer, new Envelope.StartCountdown(delay));
-                    List<BoardAction> cards = CardGenerator.generateList(Constants.CARDS_TO_DEAL);
-                    send(connectedPlayer, new Envelope.SendCards(cards));
-                }
-                // Let them arrange their cards before calling turn ended.
-                new Timer().scheduleTask(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        onCardPhaseEnd();
-                    }
-                }, delay);
+                startCardPhase();
             }
-            gamePhase = GamePhase.CARD;
         }
+    }
+
+    private void startCardPhase() {
+        float delay = Config.get(Config.CARD_WAIT);
+
+        gamePhase = GamePhase.CARD;
+        for (Player connectedPlayer : getConnectedPlayers()) {
+            send(connectedPlayer, new Envelope.StartGame());
+            send(connectedPlayer, new Envelope.StartCountdown(delay));
+            List<BoardAction> cards = CardGenerator.generateList(Constants.CARDS_TO_DEAL);
+            send(connectedPlayer, new Envelope.SendCards(cards));
+        }
+        // Let them arrange their cards before calling turn ended.
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                onCardPhaseEnd();
+            }
+        }, delay);
+
+        CountDownText countDownText = new CountDownText();
+        countDownText.startCountDown(delay);
+        gameStage.addActor(countDownText);
     }
 
     private void onCardPhaseEnd() {
@@ -218,6 +223,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
         }
         gameBoard.startTurn(turn);
         cardFlowPanel.setTurn(turn);
+
+        turn.setFinishedListener(this);
     }
 
     private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();
@@ -280,5 +287,10 @@ public class ServerGameScreen extends ServerScreen implements EventListener {
             send(playerToken.getPlayer(), new Envelope.UpdateDamage(damaged));
         }
         return false;
+    }
+
+    @Override
+    public void onTurnFinished() {
+        startCardPhase();
     }
 }
