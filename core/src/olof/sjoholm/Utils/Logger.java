@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 
 
 public class Logger {
-    private static final String TAG = "Game";
+    private static final String TAG = "LibgdxGame";
 
     public static void d(String message) {
         Gdx.app.log(TAG, message);

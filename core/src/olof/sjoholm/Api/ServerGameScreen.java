@@ -3,6 +3,7 @@ package olof.sjoholm.Api;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -59,6 +60,10 @@ public class ServerGameScreen extends ServerScreen implements EventListener, Tur
 
         cardFlowPanel = new CardFlowPanel();
         gameStage.addActor(cardFlowPanel);
+
+
+        LabelActor actor = new LabelActor("Host: " + getHostName(), Fonts.get(Fonts.FONT_34));
+        gameStage.addActor(actor);
     }
 
     private Actor getCard(Color color, final String col) {
@@ -77,7 +82,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener, Tur
     public void show() {
         super.show();
         Gdx.input.setInputProcessor(gameStage);
-        debugStartTurn();
     }
 
     private void debugStartTurn() {

@@ -52,6 +52,10 @@ public abstract class ServerScreen implements Screen, ServerConnection.OnMessage
         serverConnection.broadcast(envelope);
     }
 
+    public String getHostName() {
+        return serverConnection.getHostName();
+    }
+
     public void send(Player player, Envelope envelope) {
         serverConnection.send(player, envelope);
     }

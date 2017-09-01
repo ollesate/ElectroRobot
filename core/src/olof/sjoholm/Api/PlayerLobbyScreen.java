@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +40,6 @@ public class PlayerLobbyScreen extends PlayerScreen {
         super();
         this.playerScreenHandler = playerScreenHandler;
         lobbyStage = new LobbyStage();
-        lobbyStage.label.setText("Connecting...");
     }
 
     @Override
@@ -52,6 +52,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
     public void show() {
         Gdx.input.setInputProcessor(lobbyStage);
         connect();
+        lobbyStage.label.setText("Connecting...");
     }
 
     @Override
@@ -73,6 +74,18 @@ public class PlayerLobbyScreen extends PlayerScreen {
     @Override
     public void onConnectionFailed(String reason) {
         lobbyStage.label.setText("Not connected");
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                lobbyStage.label.setText("Connecting...");
+            }
+        }, 5f);
+        new Timer().scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                connect();
+            }
+        }, 8f);
     }
 
     @Override

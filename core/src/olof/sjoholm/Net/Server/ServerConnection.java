@@ -6,6 +6,8 @@ import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ public final class ServerConnection implements NetClient.Listener {
     private OnPlayerDisconnectedListener onPlayerDisconnectedListener;
     private OnMessageListener onMessageListener;
     private LoopingThread loopingThread;
+    private final String hostName;
 
     public interface OnMessageListener {
 
@@ -48,7 +51,15 @@ public final class ServerConnection implements NetClient.Listener {
     }
 
     private ServerConnection() {
-        serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, HOST_NAME, PORT, null);
+        String host;
+        try {
+            host = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            Logger.e(e.getMessage());
+            host = "unavailable";
+        }
+        hostName = host;
+        serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, hostName, PORT, null);
     }
 
     public static ServerConnection getInstance() {
@@ -160,4 +171,7 @@ public final class ServerConnection implements NetClient.Listener {
         onPlayerDisconnectedListener = listener;
     }
 
+    public String getHostName() {
+        return hostName;
+    }
 }

@@ -1,5 +1,7 @@
 package olof.sjoholm;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -25,12 +27,14 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 			ServerScreenHandler screenHandler = new ServerScreenHandler(this);
 			screenHandler.showScreen(ServerScreenHandler.GAME);
 		} else {
-            if (GameConfig.isServer()) {
+			if (Gdx.app.getType() == ApplicationType.Desktop) {
+				setScreen(new LoginScreen(this));
+			} else if (GameConfig.isServer()) {
                 ServerScreenHandler screenHandler = new ServerScreenHandler(this);
                 screenHandler.showScreen(ServerScreenHandler.GAME);
             } else {
                 PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
-                screenHandler.showScreen(PlayerScreenHandler.GAME);
+                screenHandler.showScreen(PlayerScreenHandler.LOBBY);
             }
 		}
 	}
