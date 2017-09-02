@@ -3,7 +3,7 @@ package olof.sjoholm.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import olof.sjoholm.MyGdxGame;
-import olof.sjoholm.Utils.Constants;
+import olof.sjoholm.configuration.Constants;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {

@@ -12,6 +12,6 @@ public class AndroidLauncher extends AndroidApplication {
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new MyGdxGame(), config);
 
-		GameConfig.setServer(getResources().getBoolean(R.bool.isServer));
+		olof.sjoholm.configuration.GameConfig.setServer(getResources().getBoolean(R.bool.isServer));
 	}
 }

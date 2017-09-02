@@ -1,18 +1,17 @@
 package olof.sjoholm;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
-import olof.sjoholm.Api.Fonts;
-import olof.sjoholm.Api.PlayerScreenHandler;
-import olof.sjoholm.Api.ServerScreenHandler;
-import olof.sjoholm.GameWorld.Assets.Textures;
-import olof.sjoholm.Utils.Logger;
-import olof.sjoholm.Views.LoginScreen;
+import olof.sjoholm.assets.Fonts;
+import olof.sjoholm.game.screens.PlayerScreenHandler;
+import olof.sjoholm.game.screens.ServerScreenHandler;
+import olof.sjoholm.assets.Textures;
+import olof.sjoholm.utils.Logger;
+import olof.sjoholm.game.screens.LoginScreen;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 	private static final boolean debug = false;
@@ -21,7 +20,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 	public void create () {
 		Logger.d("Game create");
 		Textures.initialize();
-		Skins.initialize();
+		olof.sjoholm.assets.Skins.initialize();
 		Fonts.initialize();
 		if (debug) {
 			ServerScreenHandler screenHandler = new ServerScreenHandler(this);
@@ -29,7 +28,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 		} else {
 			if (Gdx.app.getType() == ApplicationType.Desktop) {
 				setScreen(new LoginScreen(this));
-			} else if (GameConfig.isServer()) {
+			} else if (olof.sjoholm.configuration.GameConfig.isServer()) {
                 ServerScreenHandler screenHandler = new ServerScreenHandler(this);
                 screenHandler.showScreen(ServerScreenHandler.GAME);
             } else {
@@ -50,7 +49,7 @@ public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 	public void dispose () {
 		super.dispose();
 		Textures.dispose();
-		Skins.dispose();
+		olof.sjoholm.assets.Skins.dispose();
 	}
 
 	@Override
