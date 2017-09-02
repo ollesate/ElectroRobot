@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import olof.sjoholm.utils.objects.DrawableActor;
-import olof.sjoholm.utils.graphic.TextureDrawable;
+import olof.sjoholm.utils.ui.objects.DrawableActor;
+import olof.sjoholm.utils.ui.TextureDrawable;
 import olof.sjoholm.assets.Textures;
 
 public class ParticleEffect {

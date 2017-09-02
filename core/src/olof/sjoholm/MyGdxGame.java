@@ -7,11 +7,11 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.assets.Fonts;
-import olof.sjoholm.game.screens.PlayerScreenHandler;
-import olof.sjoholm.game.screens.ServerScreenHandler;
+import olof.sjoholm.game.player.PlayerScreenHandler;
+import olof.sjoholm.game.server.ServerScreenHandler;
 import olof.sjoholm.assets.Textures;
 import olof.sjoholm.utils.Logger;
-import olof.sjoholm.game.screens.LoginScreen;
+import olof.sjoholm.game.shared.LoginScreen;
 
 public class MyGdxGame extends Game implements LoginScreen.LoginActions {
 	private static final boolean debug = false;

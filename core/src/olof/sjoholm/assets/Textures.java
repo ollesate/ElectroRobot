@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public class Textures {
-    public static olof.sjoholm.utils.graphic.SpriteSheetRegion TILE;
+    public static olof.sjoholm.utils.ui.SpriteSheetRegion TILE;
     public static TextureRegion MISSILE;
     public static Texture SPRITE_SHEET;
     public static Texture BACKGROUND;
@@ -17,7 +17,7 @@ public class Textures {
     public static void initialize() {
         SPRITE_SHEET = new Texture("textures/spritesheet.png");
         
-        TILE = new olof.sjoholm.utils.graphic.SpriteSheetRegion(SPRITE_SHEET, 1, 0, 32, 32);
+        TILE = new olof.sjoholm.utils.ui.SpriteSheetRegion(SPRITE_SHEET, 1, 0, 32, 32);
         MISSILE = new TextureRegion(SPRITE_SHEET, 9, 4 * 32 + 13, 14, 5);
 
         BACKGROUND = new Texture("textures/background.png");

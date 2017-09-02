@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import java.io.Serializable;
 import java.util.List;
 
-import olof.sjoholm.game.logic.BoardAction;
+import olof.sjoholm.game.shared.logic.cards.BoardAction;
 
 public class Envelope implements Serializable {
 
