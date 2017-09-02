@@ -202,7 +202,7 @@ public class GameBoard extends Group implements EventListener {
         PlayerToken playerToken = playerTokens.get(player);
         if (playerToken != null) {
             playerToken.setColor(player.getColor());
-            player.setName(player.getName());
+            playerToken.setPlayerName(player.getName());
         }
     }
 
