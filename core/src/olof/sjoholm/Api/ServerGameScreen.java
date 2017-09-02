@@ -212,6 +212,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener, Tur
         gameBoard.startTurn(turn);
         cardFlowPanel.setTurn(turn);
 
+        currentTurn = turn;
         turn.setFinishedListener(this);
     }
 

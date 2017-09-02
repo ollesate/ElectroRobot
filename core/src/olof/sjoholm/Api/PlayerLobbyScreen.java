@@ -51,7 +51,9 @@ public class PlayerLobbyScreen extends PlayerScreen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(lobbyStage);
-        connect();
+        if (!isConnected()) {
+            connect();
+        }
         lobbyStage.label.setText("Connecting...");
     }
 
