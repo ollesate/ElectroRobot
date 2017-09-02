@@ -20,7 +20,7 @@ import olof.sjoholm.Utils.Logger;
 
 public final class ServerConnection implements NetClient.Listener {
     public static final int PORT = 9123;
-    public static final String HOST_NAME = "127.0.0.1";
+    public static final String HOST_NAME = "192.168.1.32";
 
     private static ServerConnection instance;
 
@@ -59,7 +59,7 @@ public final class ServerConnection implements NetClient.Listener {
             host = "unavailable";
         }
         hostName = host;
-        serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, hostName, PORT, null);
+        serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, HOST_NAME, PORT, null);
     }
 
     public static ServerConnection getInstance() {

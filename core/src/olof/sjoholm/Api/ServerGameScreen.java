@@ -3,8 +3,6 @@ package olof.sjoholm.Api;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.utils.Align;
@@ -15,15 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import olof.sjoholm.Client.stages.DrawableActor;
 import olof.sjoholm.GameWorld.Actors.GameBoard;
 import olof.sjoholm.GameWorld.Actors.GameBoard.AllPlayersShootAction;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.GameWorld.Actors.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.GameWorld.Actors.PlayerAction;
 import olof.sjoholm.GameWorld.Actors.PlayerToken;
-import olof.sjoholm.GameWorld.Assets.TextureDrawable;
-import olof.sjoholm.GameWorld.Assets.Textures;
 import olof.sjoholm.GameWorld.Levels;
 import olof.sjoholm.Net.Both.Envelope;
 import olof.sjoholm.Net.Server.Player;
@@ -33,6 +28,7 @@ import olof.sjoholm.Views.CountDownText;
 import olof.sjoholm.Views.GameStage;
 
 public class ServerGameScreen extends ServerScreen implements EventListener, Turn.OnTurnFinishedListener {
+    private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();
     private final GameStage gameStage;
     private boolean paused;
     private final GameBoard gameBoard;
@@ -64,18 +60,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener, Tur
 
         LabelActor actor = new LabelActor("Host: " + getHostName(), Fonts.get(Fonts.FONT_34));
         gameStage.addActor(actor);
-    }
-
-    private Actor getCard(Color color, final String col) {
-        DrawableActor drawableActor = new DrawableActor(new TextureDrawable(Textures.BACKGROUND)) {
-            @Override
-            public String toString() {
-                return col;
-            }
-        };
-        drawableActor.setColor(color);
-        drawableActor.setHeight(GraphicsUtil.dpToPixels(50));
-        return drawableActor;
     }
 
     @Override
@@ -230,8 +214,6 @@ public class ServerGameScreen extends ServerScreen implements EventListener, Tur
 
         turn.setFinishedListener(this);
     }
-
-    private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();
 
     private void onMessageWaitingForCards(Player player, Envelope envelope) {
         Logger.d("onMessageWaitingForCards " + envelope);
