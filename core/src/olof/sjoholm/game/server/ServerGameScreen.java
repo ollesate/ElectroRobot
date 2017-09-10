@@ -13,33 +13,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import olof.sjoholm.game.server.ServerScreen;
-import olof.sjoholm.game.server.objects.CardFlowPanel;
-import olof.sjoholm.game.shared.logic.Rotation;
-import olof.sjoholm.game.shared.logic.cards.MoveForward;
-import olof.sjoholm.game.shared.logic.cards.Rotate;
-import olof.sjoholm.utils.ui.objects.LabelActor;
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.configuration.Config;
-import olof.sjoholm.game.shared.logic.cards.BoardAction;
-import olof.sjoholm.game.shared.logic.CardGenerator;
+import olof.sjoholm.configuration.Constants;
+import olof.sjoholm.game.server.logic.Levels;
+import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.server.logic.Turn.OnTurnFinishedListener;
+import olof.sjoholm.game.server.objects.CardFlowPanel;
+import olof.sjoholm.game.server.objects.EventLog;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootAction;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
-import olof.sjoholm.game.server.logic.PlayerAction;
+import olof.sjoholm.game.server.objects.GameStage;
+import olof.sjoholm.game.shared.DebugUtil;
+import olof.sjoholm.game.shared.logic.CardGenerator;
+import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
-import olof.sjoholm.game.server.logic.Levels;
 import olof.sjoholm.net.Envelope;
 import olof.sjoholm.net.Player;
-import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.utils.Logger;
-import olof.sjoholm.game.server.objects.CountDownText;
-import olof.sjoholm.game.server.objects.GameStage;
-import olof.sjoholm.game.server.objects.PopupText;
-import olof.sjoholm.game.shared.DebugUtil;
+import olof.sjoholm.utils.ui.objects.LabelActor;
 
 public class ServerGameScreen extends ServerScreen implements EventListener, OnTurnFinishedListener {
     private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();
@@ -48,6 +43,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
     private final GameBoard gameBoard;
     private final CardFlowPanel cardFlowPanel;
     private Turn currentTurn;
+    private final EventLog eventLog;
 
     public enum GamePhase {
         LOBBY,
@@ -75,6 +71,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
 
         LabelActor actor = new LabelActor("Host: " + getHostName(), Fonts.get(Fonts.FONT_34));
         gameStage.addActor(actor);
+        eventLog = new EventLog();
+        gameStage.addActor(eventLog);
     }
 
     @Override
@@ -124,6 +122,9 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
 
         cardFlowPanel.setWidth(0.2f * width);
         cardFlowPanel.setPosition(0.8f * width, height, Align.topLeft);
+
+        eventLog.setWidth(width);
+        eventLog.setPosition(0, height, Align.topLeft);
     }
 
     @Override
@@ -168,15 +169,15 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
                     allReady = false;
                 }
             }
-            Logger.d("all players ready? " + allReady + " " + getConnectedPlayers().size());
             if (allReady) {
+                Logger.d("All players ready: start");
                 startCardPhase();
             }
         }
     }
 
     private void startCardPhase() {
-        float delay = Config.get(Config.CARD_WAIT);
+        final float delay = Config.get(Config.CARD_WAIT);
 
         gamePhase = GamePhase.CARD;
         for (Player connectedPlayer : getConnectedPlayers()) {
@@ -193,9 +194,15 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
             }
         }, delay);
 
-        CountDownText countDownText = new CountDownText();
-        countDownText.startCountDown(delay);
-        gameStage.addActor(countDownText);
+        eventLog.addEventAction(new EventLog.TextAction() {
+            float timeLeft = delay;
+
+            @Override
+            public String onTick(float delta) {
+                timeLeft -= delta;
+                return String.format("Time until card phase end %s", (int) timeLeft);
+            }
+        }, delay);
     }
 
     private void onCardPhaseEnd() {
@@ -270,14 +277,8 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
             send(player, new Envelope.OnCardDeactivated(endEvent.boardAction));
 
             if (currentTurn.isLastOfRound(endEvent.boardAction)) {
-                int whatRound = currentTurn.getRoundOf(endEvent.boardAction);
-                PopupText popupText = new PopupText("Round " + (whatRound + 2),
-                        Fonts.get(Fonts.FONT_60), Constants.NEW_ROUND_POPUP_DURATION);
-                popupText.start();
-                popupText.setWidth(gameStage.getWidth());
-                popupText.setAlignment(Align.center);
-                popupText.setPosition(0, gameStage.getHeight(), Align.topLeft);
-                gameStage.addActor(popupText);
+                int currentRound = currentTurn.getRoundOf(endEvent.boardAction);
+                eventLog.addEventText("Round " + (currentRound + 1), 4f);
             }
         } else if (event instanceof AllPlayersShootAction) {
             cardFlowPanel.next();

@@ -11,12 +11,6 @@ public class LinearLayout extends Group {
     private int alignment;
 
     @Override
-    public void addActor(Actor actor) {
-        actor.setWidth(getWidth());
-        super.addActor(actor);
-    }
-
-    @Override
     protected void childrenChanged() {
         float prevY = getY(alignment);
 
@@ -26,6 +20,9 @@ public class LinearLayout extends Group {
         }
         float y = totalHeight;
         for (Actor actor : getChildren()) {
+            if (actor.getWidth() != getWidth()) {
+                actor.setWidth(getWidth());
+            }
             actor.setPosition(0, y, Align.topLeft);
             y -= actor.getHeight();
         }

@@ -59,7 +59,7 @@ public class Turn {
             for (PlayerAction playerAction : actions) {
                 BoardAction action = playerAction.boardAction;
                 if (boardAction.equals(action)) {
-                    return i;
+                    return i + 1; // We do not count 0.
                 }
             }
         }

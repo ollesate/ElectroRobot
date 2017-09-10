@@ -9,4 +9,13 @@ public class LabelActor extends Label {
     public LabelActor(CharSequence text, BitmapFont bitmapFont) {
         super(text, new Label.LabelStyle(bitmapFont, Color.BLACK));
     }
+
+    public void setTextColor(Color color) {
+        getStyle().fontColor = color;
+    }
+
+    public void setBitmapFont(BitmapFont font) {
+        getStyle().font = font;
+        setStyle(getStyle());
+    }
 }
