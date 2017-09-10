@@ -98,23 +98,6 @@ public class GameBoard extends Group implements EventListener {
         float playSpeed = Config.get(Config.PLAY_SPEED);
         SequenceAction sequence = new SequenceAction();
 
-        // Spawn dead players again
-        for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
-            boolean isDead = entry.getValue() == null;
-            Logger.d(entry.getKey().getName() +  " token is " + (isDead ? "dead" : "alive"));
-
-
-            if (entry.getValue() == null) { // Player died
-                Logger.d("Spawn player token");
-                Player player = entry.getKey();
-
-                SpawnPoint spawnPoint = getSpawnPoint(player);
-
-                PlayerToken spawnedToken = spawnPlayerToken(player, spawnPoint);
-                entry.setValue(spawnedToken);
-            }
-        }
-
         for (int i = 0; i < turn.size(); i++) {
             List<Action> shootActions = new ArrayList<Action>();
 
@@ -142,6 +125,22 @@ public class GameBoard extends Group implements EventListener {
             @Override
             public boolean act(float delta) {
                 turn.finished();
+                // Spawn dead players again
+                for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
+                    boolean isDead = entry.getValue() == null;
+                    Logger.d(entry.getKey().getName() +  " token is " + (isDead ? "dead" : "alive"));
+
+
+                    if (entry.getValue() == null) { // Player died
+                        Logger.d("Spawn player token");
+                        Player player = entry.getKey();
+
+                        SpawnPoint spawnPoint = getSpawnPoint(player);
+
+                        PlayerToken spawnedToken = spawnPlayerToken(player, spawnPoint);
+                        entry.setValue(spawnedToken);
+                    }
+                }
                 return true;
             }
         });
