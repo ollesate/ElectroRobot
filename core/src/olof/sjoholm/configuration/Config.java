@@ -19,7 +19,7 @@ public class Config {
     private final Map<String, Object> mDefaultValues = new HashMap<String, Object>();
 
     public Config() {
-        mDefaultValues.put(CARD_WAIT, 25f);
+        mDefaultValues.put(CARD_WAIT, 5f);
         mDefaultValues.put(STAGE_CARD_TURN_DURATION, 1f);
         mDefaultValues.put(CARD_DELAY_NEXT, 2f);
         mDefaultValues.put(CARD_STEP_DURATION, 0.5);

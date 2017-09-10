@@ -14,25 +14,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import olof.sjoholm.configuration.Config;
+import olof.sjoholm.configuration.Constants;
+import olof.sjoholm.game.server.logic.DoPlayerAction;
+import olof.sjoholm.game.server.logic.Levels.Level;
+import olof.sjoholm.game.server.logic.PlayerAction;
+import olof.sjoholm.game.server.logic.Turn;
+import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
+import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.logic.cards.Shoot;
 import olof.sjoholm.game.shared.objects.PlayerToken;
-import olof.sjoholm.utils.actions.FireEventAction;
-import olof.sjoholm.game.server.logic.PlayerAction;
-import olof.sjoholm.game.server.logic.*;
-import olof.sjoholm.configuration.Config;
-import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
-import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
-import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.net.Player;
-import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.utils.Logger;
+import olof.sjoholm.utils.actions.FireEventAction;
 
 public class GameBoard extends Group implements EventListener {
     private List<SpawnPoint> spawnPoints;
 
     // TODO: extract away this. Would be cool to handle in base class.
-    private List<olof.sjoholm.game.server.objects.GameBoardActor> spawnedActors = new ArrayList<olof.sjoholm.game.server.objects.GameBoardActor>();
+    private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
     public Map<Player, PlayerToken> playerTokens = new HashMap<Player, PlayerToken>();
     private int tileSize;
     private Level level;
@@ -106,12 +107,11 @@ public class GameBoard extends Group implements EventListener {
                 BoardAction boardAction = playerAction.boardAction;
 
                 sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
-                sequence.addAction(new olof.sjoholm.game.server.logic.DoPlayerAction(this, playerAction));
+                sequence.addAction(new DoPlayerAction(this, playerAction));
                 sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
                 sequence.addAction(new DelayAction(Constants.CARD_POST_DELAY / playSpeed));
 
-                shootActions.add(new olof.sjoholm.game.server.logic.DoPlayerAction(this, new PlayerAction(player,
-                        new Shoot())));
+                shootActions.add(new DoPlayerAction(this, new PlayerAction(player, new Shoot())));
             }
             // Let all players shoot
             ParallelAction allShootAction = new ParallelAction();
@@ -161,9 +161,9 @@ public class GameBoard extends Group implements EventListener {
         return level;
     }
 
-    public List<olof.sjoholm.game.server.objects.GameBoardActor> getActorsAt(int x, int y) {
-        List<olof.sjoholm.game.server.objects.GameBoardActor> actors = new ArrayList<olof.sjoholm.game.server.objects.GameBoardActor>();
-        for (olof.sjoholm.game.server.objects.GameBoardActor spawnedActor : spawnedActors) {
+    public List<GameBoardActor> getActorsAt(int x, int y) {
+        List<GameBoardActor> actors = new ArrayList<GameBoardActor>();
+        for (GameBoardActor spawnedActor : spawnedActors) {
             if ((int) (spawnedActor.getX() / Constants.STEP_SIZE) == x &&
                     (int) (spawnedActor.getY() / Constants.STEP_SIZE) == y) {
                 actors.add(spawnedActor);
@@ -172,9 +172,9 @@ public class GameBoard extends Group implements EventListener {
         return actors;
     }
 
-    public List<olof.sjoholm.game.server.objects.GameBoardActor> getActors(float x, float y, float width, float height) {
-        List<olof.sjoholm.game.server.objects.GameBoardActor> actors = new ArrayList<olof.sjoholm.game.server.objects.GameBoardActor>();
-        for (olof.sjoholm.game.server.objects.GameBoardActor actor : spawnedActors) {
+    public List<GameBoardActor> getActors(float x, float y, float width, float height) {
+        List<GameBoardActor> actors = new ArrayList<GameBoardActor>();
+        for (GameBoardActor actor : spawnedActors) {
             if (actor.getX() + actor.getWidth() < x || actor.getX() > x + width) {
                 continue;
             }

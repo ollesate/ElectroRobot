@@ -17,7 +17,7 @@ import olof.sjoholm.utils.Logger;
 
 public final class ServerConnection implements NetClient.Listener {
     public static final int PORT = 9123;
-    public static final String HOST_NAME = "192.168.1.32";
+    public static final String HOST_NAME = "127.0.0.1";
 
     private static ServerConnection instance;
 

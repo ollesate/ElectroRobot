@@ -11,7 +11,7 @@ public class Envelope implements Serializable {
 
     @Override
     public String toString() {
-        return "Envelope-> Type: " + getClass().getSimpleName() + ", Content: ";
+        return "Envelope-> Type: " + getClass().getSimpleName();
     }
 
     public static class SendCards extends Envelope {

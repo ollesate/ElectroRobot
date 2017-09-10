@@ -15,6 +15,9 @@ import java.util.Map;
 
 import olof.sjoholm.game.server.ServerScreen;
 import olof.sjoholm.game.server.objects.CardFlowPanel;
+import olof.sjoholm.game.shared.logic.Rotation;
+import olof.sjoholm.game.shared.logic.cards.MoveForward;
+import olof.sjoholm.game.shared.logic.cards.Rotate;
 import olof.sjoholm.utils.ui.objects.LabelActor;
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.configuration.Config;
@@ -66,6 +69,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
         startServer();
 
         cardFlowPanel = new CardFlowPanel();
+        cardFlowPanel.setDebug(true);
         gameStage.addActor(cardFlowPanel);
 
 
