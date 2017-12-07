@@ -537,7 +537,7 @@ public class PlayerToken extends olof.sjoholm.game.server.objects.GameBoardActor
 
     public class TankAnimation implements Drawable {
         private static final float frameDuration = 0.1f;
-        private Animation animation;
+        private Animation<TextureRegion> animation;
         private float duration;
         private boolean isPlaying;
 
@@ -548,7 +548,7 @@ public class PlayerToken extends olof.sjoholm.game.server.objects.GameBoardActor
                 regions[i] = getFrame(i);
             }
 
-            animation = new Animation(frameDuration, regions);
+            animation = new Animation<TextureRegion>(frameDuration, regions);
         }
 
         private TextureRegion getFrame(int frame) {
