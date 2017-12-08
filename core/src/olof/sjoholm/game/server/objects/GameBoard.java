@@ -25,7 +25,7 @@ import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.logic.cards.Shoot;
 import olof.sjoholm.game.shared.objects.PlayerToken;
-import olof.sjoholm.net.Player;
+import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.utils.Logger;
 import olof.sjoholm.utils.actions.FireEventAction;
 

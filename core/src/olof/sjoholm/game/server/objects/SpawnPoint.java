@@ -3,7 +3,7 @@ package olof.sjoholm.game.server.objects;
 import olof.sjoholm.utils.ui.objects.DrawableActor;
 import olof.sjoholm.utils.ui.TextureDrawable;
 import olof.sjoholm.assets.Textures;
-import olof.sjoholm.net.Player;
+import olof.sjoholm.game.server.server_logic.Player;
 
 public class SpawnPoint extends DrawableActor {
     private final int boardX;

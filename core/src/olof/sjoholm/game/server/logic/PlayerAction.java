@@ -1,7 +1,7 @@
 package olof.sjoholm.game.server.logic;
 
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
-import olof.sjoholm.net.Player;
+import olof.sjoholm.game.server.server_logic.Player;
 
 public class PlayerAction {
     public final Player player;

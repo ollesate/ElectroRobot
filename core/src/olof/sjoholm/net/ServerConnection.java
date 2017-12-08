@@ -9,9 +9,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import olof.sjoholm.utils.Logger;
 
@@ -21,9 +22,9 @@ public final class ServerConnection implements NetClient.Listener {
 
     private static ServerConnection instance;
 
-    private final ServerSocket serverSocket;
+    private ServerSocket serverSocket;
     private final List<NetClient> netClients = new ArrayList<NetClient>();
-    private final Map<Integer, Player> players = new HashMap<Integer, Player>();
+    private final Set<Integer> players = new HashSet<Integer>();
 
     private int clientCounter;
     private OnPlayerConnectedListener onPlayerConnectedListener;
@@ -34,20 +35,20 @@ public final class ServerConnection implements NetClient.Listener {
 
     public interface OnMessageListener {
 
-        void onMessage(Player player, Envelope envelope);
+        void onMessage(int playerId, Envelope envelope);
     }
 
     public interface OnPlayerConnectedListener {
 
-        void onPlayerConnected(Player player);
+        void onPlayerConnected(int playerId);
     }
 
     public interface OnPlayerDisconnectedListener {
 
-        void onPlayerDisconnected(Player player);
+        void onPlayerDisconnected(int playerId);
     }
 
-    private ServerConnection() {
+    public ServerConnection() {
         String host;
         try {
             host = InetAddress.getLocalHost().getHostName();
@@ -56,7 +57,6 @@ public final class ServerConnection implements NetClient.Listener {
             host = "unavailable";
         }
         hostName = host;
-        serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, HOST_NAME, PORT, null);
     }
 
     public static ServerConnection getInstance() {
@@ -72,13 +72,10 @@ public final class ServerConnection implements NetClient.Listener {
             NetClient client = NetClient.open(socket, clientCounter);
             client.startReading(this);
 
-            int id = client.getId();
-            Player player = new Player(id);
-            players.put(id, player);
             netClients.add(client);
 
             if (onPlayerConnectedListener != null) {
-                onPlayerConnectedListener.onPlayerConnected(player);
+                onPlayerConnectedListener.onPlayerConnected(client.getId());
             }
         } catch (ConnectionException e) {
             e.printStackTrace();
@@ -88,16 +85,14 @@ public final class ServerConnection implements NetClient.Listener {
     @Override
     public void onMessage(NetClient netClient, Envelope envelope) {
         if (onMessageListener != null) {
-            onMessageListener.onMessage(players.get(netClient.getId()), envelope);
+            onMessageListener.onMessage(netClient.getId(), envelope);
         }
     }
 
     @Override
     public void onDisconnected(NetClient netClient) {
-        Player player = players.get(netClient.getId());
-
         if (onPlayerDisconnectedListener != null) {
-            onPlayerDisconnectedListener.onPlayerDisconnected(player);
+            onPlayerDisconnectedListener.onPlayerDisconnected(netClient.getId());
         }
 
         players.remove(netClient.getId());
@@ -106,8 +101,13 @@ public final class ServerConnection implements NetClient.Listener {
 
     // API
 
-    public void openConnection() {
-        Logger.d("openConnection");
+    public void connect() {
+        Logger.d("connect");
+
+        if (serverSocket == null) {
+            serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, HOST_NAME, PORT, null);
+        }
+
         if (loopingThread != null && loopingThread.isRunning()) {
             throw new IllegalStateException("Connection already opened");
         }
@@ -134,8 +134,8 @@ public final class ServerConnection implements NetClient.Listener {
         loopingThread.stop();
     }
 
-    public List<Player> getConnectedPlayers() {
-        return new ArrayList<Player>(players.values());
+    public Collection<Integer> getConnectedPlayers() {
+        return players;
     }
 
     public boolean isConnectionOpen() {
@@ -148,9 +148,9 @@ public final class ServerConnection implements NetClient.Listener {
         }
     }
 
-    public synchronized void send(Player player, Envelope envelope) {
+    public synchronized void send(int id, Envelope envelope) {
         for (NetClient netClient : netClients) {
-            if (netClient.getId() == player.getId()) {
+            if (netClient.getId() == id) {
                 netClient.sendData(envelope);
             }
         }

@@ -2,7 +2,8 @@ package olof.sjoholm.game.server;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.utils.Align;
@@ -27,16 +28,17 @@ import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootAction;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.game.server.objects.GameStage;
+import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.DebugUtil;
 import olof.sjoholm.game.shared.logic.CardGenerator;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
 import olof.sjoholm.net.Envelope;
-import olof.sjoholm.net.Player;
 import olof.sjoholm.utils.Logger;
 import olof.sjoholm.utils.ui.objects.LabelActor;
 
-public class ServerGameScreen extends ServerScreen implements EventListener, OnTurnFinishedListener {
+public class ServerGameScreen extends ScreenAdapter implements EventListener, OnTurnFinishedListener {
+    private List<Player> players = new ArrayList<Player>();
     private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();
     private final GameStage gameStage;
     private boolean paused;
@@ -62,14 +64,12 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
 
         gameStage.addActor(gameBoard);
 
-        startServer();
-
         cardFlowPanel = new CardFlowPanel();
         cardFlowPanel.setDebug(true);
         gameStage.addActor(cardFlowPanel);
 
 
-        LabelActor actor = new LabelActor("Host: " + getHostName(), Fonts.get(Fonts.FONT_34));
+        LabelActor actor = new LabelActor("Host: " + "undefined", Fonts.get(Fonts.FONT_34));
         gameStage.addActor(actor);
         eventLog = new EventLog();
         gameStage.addActor(eventLog);
@@ -138,53 +138,38 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
         gameStage.draw();
     }
 
-    @Override
-    public void onMessage(Player player, Envelope envelope) {
-        switch (gamePhase) {
-            case LOBBY:
-                onMessageLobby(player, envelope);
-                break;
-            case CARD:
-                onMessageWaitingForCards(player, envelope);
-                break;
+    public void updateAppearance(Player player) {
+        gameBoard.updatePlayer(player);
+    }
+
+    public void allPlayersReady() {
+        Logger.d("All players ready: start");
+        startCardPhase();
+    }
+
+    public void onPlayerReady(Player player, boolean ready) {
+        // Nothing to do here yet.
+    }
+
+    public void onPlayerCardsReady(Player player, boolean ready) {
+        if (!ready) {
+            cardsToPlay.remove(player);
         }
     }
 
-    private void onMessageLobby(Player player, Envelope envelope) {
-        Logger.d("onMessageLobby " + envelope);
-        if (envelope instanceof Envelope.PlayerSelectColor) {
-            player.setColor(((Envelope.PlayerSelectColor) envelope).getColor());
-            gameBoard.updatePlayer(player);
-        }
-        if (envelope instanceof Envelope.PlayerSelectName) {
-            player.setName(((Envelope.PlayerSelectName) envelope).name);
-            gameBoard.updatePlayer(player);
-        }
-        if (envelope instanceof Envelope.PlayerReady) {
-            boolean ready = ((Envelope.PlayerReady) envelope).ready;
-            player.setReady(ready);
-            boolean allReady = true;
-            for (Player connectedPlayer : getConnectedPlayers()) {
-                if (!connectedPlayer.isReady()) {
-                    allReady = false;
-                }
-            }
-            if (allReady) {
-                Logger.d("All players ready: start");
-                startCardPhase();
-            }
-        }
+    public void onPlayerCardsReceived(Player player, List<BoardAction> cards) {
+        cardsToPlay.put(player, cards);
     }
 
     private void startCardPhase() {
         final float delay = Config.get(Config.CARD_WAIT);
 
         gamePhase = GamePhase.CARD;
-        for (Player connectedPlayer : getConnectedPlayers()) {
-            send(connectedPlayer, new Envelope.StartGame());
-            send(connectedPlayer, new Envelope.StartCountdown(delay));
+        for (Player connectedPlayer : players) {
+            connectedPlayer.send(new Envelope.StartGame());
+            connectedPlayer.send(new Envelope.StartCountdown(delay));
             List<BoardAction> cards = CardGenerator.generateList(Constants.CARDS_TO_DEAL);
-            send(connectedPlayer, new Envelope.SendCards(cards));
+            connectedPlayer.send(new Envelope.SendCards(cards));
         }
         // Let them arrange their cards before calling turn ended.
         new Timer().scheduleTask(new Timer.Task() {
@@ -207,9 +192,9 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
 
     private void onCardPhaseEnd() {
         // TODO: do something if someone disconnects
-        for (Player player : getConnectedPlayers()) {
+        for (Player player : players) {
             // This will tell them to return cards to play.
-            send(player, new Envelope.OnCardPhaseEnded());
+            player.send(new Envelope.OnCardPhaseEnded());
         }
         // They need a little time to give their response.
         new Timer().scheduleTask(new Timer.Task() {
@@ -225,7 +210,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
 
     private void onGameBegin() {
         Turn turn = new Turn(Constants.CARDS_TO_PLAY);
-        for (Player player : getConnectedPlayers()) {
+        for (Player player : players) {
             List<BoardAction> cards = cardsToPlay.get(player);
             for (int i = 0; i < Constants.CARDS_TO_PLAY; i++) {
                 turn.addToRound(i, new PlayerAction(player, cards.get(i)));
@@ -238,30 +223,16 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
         turn.setFinishedListener(this);
     }
 
-    private void onMessageWaitingForCards(Player player, Envelope envelope) {
-        Logger.d("onMessageWaitingForCards " + envelope);
-        if (envelope instanceof Envelope.SendCards) {
-            List<BoardAction> cards = ((Envelope.SendCards) envelope).cards;
-            cardsToPlay.put(player, cards);
-        }
-        if (envelope instanceof Envelope.UnReadyMyCards) {
-            cardsToPlay.remove(player);
-        }
-    }
-
-    @Override
-    public void onPlayerConnected(final Player player) {
+    public void onPlayerConnected(Player player) {
         Logger.d("onPlayerConnected");
-        player.setColor(Color.WHITE);
-        player.setName("Player " + player.getId());
-        // TODO: will throw NPE here.
         gameBoard.createPlayerToken(player);
+        players.add(player);
     }
 
-    @Override
     public void onPlayerDisconnected(Player player) {
         Logger.d("onPlayerDisconnected");
         gameBoard.removePlayer(player);
+        players.remove(player);
     }
 
     @Override
@@ -269,12 +240,12 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
         if (event instanceof OnStartActionEvent) {
             OnStartActionEvent startEvent = (OnStartActionEvent) event;
             Player player = startEvent.player;
-            send(player, new Envelope.OnCardActivated(startEvent.boardAction));
+            player.send(new Envelope.OnCardActivated(startEvent.boardAction));
             cardFlowPanel.next();
         } else if (event instanceof OnEndActionEvent) {
             OnEndActionEvent endEvent = (OnEndActionEvent) event;
             Player player = endEvent.player;
-            send(player, new Envelope.OnCardDeactivated(endEvent.boardAction));
+            player.send(new Envelope.OnCardDeactivated(endEvent.boardAction));
 
             if (currentTurn.isLastOfRound(endEvent.boardAction)) {
                 int currentRound = currentTurn.getRoundOf(endEvent.boardAction);
@@ -287,7 +258,7 @@ public class ServerGameScreen extends ServerScreen implements EventListener, OnT
             PlayerToken.DamagedEvent damagedEvent = (PlayerToken.DamagedEvent) event;
             int damaged = damagedEvent.maxHealth - damagedEvent.healthLeft;
             PlayerToken playerToken = (PlayerToken) event.getTarget();
-            send(playerToken.getPlayer(), new Envelope.UpdateDamage(damaged));
+            playerToken.getPlayer().send(new Envelope.UpdateDamage(damaged));
         }
         return false;
     }

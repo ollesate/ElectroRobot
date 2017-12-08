@@ -9,7 +9,7 @@ import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.logic.CardGenerator;
 import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.server.logic.PlayerAction;
-import olof.sjoholm.net.Player;
+import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.configuration.Constants;
 
 public class DebugUtil {
@@ -39,9 +39,9 @@ public class DebugUtil {
         colors.add(Color.RED);
         colors.add(Color.BLUE);
 
-        Player player = new Player(i);
-        player.setName(names.get(i));
-        player.setColor(colors.get(i));
+        Player player = new Player(i, null);
+//        player.setName(names.get(i));
+//        player.setColor(colors.get(i));
         return player;
     }
 }

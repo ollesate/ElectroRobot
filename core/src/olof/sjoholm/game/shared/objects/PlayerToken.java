@@ -28,7 +28,7 @@ import olof.sjoholm.game.server.objects.SpawnPoint;
 import olof.sjoholm.utils.actions.RelativeAction;
 import olof.sjoholm.configuration.Config;
 import olof.sjoholm.game.server.logic.TileType;
-import olof.sjoholm.net.Player;
+import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.utils.Logger;
 import olof.sjoholm.game.shared.logic.Movement;

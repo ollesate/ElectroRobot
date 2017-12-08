@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
-import olof.sjoholm.net.Player;
+import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.utils.ui.Drawable;
 
 public class GameBoardActor extends Group {
