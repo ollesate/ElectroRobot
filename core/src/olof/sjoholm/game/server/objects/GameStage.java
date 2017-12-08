@@ -1,6 +1,7 @@
 package olof.sjoholm.game.server.objects;
 
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,14 +29,6 @@ public class GameStage extends Stage {
         setViewport(viewport);
         getRoot().setWidth(Constants.WORLD_WIDTH);
         getRoot().setHeight(Constants.WORLD_HEIGHT);
-
-        addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                addActor(Explosion.create(x, y));
-                return true;
-            }
-        });
     }
 
     public List<GameBoardActor> getActorsAt(int x, int y) {
@@ -53,4 +46,5 @@ public class GameStage extends Stage {
     public TileType getTile(int x, int y) {
         return gameBoard.getLevel().getTile(x, y);
     }
+
 }

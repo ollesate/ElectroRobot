@@ -5,23 +5,29 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 
+import java.util.Arrays;
 import java.util.List;
 
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.assets.Skins;
 import olof.sjoholm.assets.Textures;
+import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.server.server_logic.ServerLogic;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.net.Envelope;
 import olof.sjoholm.net.ServerConnection;
 import olof.sjoholm.utils.Logger;
+import olof.sjoholm.utils.TextUtils;
 
 public class ServerGame extends Game implements ServerConnection.OnMessageListener,
-        ServerConnection.OnPlayerConnectedListener, ServerConnection.OnPlayerDisconnectedListener {
+        ServerConnection.OnPlayerConnectedListener, ServerConnection.OnPlayerDisconnectedListener, EventListener {
 
     private ServerConnection serverConnection;
     private ServerLogic serverLogic;
+    private ServerGameScreen serverGameScreen;
 
     public ServerGame() {
         serverConnection = new ServerConnection();
@@ -36,7 +42,8 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
         Textures.initialize();
         Skins.initialize();
         Fonts.initialize();
-        ServerGameScreen serverGameScreen = new ServerGameScreen();
+        serverGameScreen = new ServerGameScreen();
+        serverGameScreen.setMessageListener(this);
         setScreen(serverGameScreen);
         serverConnection.connect();
         serverLogic = new ServerLogic(serverGameScreen, serverConnection);
@@ -73,6 +80,16 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
         });
     }
 
+    @Override
+    public void onPlayerConnected(int playerId) {
+        serverLogic.onPlayerConnected(playerId);
+    }
+
+    @Override
+    public void onPlayerDisconnected(int playerId) {
+        serverLogic.onPlayerDisconnected(playerId);
+    }
+
     private void onMessageUi(int id, Envelope envelope) {
         if (envelope instanceof Envelope.PlayerSelectColor) {
             Color color = ((Envelope.PlayerSelectColor) envelope).getColor();
@@ -92,13 +109,96 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
     }
 
     @Override
-    public void onPlayerConnected(int playerId) {
-        serverLogic.onPlayerConnected(playerId);
+    public boolean handle(Event event) {
+        if (event instanceof TerminalEvent) {
+            String[] args = ((TerminalEvent) event).args;
+            Logger.d("onTerminalMessage " + TextUtils.join(args, ", "));
+            TerminalHandler terminalHandler = new TerminalHandler();
+            try {
+                terminalHandler.handleMessage(args);
+            } catch (TerminalException e) {
+                System.out.print("Error " + e.getMessage());
+                serverGameScreen.onTerminalError(e.getMessage());
+            }
+            return true;
+        }
+        return false;
     }
 
-    @Override
-    public void onPlayerDisconnected(int playerId) {
-        serverLogic.onPlayerDisconnected(playerId);
+    private static class TerminalException extends Exception {
+
+        public TerminalException(String error) {
+            super(error);
+        }
     }
 
+    private class TerminalHandler {
+
+        private String[] args;
+
+        public void handleMessage(String[] args) throws TerminalException {
+            this.args = args;
+
+            String command = get(0, "No command provided");
+            if ("player".equals(command)) {
+                int playerId = getInt(1, "No valid player id");
+                String operation = get(2, "No operation provided");
+                if ("join".equals(operation)) {
+                    onPlayerConnected(playerId);
+                } else if ("quit".equals(operation)) {
+                    onPlayerDisconnected(playerId);
+                } else if ("ready".equals(operation)) {
+                    onMessageUi(playerId, new Envelope.PlayerReady(true));
+                } else if ("unready".equals(operation)) {
+                    onMessageUi(playerId, new Envelope.PlayerReady(false));
+                } else if ("color".equals(operation)) {
+                    Color color = getColor(3, "No valid color");
+                    if (color != null) {
+                        onMessageUi(playerId, new Envelope.PlayerSelectColor(color));
+                    }
+                } else if ("name".equals(operation)) {
+                    String name = get(3, "No name provided");
+                    if (name != null) {
+                        onMessageUi(playerId, new Envelope.PlayerSelectName(name));
+                    }
+                }
+            }
+        }
+
+        private Color getColor(int index, String error) throws TerminalException {
+            String color = get(index, error);
+            if ("black".equals(color)) {
+                return Color.BLACK;
+            } else if ("orange".equals(color)) {
+                return Color.ORANGE;
+            } else if ("white".equals(color)) {
+                return Color.WHITE;
+            } else if ("red".equals(color)) {
+                return Color.RED;
+            } else if ("green".equals(color)) {
+                return Color.GREEN;
+            } else if ("yellow".equals(color)) {
+                return Color.YELLOW;
+            } else if ("blue".equals(color)) {
+                return Color.BLUE;
+            }
+            throw new TerminalException(error);
+        }
+
+        private String get(int index, String error) throws TerminalException {
+            if (args.length > index) {
+                return args[index];
+            }
+            throw new TerminalException(error);
+        }
+
+        private int getInt(int index, String error) throws TerminalException {
+            String id = get(index, error);
+            try {
+                return Integer.valueOf(id);
+            } catch (NumberFormatException e) {
+                throw new TerminalException(error);
+            }
+        }
+    }
 }

@@ -2,10 +2,12 @@ package olof.sjoholm.game.server;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 
@@ -28,6 +30,7 @@ import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootAction;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.game.server.objects.GameStage;
+import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.DebugUtil;
 import olof.sjoholm.game.shared.logic.CardGenerator;
@@ -46,14 +49,15 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
     private final CardFlowPanel cardFlowPanel;
     private Turn currentTurn;
     private final EventLog eventLog;
+    private final Terminal terminal;
 
     public enum GamePhase {
         LOBBY,
         CARD,
         GAME;
+
     }
     private GamePhase gamePhase = GamePhase.LOBBY;
-
     public ServerGameScreen() {
         super();
         float tileSize = Constants.STEP_SIZE;
@@ -73,6 +77,35 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
         gameStage.addActor(actor);
         eventLog = new EventLog();
         gameStage.addActor(eventLog);
+
+        terminal = new Terminal();
+        terminal.setSize(500, 500);
+        terminal.setVisible(false);
+        gameStage.addActor(terminal);
+
+        gameStage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                switch (keycode) {
+                    case Input.Keys.T:
+                        if (!terminal.hasFocus()) {
+                            terminal.setVisible(!terminal.isVisible());
+                        }
+                        return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                terminal.setFocus(terminal.hit(x, y, true) != null);
+                return false;
+            }
+        });
+    }
+
+    public void setMessageListener(EventListener eventListener) {
+        gameStage.addListener(eventListener);
     }
 
     @Override
@@ -266,5 +299,9 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
     @Override
     public void onTurnFinished() {
         startCardPhase();
+    }
+
+    public void onTerminalError(String message) {
+        terminal.onError(message);
     }
 }
