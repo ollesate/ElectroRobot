@@ -86,6 +86,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
                 switch (keycode) {
                     case Input.Keys.T:
                         if (!terminal.hasFocus()) {
+                            terminal.setFocus(!terminal.isVisible());
                             terminal.setVisible(!terminal.isVisible());
                         }
                         return true;
