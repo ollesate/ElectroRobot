@@ -91,6 +91,7 @@ public class ServerLogic {
     public void onCardsReceived(int id, List<BoardAction> cards) {
         Player player = getPlayer(id);
         if (player != null) {
+            player.setCards(cards);
             serverGameScreen.onPlayerCardsReceived(player, cards);
         }
     }

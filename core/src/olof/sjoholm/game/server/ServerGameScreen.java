@@ -3,7 +3,6 @@ package olof.sjoholm.game.server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -36,13 +35,11 @@ import olof.sjoholm.game.shared.DebugUtil;
 import olof.sjoholm.game.shared.logic.CardGenerator;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
-import olof.sjoholm.net.Envelope;
 import olof.sjoholm.utils.Logger;
 import olof.sjoholm.utils.ui.objects.LabelActor;
 
 public class ServerGameScreen extends ScreenAdapter implements EventListener, OnTurnFinishedListener {
     private List<Player> players = new ArrayList<Player>();
-    private Map<Player, List<BoardAction>> cardsToPlay = new HashMap<Player, List<BoardAction>>();
     private final GameStage gameStage;
     private boolean paused;
     private final GameBoard gameBoard;
@@ -185,13 +182,11 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
     }
 
     public void onPlayerCardsReady(Player player, boolean ready) {
-        if (!ready) {
-            cardsToPlay.remove(player);
-        }
+
     }
 
     public void onPlayerCardsReceived(Player player, List<BoardAction> cards) {
-        cardsToPlay.put(player, cards);
+
     }
 
     private void startCardPhase() {
@@ -199,10 +194,9 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
 
         gamePhase = GamePhase.CARD;
         for (Player connectedPlayer : players) {
-            connectedPlayer.send(new Envelope.StartGame());
-            connectedPlayer.send(new Envelope.StartCountdown(delay));
-            List<BoardAction> cards = CardGenerator.generateList(Constants.CARDS_TO_DEAL);
-            connectedPlayer.send(new Envelope.SendCards(cards));
+            connectedPlayer.startGame();
+            connectedPlayer.startCountdown(delay);
+            connectedPlayer.sendCards(CardGenerator.generateList(Constants.CARDS_TO_DEAL));
         }
         // Let them arrange their cards before calling turn ended.
         new Timer().scheduleTask(new Timer.Task() {
@@ -227,7 +221,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
         // TODO: do something if someone disconnects
         for (Player player : players) {
             // This will tell them to return cards to play.
-            player.send(new Envelope.OnCardPhaseEnded());
+            player.sendCardPhaseEnded();
         }
         // They need a little time to give their response.
         new Timer().scheduleTask(new Timer.Task() {
@@ -244,9 +238,8 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
     private void onGameBegin() {
         Turn turn = new Turn(Constants.CARDS_TO_PLAY);
         for (Player player : players) {
-            List<BoardAction> cards = cardsToPlay.get(player);
             for (int i = 0; i < Constants.CARDS_TO_PLAY; i++) {
-                turn.addToRound(i, new PlayerAction(player, cards.get(i)));
+                turn.addToRound(i, new PlayerAction(player, player.getCards().get(i)));
             }
         }
         gameBoard.startTurn(turn);
@@ -273,12 +266,12 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
         if (event instanceof OnStartActionEvent) {
             OnStartActionEvent startEvent = (OnStartActionEvent) event;
             Player player = startEvent.player;
-            player.send(new Envelope.OnCardActivated(startEvent.boardAction));
+            player.onCardActivated(startEvent.boardAction);
             cardFlowPanel.next();
         } else if (event instanceof OnEndActionEvent) {
             OnEndActionEvent endEvent = (OnEndActionEvent) event;
             Player player = endEvent.player;
-            player.send(new Envelope.OnCardDeactivated(endEvent.boardAction));
+            player.onCardDeactivated(endEvent.boardAction);
 
             if (currentTurn.isLastOfRound(endEvent.boardAction)) {
                 int currentRound = currentTurn.getRoundOf(endEvent.boardAction);
@@ -291,7 +284,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
             PlayerToken.DamagedEvent damagedEvent = (PlayerToken.DamagedEvent) event;
             int damaged = damagedEvent.maxHealth - damagedEvent.healthLeft;
             PlayerToken playerToken = (PlayerToken) event.getTarget();
-            playerToken.getPlayer().send(new Envelope.UpdateDamage(damaged));
+            playerToken.getPlayer().updateDamage(damaged);
         }
         return false;
     }
