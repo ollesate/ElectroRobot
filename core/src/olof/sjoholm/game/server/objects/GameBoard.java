@@ -2,6 +2,7 @@ package olof.sjoholm.game.server.objects;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -31,6 +32,7 @@ import olof.sjoholm.utils.actions.FireEventAction;
 
 public class GameBoard extends Group implements EventListener {
     private List<SpawnPoint> spawnPoints;
+    private List<GameBoardActor> gameBoardActors = new ArrayList<GameBoardActor>();
 
     // TODO: extract away this. Would be cool to handle in base class.
     private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
@@ -41,6 +43,31 @@ public class GameBoard extends Group implements EventListener {
     public GameBoard(int tileSize) {
         this.tileSize = tileSize;
         addListener(this);
+    }
+
+    @Override
+    public void addActor(Actor actor) {
+        super.addActor(actor);
+        if (actor instanceof GameBoardActor) {
+            gameBoardActors.add((GameBoardActor) actor);
+        }
+    }
+
+    @Override
+    public boolean removeActor(Actor actor, boolean unfocus) {
+        if (actor instanceof GameBoardActor) {
+            gameBoardActors.remove(actor);
+        }
+        return super.removeActor(actor, unfocus);
+    }
+
+    public GameBoardActor getActor(int id) {
+        for (GameBoardActor gameBoardActor : gameBoardActors) {
+            if (gameBoardActor.getId() == id) {
+                return gameBoardActor;
+            }
+        }
+        return null;
     }
 
     public void loadMap(Level level) {
@@ -74,6 +101,15 @@ public class GameBoard extends Group implements EventListener {
         playerToken.setPlayerName(player.getName());
         spawnedActors.add(playerToken);
 
+        return playerToken;
+    }
+
+    public PlayerToken spawnToken(int x, int y) {
+        PlayerToken playerToken = new PlayerToken();
+        playerToken.setSize(tileSize, tileSize);
+        playerToken.setX(x * tileSize);
+        playerToken.setY(y * tileSize);
+        addActor(playerToken);
         return playerToken;
     }
 

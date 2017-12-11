@@ -21,4 +21,13 @@ public enum Rotation {
         int rand = (int)(Math.random() * Rotation.values().length);
         return Rotation.values()[rand];
     }
+
+    public static Rotation fromString(String string) {
+        for (Rotation rotation : values()) {
+            if (rotation.name().equalsIgnoreCase(string)) {
+                return rotation;
+            }
+        }
+        return null;
+    }
 }

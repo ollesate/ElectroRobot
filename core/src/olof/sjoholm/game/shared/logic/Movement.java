@@ -23,4 +23,13 @@ public enum Movement {
         int rand = (int)(Math.random() * Movement.values().length);
         return Movement.values()[rand];
     }
+
+    public static Movement fromString(String string) {
+        for (Movement movement : Movement.values()) {
+            if (movement.name().equalsIgnoreCase(string)) {
+                return movement;
+            }
+        }
+        return null;
+    }
 }

@@ -46,6 +46,7 @@ public class Terminal extends Group {
                 null
         );
         textField = new TextField("", tfStyle);
+        textField.setDisabled(true);
         addActor(textField);
         addListener(new InputListener() {
 
@@ -109,8 +110,13 @@ public class Terminal extends Group {
         }
     }
 
-    public void onError(String message) {
-        textArea.appendText(message + "\n");
+    public void onError(final String message) {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                textArea.appendText(message + "\n");
+            }
+        });
     }
 
     public boolean hasFocus() {
@@ -120,5 +126,15 @@ public class Terminal extends Group {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, 0.85f);
+    }
+
+    public void writeLine(final String message) {
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                // We want this printed after enter event has occured
+                textArea.appendText(message + "\n");
+            }
+        });
     }
 }

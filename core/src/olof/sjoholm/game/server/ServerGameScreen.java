@@ -3,17 +3,17 @@ package olof.sjoholm.game.server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.configuration.Config;
@@ -26,6 +26,7 @@ import olof.sjoholm.game.server.objects.CardFlowPanel;
 import olof.sjoholm.game.server.objects.EventLog;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootAction;
+import olof.sjoholm.game.server.objects.GameBoardActor;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
 import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.game.server.objects.GameStage;
@@ -33,9 +34,13 @@ import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.DebugUtil;
 import olof.sjoholm.game.shared.logic.CardGenerator;
+import olof.sjoholm.game.shared.logic.Movement;
+import olof.sjoholm.game.shared.logic.Rotation;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
+import olof.sjoholm.game.shared.logic.cards.Rotate;
 import olof.sjoholm.game.shared.objects.PlayerToken;
 import olof.sjoholm.utils.Logger;
+import olof.sjoholm.utils.NumberUtils;
 import olof.sjoholm.utils.ui.objects.LabelActor;
 
 public class ServerGameScreen extends ScreenAdapter implements EventListener, OnTurnFinishedListener {
@@ -81,6 +86,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
         gameStage.addActor(terminal);
 
         gameStage.addListener(new InputListener() {
+
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 switch (keycode) {
@@ -97,6 +103,82 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 terminal.setFocus(terminal.hit(x, y, true) != null);
+                return false;
+            }
+        });
+        gameStage.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                if (event instanceof TerminalEvent) {
+                    TerminalEvent terminalEvent = (TerminalEvent) event;
+                    String command = terminalEvent.getCommand();
+                    if ("spawn".equals(command)) {
+                        String what = terminalEvent.get(1);
+                        if ("token".equals(what)) {
+                            try {
+                                int x = terminalEvent.getInt(2);
+                                int y = terminalEvent.getInt(3);
+                                int id = gameBoard.spawnToken(x, y).getId();
+                                terminal.writeLine("Spawned token with id " +id);
+                            } catch (TerminalException e) {
+                                terminal.onError(e.getMessage());
+                            }
+                        }
+                    } else if ("token".equals(command)) {
+                        PlayerToken playerToken = null;
+                        try {
+                            GameBoardActor gameBoardActor = gameBoard.getActor(terminalEvent.getInt(1));
+                            if (gameBoardActor instanceof PlayerToken) {
+                                playerToken = ((PlayerToken) gameBoardActor);
+                            }
+                        } catch (TerminalException e) {
+                            return false;
+                        }
+                        if (playerToken == null) {
+                            terminal.onError("No token for " + terminalEvent.get(1));
+                            return false;
+                        }
+
+                        if ("perform".equals(terminalEvent.get(2))) {
+                            int length = terminalEvent.getLength(3);
+                            if (length == 0) {
+                                terminal.onError("No actions");
+                            }
+                            SequenceAction sequenceAction = new SequenceAction();
+                            for (int i = 3; i < length + 3; i++) {
+                                String[] actions = terminalEvent.get(i).split(":");
+                                String action = actions.length > 0 ? actions[0] : null;
+                                Action gdxAction = null;
+                                if ("move".equals(action) && actions.length == 3) {
+                                    Movement movement = Movement.fromString(actions[1]);
+                                    int steps = NumberUtils.toInt(actions[2], -1);
+                                    if (movement != null && steps != -1) {
+                                        terminal.writeLine("Perform movement " + movement + " " + steps);
+                                        PlayerToken.MoveAction moveAction =
+                                                new PlayerToken.MoveAction(movement, steps);
+                                        moveAction.setPlayerToken(playerToken);
+                                        gdxAction = moveAction;
+                                    } else {
+                                        terminal.onError("Failure with move");
+                                    }
+                                } else if ("rotate".equals(action) && actions.length == 2) {
+                                    Rotation rotation = Rotation.fromString(actions[1]);
+                                    if (rotation != null) {
+                                        terminal.writeLine("Perform rotation "+ rotation);
+                                        gdxAction = playerToken.rotate(rotation);
+                                    }
+                                }
+                                if (gdxAction != null) {
+                                    sequenceAction.addAction(gdxAction);
+                                }
+                            }
+                            if (sequenceAction.getActions().size > 0) {
+                                System.out.print("add sequence");
+                                gameStage.addAction(sequenceAction);
+                            }
+                        }
+                    }
+                }
                 return false;
             }
         });

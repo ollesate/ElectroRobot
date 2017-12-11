@@ -9,6 +9,14 @@ import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.utils.ui.Drawable;
 
 public class GameBoardActor extends Group {
+    private static int idCounter;
+
+    private final int id;
+
+    {
+        id = idCounter++;
+    }
+
     private Drawable drawable;
 
     public void setDrawable(Drawable drawable) {
@@ -47,5 +55,9 @@ public class GameBoardActor extends Group {
             this.player = player;
             this.boardAction = boardAction;
         }
+    }
+
+    public int getId() {
+        return id;
     }
 }

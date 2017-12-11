@@ -20,20 +20,20 @@ import com.badlogic.gdx.utils.Align;
 import java.util.List;
 
 import olof.sjoholm.assets.Textures;
+import olof.sjoholm.configuration.Config;
+import olof.sjoholm.configuration.Constants;
+import olof.sjoholm.game.server.logic.TileType;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoardActor;
 import olof.sjoholm.game.server.objects.GameStage;
 import olof.sjoholm.game.server.objects.Missile;
 import olof.sjoholm.game.server.objects.SpawnPoint;
-import olof.sjoholm.utils.actions.RelativeAction;
-import olof.sjoholm.configuration.Config;
-import olof.sjoholm.game.server.logic.TileType;
 import olof.sjoholm.game.server.server_logic.Player;
-import olof.sjoholm.configuration.Constants;
-import olof.sjoholm.utils.Logger;
 import olof.sjoholm.game.shared.logic.Movement;
 import olof.sjoholm.game.shared.logic.Rotation;
 import olof.sjoholm.sfx.Muzzle;
+import olof.sjoholm.utils.Logger;
+import olof.sjoholm.utils.actions.RelativeAction;
 import olof.sjoholm.utils.ui.Drawable;
 
 public class PlayerToken extends olof.sjoholm.game.server.objects.GameBoardActor {
@@ -264,6 +264,10 @@ public class PlayerToken extends olof.sjoholm.game.server.objects.GameBoardActor
         private Action movementAction;
         private GameStage gameStage;
         private float stepDuration;
+
+        public MoveAction(Movement movement, int steps) {
+            this(movement, steps, 1f);
+        }
 
         public MoveAction(Movement movement, int steps, float speedModifier) {
             stepDuration = MOVE_DURATION / speedModifier;
