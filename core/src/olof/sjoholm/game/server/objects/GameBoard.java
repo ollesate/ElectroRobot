@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.AfterAction;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
@@ -21,8 +22,6 @@ import olof.sjoholm.game.server.logic.DoPlayerAction;
 import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.Turn;
-import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
-import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.logic.cards.Shoot;
 import olof.sjoholm.game.shared.objects.PlayerToken;
@@ -136,8 +135,6 @@ public class GameBoard extends Group implements EventListener {
         SequenceAction sequence = new SequenceAction();
 
         for (int i = 0; i < turn.size(); i++) {
-            List<Action> shootActions = new ArrayList<Action>();
-
             for (PlayerAction playerAction : turn.getRound(i)) {
                 Player player = playerAction.player;
                 BoardAction boardAction = playerAction.boardAction;
@@ -146,41 +143,13 @@ public class GameBoard extends Group implements EventListener {
                 sequence.addAction(new DoPlayerAction(this, playerAction));
                 sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
                 sequence.addAction(new DelayAction(Constants.CARD_POST_DELAY / playSpeed));
+            }
+            sequence.addAction(new AllPlayersShootAction());
+            sequence.addAction(new RunConveyorBeltAction());
+            sequence.addAction(new ShootLasersAction());
 
-                shootActions.add(new DoPlayerAction(this, new PlayerAction(player, new Shoot())));
-            }
-            // Let all players shoot
-            ParallelAction allShootAction = new ParallelAction();
-            for (Action shootAction : shootActions) {
-                allShootAction.addAction(shootAction);
-            }
-            sequence.addAction(new FireEventAction(new AllPlayersShootAction()));
-            sequence.addAction(allShootAction);
         }
-        sequence.addAction(new Action() {
-            @Override
-            public boolean act(float delta) {
-                turn.finished();
-                // Spawn dead players again
-                for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
-                    boolean isDead = entry.getValue() == null;
-                    Logger.d(entry.getKey().getName() +  " token is " + (isDead ? "dead" : "alive"));
-
-
-                    if (entry.getValue() == null) { // Player died
-                        Logger.d("Spawn player token");
-                        Player player = entry.getKey();
-
-                        SpawnPoint spawnPoint = getSpawnPoint(player);
-
-                        PlayerToken spawnedToken = spawnPlayerToken(player, spawnPoint);
-                        entry.setValue(spawnedToken);
-                    }
-                }
-                return true;
-            }
-        });
-
+        sequence.addAction(new TurnFinishedAction());
         addAction(sequence);
     }
 
@@ -222,6 +191,16 @@ public class GameBoard extends Group implements EventListener {
         return actors;
     }
 
+    public <T> List<T> getActors(Class<T> clazz) {
+        List<T> actors = new ArrayList<T>();
+        for (Actor actor : getChildren()) {
+            if (clazz.isInstance(actor)) {
+                actors.add(clazz.cast(actor));
+            }
+        }
+        return actors;
+    }
+
     public static Vector2 getBoardPosition(float x, float y) {
         return new Vector2(x / Constants.STEP_SIZE, y / Constants.STEP_SIZE);
     }
@@ -249,7 +228,79 @@ public class GameBoard extends Group implements EventListener {
         return playerTokens.get(player);
     }
 
-    public static class AllPlayersShootAction extends Event {
+    public static class AllPlayersShootEvent extends Event {}
 
+    public static class TurnFinishedEvent extends Event {}
+
+    private class AllPlayersShootAction extends Action {
+        Action shootActions;
+        @Override
+        public boolean act(float delta) {
+            if (shootActions == null) {
+                shootActions = getShootActions();
+                fire(new AllPlayersShootEvent());
+            }
+            return shootActions.act(delta);
+        }
+
+        private Action getShootActions() {
+            List<PlayerToken> actors = getActors(PlayerToken.class);
+            ParallelAction parallelAction = new ParallelAction();
+            for (PlayerToken token : actors) {
+                parallelAction.addAction(token.getShootAction());
+            }
+            return parallelAction;
+        }
+    }
+
+    private class RunConveyorBeltAction extends Action {
+        Action beltActions;
+        @Override
+        public boolean act(float delta) {
+            if (beltActions == null) {
+                beltActions = getBeltActions();
+            }
+            return beltActions.act(delta);
+        }
+
+        private Action getBeltActions() {
+            List<ConveyorBelt> actors = getActors(ConveyorBelt.class);
+            ParallelAction parallelAction = new ParallelAction();
+            for (ConveyorBelt conveyorBelt : actors) {
+                parallelAction.addAction(conveyorBelt.getAction());
+            }
+            return parallelAction;
+        }
+    }
+
+    private class ShootLasersAction extends Action {
+        @Override
+        public boolean act(float delta) {
+            return true;
+        }
+    }
+
+    private class TurnFinishedAction extends Action {
+
+        @Override
+            public boolean act(float delta) {
+                fire(new TurnFinishedEvent());
+                // Spawn dead players again
+                for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
+                    boolean isDead = entry.getValue() == null;
+                    Logger.d(entry.getKey().getName() +  " token is " + (isDead ? "dead" : "alive"));
+
+                    if (entry.getValue() == null) { // Player died
+                        Logger.d("Spawn player token");
+                        Player player = entry.getKey();
+
+                        SpawnPoint spawnPoint = getSpawnPoint(player);
+
+                        PlayerToken spawnedToken = spawnPlayerToken(player, spawnPoint);
+                        entry.setValue(spawnedToken);
+                    }
+                }
+                return true;
+            }
     }
 }

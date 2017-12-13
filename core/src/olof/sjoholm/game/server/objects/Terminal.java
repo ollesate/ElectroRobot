@@ -110,7 +110,7 @@ public class Terminal extends Group {
         }
     }
 
-    public void onError(final String message) {
+    public void writeError(final String message) {
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {

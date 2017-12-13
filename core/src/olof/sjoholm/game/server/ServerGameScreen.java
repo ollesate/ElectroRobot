@@ -21,29 +21,26 @@ import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.Levels;
 import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.Turn;
-import olof.sjoholm.game.server.logic.Turn.OnTurnFinishedListener;
 import olof.sjoholm.game.server.objects.CardFlowPanel;
 import olof.sjoholm.game.server.objects.EventLog;
 import olof.sjoholm.game.server.objects.GameBoard;
-import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootAction;
+import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootEvent;
 import olof.sjoholm.game.server.objects.GameBoardActor;
-import olof.sjoholm.game.server.objects.GameBoardActor.OnEndActionEvent;
-import olof.sjoholm.game.server.objects.GameBoardActor.OnStartActionEvent;
 import olof.sjoholm.game.server.objects.GameStage;
+import olof.sjoholm.game.server.objects.OnEndActionEvent;
+import olof.sjoholm.game.server.objects.OnStartActionEvent;
 import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.server.server_logic.Player;
-import olof.sjoholm.game.shared.DebugUtil;
 import olof.sjoholm.game.shared.logic.CardGenerator;
 import olof.sjoholm.game.shared.logic.Movement;
 import olof.sjoholm.game.shared.logic.Rotation;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
-import olof.sjoholm.game.shared.logic.cards.Rotate;
 import olof.sjoholm.game.shared.objects.PlayerToken;
 import olof.sjoholm.utils.Logger;
 import olof.sjoholm.utils.NumberUtils;
 import olof.sjoholm.utils.ui.objects.LabelActor;
 
-public class ServerGameScreen extends ScreenAdapter implements EventListener, OnTurnFinishedListener {
+public class ServerGameScreen extends ScreenAdapter implements EventListener {
     private List<Player> players = new ArrayList<Player>();
     private final GameStage gameStage;
     private boolean paused;
@@ -121,7 +118,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
                                 int id = gameBoard.spawnToken(x, y).getId();
                                 terminal.writeLine("Spawned token with id " +id);
                             } catch (TerminalException e) {
-                                terminal.onError(e.getMessage());
+                                terminal.writeError(e.getMessage());
                             }
                         }
                     } else if ("token".equals(command)) {
@@ -135,14 +132,14 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
                             return false;
                         }
                         if (playerToken == null) {
-                            terminal.onError("No token for " + terminalEvent.get(1));
+                            terminal.writeError("No token for " + terminalEvent.get(1));
                             return false;
                         }
 
                         if ("perform".equals(terminalEvent.get(2))) {
                             int length = terminalEvent.getLength(3);
                             if (length == 0) {
-                                terminal.onError("No actions");
+                                terminal.writeError("No actions");
                             }
                             SequenceAction sequenceAction = new SequenceAction();
                             for (int i = 3; i < length + 3; i++) {
@@ -159,7 +156,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
                                         moveAction.setPlayerToken(playerToken);
                                         gdxAction = moveAction;
                                     } else {
-                                        terminal.onError("Failure with move");
+                                        terminal.writeError("Failure with move");
                                     }
                                 } else if ("rotate".equals(action) && actions.length == 2) {
                                     Rotation rotation = Rotation.fromString(actions[1]);
@@ -192,41 +189,6 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
     public void show() {
         super.show();
         Gdx.input.setInputProcessor(gameStage);
-    }
-
-    private void debugStartTurn() {
-        final List<Player> players = new ArrayList<Player>();
-        for (int i = 0; i < 1; i++) {
-            Player player = DebugUtil.getPlayer(i);
-            players.add(player);
-            gameBoard.createPlayerToken(player);
-        }
-        Turn turn = DebugUtil.generateTurns(players);
-        turn.setFinishedListener(new OnTurnFinishedListener() {
-            @Override
-            public void onTurnFinished() {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Logger.d("Start new turn soon");
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        Turn newTurn = DebugUtil.generateTurns(players);
-
-                        gameBoard.startTurn(newTurn);
-                        cardFlowPanel.setTurn(newTurn);
-                        currentTurn = newTurn;
-                    }
-                }).start();
-            }
-        });
-        gameBoard.startTurn(turn);
-        cardFlowPanel.setTurn(turn);
-        currentTurn = turn;
     }
 
     @Override
@@ -329,7 +291,6 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
         cardFlowPanel.setTurn(turn);
 
         currentTurn = turn;
-        turn.setFinishedListener(this);
     }
 
     public void onPlayerConnected(Player player) {
@@ -360,7 +321,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
                 int currentRound = currentTurn.getRoundOf(endEvent.boardAction);
                 eventLog.addEventText("Round " + (currentRound + 1), 4f);
             }
-        } else if (event instanceof AllPlayersShootAction) {
+        } else if (event instanceof AllPlayersShootEvent) {
             cardFlowPanel.next();
         } else if (event instanceof PlayerToken.DamagedEvent) {
             // Player got damaged
@@ -368,16 +329,13 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener, On
             int damaged = damagedEvent.maxHealth - damagedEvent.healthLeft;
             PlayerToken playerToken = (PlayerToken) event.getTarget();
             playerToken.getPlayer().updateDamage(damaged);
+        } else if (event instanceof GameBoard.TurnFinishedEvent) {
+            startCardPhase();
         }
         return false;
     }
 
-    @Override
-    public void onTurnFinished() {
-        startCardPhase();
-    }
-
     public void onTerminalError(String message) {
-        terminal.onError(message);
+        terminal.writeError(message);
     }
 }
