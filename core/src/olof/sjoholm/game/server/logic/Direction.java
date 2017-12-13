@@ -19,6 +19,10 @@ public enum Direction {
         this.rotation = rotation;
     }
 
+    public Vector2 getDirection() {
+        return new Vector2(dirX, dirY);
+    }
+
     public static Direction fromRotation(float rotation) {
         float x = MathUtils.cosDeg(rotation);
         float y = MathUtils.sinDeg(rotation);

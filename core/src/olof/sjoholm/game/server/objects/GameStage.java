@@ -47,4 +47,7 @@ public class GameStage extends Stage {
         return gameBoard.getLevel().getTile(x, y);
     }
 
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
 }

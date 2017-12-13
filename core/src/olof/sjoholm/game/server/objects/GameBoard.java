@@ -6,11 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.actions.AfterAction;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,6 @@ import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
-import olof.sjoholm.game.shared.logic.cards.Shoot;
 import olof.sjoholm.game.shared.objects.PlayerToken;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.utils.Logger;
@@ -166,15 +165,21 @@ public class GameBoard extends Group implements EventListener {
         return level;
     }
 
-    public List<GameBoardActor> getActorsAt(int x, int y) {
-        List<GameBoardActor> actors = new ArrayList<GameBoardActor>();
+    public <T extends GameBoardActor> List<T> getActorsAt(int x, int y, Class<T> clazz) {
+        List<T> actors = new ArrayList<T>();
         for (GameBoardActor spawnedActor : spawnedActors) {
             if ((int) (spawnedActor.getX() / Constants.STEP_SIZE) == x &&
                     (int) (spawnedActor.getY() / Constants.STEP_SIZE) == y) {
-                actors.add(spawnedActor);
+                if (clazz != null && clazz.isInstance(spawnedActor)) {
+                    actors.add(clazz.cast(spawnedActor));
+                }
             }
         }
         return actors;
+    }
+
+    public List<GameBoardActor> getActorsAt(int x, int y) {
+        return getActorsAt(x, y, null);
     }
 
     public List<GameBoardActor> getActors(float x, float y, float width, float height) {
@@ -203,6 +208,11 @@ public class GameBoard extends Group implements EventListener {
 
     public static Vector2 getBoardPosition(float x, float y) {
         return new Vector2(x / Constants.STEP_SIZE, y / Constants.STEP_SIZE);
+    }
+
+    public Point getBoardPosition(GameBoardActor actor) {
+        return new Point((int)(actor.getY() / Constants.STEP_SIZE),
+                (int)(actor.getX() / Constants.STEP_SIZE));
     }
 
     public void removePlayer(Player player) {

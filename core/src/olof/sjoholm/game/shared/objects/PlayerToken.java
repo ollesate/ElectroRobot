@@ -22,6 +22,7 @@ import java.util.List;
 import olof.sjoholm.assets.Textures;
 import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
+import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.server.logic.TileType;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoardActor;
@@ -189,7 +190,11 @@ public class PlayerToken extends olof.sjoholm.game.server.objects.GameBoardActor
         return new Vector2(Math.round(x), Math.round(y));
     }
 
-    public static class MoveTileAction extends RelativeAction {
+    public Action getMoveAction(Direction vectorDirection, float duration) {
+        return new MoveTileAction(this, vectorDirection.getDirection(), false, duration);
+    }
+
+    private static class MoveTileAction extends RelativeAction {
         private final PlayerToken token;
         private final Vector2 direction;
         private boolean animate;
@@ -308,7 +313,7 @@ public class PlayerToken extends olof.sjoholm.game.server.objects.GameBoardActor
 
         private Action getNextMovement() {
             Vector2 movementDir = playerToken.getMovementVector(movement);
-            Vector2 pos = olof.sjoholm.game.server.objects.GameBoard.getBoardPosition(playerToken.getX(), playerToken.getY());
+            Vector2 pos = GameBoard.getBoardPosition(playerToken.getX(), playerToken.getY());
             List<olof.sjoholm.game.server.objects.GameBoardActor> actorsAt = gameStage.getActorsAt((int) (pos.x + movementDir.x),
                     (int) (pos.y + movementDir.y));
             PlayerToken blockingPlayer = null;

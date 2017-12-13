@@ -1,11 +1,13 @@
 package olof.sjoholm.game.server.logic;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Align;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.SpawnPoint;
 import olof.sjoholm.game.server.objects.Tile;
 
@@ -14,10 +16,10 @@ public class Levels {
     public static Level level1() {
         return new Level(
                 new int[][]{
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 1, 0, 0, 0, 0, 1, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 1, 0, -1, -1, 0, 1, 0},
+                        {2, 0, 0, 0, 0, 0, 0, 0},
+                        {2, 0, 0, 0, 0, 0, 1, 0},
+                        {2, 0, 0, 0, 0, 0, 0, 0},
+                        {2, 1, 0, 0, 0, 0, 1, 0},
                         {0, 0, 0, 0, 0, 0, 0, 0},
                 }
         );
@@ -27,6 +29,7 @@ public class Levels {
         public static final int OUT_OF_BOUNDS = -2;
         public static final int FLOOR = 0;
         public static final int SPAWN = 1;
+        public static final int CONVEYER_BELT_1 = 2;
 
         private final List<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
         private final int[][] tileArray;
@@ -50,10 +53,20 @@ public class Levels {
                             addTile(group, tileSize, x, y);
                             addSpawn(group, tileSize, x, y);
                             break;
+                        case CONVEYER_BELT_1:
+                            addActor(group, new ConveyorBelt(Direction.UP, 1),tileSize, x, y);
                     }
 
                 }
             }
+        }
+
+        private void addActor(Group group, Actor actor, int tileSize, int x, int y) {
+            actor.setX(x * tileSize);
+            actor.setY(y * tileSize);
+            actor.setWidth(tileSize);
+            actor.setHeight(tileSize);
+            group.addActor(actor);
         }
 
         private void addTile(Group group, int tileSize, int x, int y) {
