@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
@@ -22,6 +23,7 @@ import olof.sjoholm.game.server.logic.Levels;
 import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.server.objects.CardFlowPanel;
+import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.EventLog;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootEvent;
@@ -161,7 +163,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
                                 } else if ("rotate".equals(action) && actions.length == 2) {
                                     Rotation rotation = Rotation.fromString(actions[1]);
                                     if (rotation != null) {
-                                        terminal.writeLine("Perform rotation "+ rotation);
+                                        terminal.writeLine("Perform rotation " + rotation);
                                         gdxAction = playerToken.rotate(rotation);
                                     }
                                 }
@@ -174,6 +176,17 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
                                 gameStage.addAction(sequenceAction);
                             }
                         }
+                    } else if ("belts".equals(terminalEvent.getCommand())) {
+                        System.out.println("Belts should act here!");
+                        List<ConveyorBelt> belts = gameStage.getGameBoard().getActors(ConveyorBelt.class);
+                        if (belts.size() == 0) {
+                            System.out.println("No belts could be found!");
+                        }
+                        ParallelAction beltActions = new ParallelAction();
+                        for (ConveyorBelt belt : belts) {
+                            beltActions.addAction(belt.getAction());
+                        }
+                        gameStage.addAction(beltActions);
                     }
                 }
                 return false;
@@ -204,7 +217,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             paused = !paused;
         }
         if (!paused) {

@@ -30,6 +30,7 @@ public class ConveyorBelt extends GameBoardActor {
     }
 
     public Action getAction() {
+        System.out.println("Get action");
         return new BeltAction();
     }
 
@@ -43,28 +44,37 @@ public class ConveyorBelt extends GameBoardActor {
 
         @Override
         public boolean act(float delta) {
-            if (beltAction == null || beltAction.act(delta)) {
+            if (beltAction == null) {
+                beltAction = getInternalBeltAction();
+            }
+
+            if (beltAction.act(delta)) {
+                currentTime--;
                 if (currentTime == 0) {
                     // We are finished
                     return true;
+                } else {
+                    beltAction = getInternalBeltAction();
                 }
-
-                currentTime--;
-                beltAction = getInternalBeltAction();
             }
-            return beltAction.act(delta);
+            return false;
         }
 
         private Action getInternalBeltAction() {
             GameBoard gameBoard = getStage().getGameBoard();
             Point boardPosition = gameBoard.getBoardPosition(ConveyorBelt.this);
+            System.out.println("- Find tokens at " + boardPosition.x + ", " + boardPosition.y);
             List<PlayerToken> tokens = gameBoard.getActorsAt(boardPosition.x, boardPosition.y,
                     PlayerToken.class);
 
             if (tokens.size() > 0) {
                 PlayerToken playerToken = tokens.get(0);
+                System.out.println("---> Move token " + playerToken);
+                System.out.println("------------");
                 return playerToken.getMoveAction(direction, DURATION);
             }
+            System.out.println("No one on it");
+            System.out.println("------------");
             return Actions.delay(DURATION);
         }
     }

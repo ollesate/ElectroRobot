@@ -31,9 +31,6 @@ import olof.sjoholm.utils.actions.FireEventAction;
 public class GameBoard extends Group implements EventListener {
     private List<SpawnPoint> spawnPoints;
     private List<GameBoardActor> gameBoardActors = new ArrayList<GameBoardActor>();
-
-    // TODO: extract away this. Would be cool to handle in base class.
-    private List<GameBoardActor> spawnedActors = new ArrayList<GameBoardActor>();
     public Map<Player, PlayerToken> playerTokens = new HashMap<Player, PlayerToken>();
     private int tileSize;
     private Level level;
@@ -97,7 +94,6 @@ public class GameBoard extends Group implements EventListener {
 
         playerTokens.put(player, playerToken);
         playerToken.setPlayerName(player.getName());
-        spawnedActors.add(playerToken);
 
         return playerToken;
     }
@@ -167,7 +163,7 @@ public class GameBoard extends Group implements EventListener {
 
     public <T extends GameBoardActor> List<T> getActorsAt(int x, int y, Class<T> clazz) {
         List<T> actors = new ArrayList<T>();
-        for (GameBoardActor spawnedActor : spawnedActors) {
+        for (GameBoardActor spawnedActor : gameBoardActors) {
             if ((int) (spawnedActor.getX() / Constants.STEP_SIZE) == x &&
                     (int) (spawnedActor.getY() / Constants.STEP_SIZE) == y) {
                 if (clazz != null && clazz.isInstance(spawnedActor)) {
@@ -184,7 +180,7 @@ public class GameBoard extends Group implements EventListener {
 
     public List<GameBoardActor> getActors(float x, float y, float width, float height) {
         List<GameBoardActor> actors = new ArrayList<GameBoardActor>();
-        for (GameBoardActor actor : spawnedActors) {
+        for (GameBoardActor actor : gameBoardActors) {
             if (actor.getX() + actor.getWidth() < x || actor.getX() > x + width) {
                 continue;
             }
@@ -211,8 +207,8 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public Point getBoardPosition(GameBoardActor actor) {
-        return new Point((int)(actor.getY() / Constants.STEP_SIZE),
-                (int)(actor.getX() / Constants.STEP_SIZE));
+        return new Point((int)(actor.getX() / Constants.STEP_SIZE),
+                (int)(actor.getY() / Constants.STEP_SIZE));
     }
 
     public void removePlayer(Player player) {
@@ -223,7 +219,6 @@ public class GameBoard extends Group implements EventListener {
 
     private void cleanPlayerToken(PlayerToken playerToken) {
         playerTokens.put(playerToken.getPlayer(), null);
-        spawnedActors.remove(playerToken);
     }
 
     public void updatePlayer(Player player) {
