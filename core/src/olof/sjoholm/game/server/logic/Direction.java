@@ -3,6 +3,10 @@ package olof.sjoholm.game.server.logic;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
+import java.awt.Point;
+
+import olof.sjoholm.game.shared.logic.Movement;
+
 public enum Direction {
     LEFT(-1, 0, 180f),
     UP(0, 1, 90f),
@@ -19,8 +23,17 @@ public enum Direction {
         this.rotation = rotation;
     }
 
-    public Vector2 getDirection() {
+    public Vector2 getVector() {
         return new Vector2(dirX, dirY);
+    }
+
+    public Point getPoint() {
+        return new Point((int)(dirX), (int)(dirY));
+    }
+
+    public Direction translate(Movement movement) {
+        float newRotation = rotation + movement.getRotation();
+        return fromRotation(newRotation);
     }
 
     public static Direction fromRotation(float rotation) {

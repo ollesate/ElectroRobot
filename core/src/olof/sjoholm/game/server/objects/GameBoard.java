@@ -21,6 +21,7 @@ import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.DoPlayerAction;
 import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.game.server.logic.PlayerAction;
+import olof.sjoholm.game.server.logic.TileType;
 import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
@@ -202,8 +203,8 @@ public class GameBoard extends Group implements EventListener {
         return actors;
     }
 
-    public static Vector2 getBoardPosition(float x, float y) {
-        return new Vector2(x / Constants.STEP_SIZE, y / Constants.STEP_SIZE);
+    public static Point getBoardPosition(float x, float y) {
+        return new Point((int)(x / Constants.STEP_SIZE), (int)(y / Constants.STEP_SIZE));
     }
 
     public Point getBoardPosition(GameBoardActor actor) {
@@ -231,6 +232,18 @@ public class GameBoard extends Group implements EventListener {
 
     public PlayerToken getPlayerToken(Player player) {
         return playerTokens.get(player);
+    }
+
+    public boolean isPit(int x, int y) {
+        return level.getTile(x, y) == TileType.PIT;
+    }
+
+    public boolean isPassableTerrain(int x, int y) {
+        return level.getTile(x, y) == TileType.FLOOR;
+    }
+
+    public boolean isAvailableSpace(int x, int y) {
+        return isPassableTerrain(x, y)  && getActorsAt(x, y, PlayerToken.class).isEmpty();
     }
 
     public static class AllPlayersShootEvent extends Event {}

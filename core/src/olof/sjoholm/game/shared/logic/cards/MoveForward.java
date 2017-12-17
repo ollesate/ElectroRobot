@@ -15,7 +15,7 @@ public class MoveForward extends BoardAction {
 
     @Override
     public Action getAction(PlayerToken playerToken) {
-        return playerToken.move(Movement.FORWARD, steps);
+        return playerToken.getPushMoveAction(Movement.FORWARD, steps);
     }
 
     @Override

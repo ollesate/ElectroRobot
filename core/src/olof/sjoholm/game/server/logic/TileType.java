@@ -5,7 +5,8 @@ import java.util.Set;
 
 public enum TileType {
     FLOOR(0, 1),
-    PIT(-1);
+    PIT(-1),
+    OUT_OF_BOUNDS(-2);
 
     private final Set<Integer> ids = new HashSet<Integer>();
 

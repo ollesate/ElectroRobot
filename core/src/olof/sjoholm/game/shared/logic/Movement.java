@@ -1,23 +1,22 @@
 package olof.sjoholm.game.shared.logic;
 
+import olof.sjoholm.game.server.logic.Direction;
+
 public enum Movement {
 
-    FORWARD(0, 1),
+    FORWARD(0f),
 
-    CRAB_LEFT(-1, 0),
+    CRAB_LEFT(-90f),
 
-    CRAB_RIGHT(1, 0),
+    CRAB_RIGHT(90f),
 
-    BACKWARDS(0, -1);
+    BACKWARDS(180f);
 
-    Movement(int x, int y) {
-        this.x = x;
-        this.y = y;
+    private final float rotation;
+
+    Movement(float rotation) {
+        this.rotation = rotation;
     }
-
-    public int x;
-
-    public int y;
 
     public static Movement random() {
         int rand = (int)(Math.random() * Movement.values().length);
@@ -31,5 +30,9 @@ public enum Movement {
             }
         }
         return null;
+    }
+
+    public float getRotation() {
+        return rotation;
     }
 }

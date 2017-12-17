@@ -153,10 +153,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
                                     int steps = NumberUtils.toInt(actions[2], -1);
                                     if (movement != null && steps != -1) {
                                         terminal.writeLine("Perform movement " + movement + " " + steps);
-                                        PlayerToken.MoveAction moveAction =
-                                                new PlayerToken.MoveAction(movement, steps);
-                                        moveAction.setPlayerToken(playerToken);
-                                        gdxAction = moveAction;
+                                        gdxAction = playerToken.getPushMoveAction(movement, steps);
                                     } else {
                                         terminal.writeError("Failure with move");
                                     }
@@ -217,7 +214,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+        if (false) {
             paused = !paused;
         }
         if (!paused) {
