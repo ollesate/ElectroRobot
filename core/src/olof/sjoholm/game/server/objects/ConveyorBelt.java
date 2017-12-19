@@ -30,7 +30,6 @@ public class ConveyorBelt extends GameBoardActor {
     }
 
     public Action getAction() {
-        System.out.println("Get action");
         return new BeltAction();
     }
 
@@ -44,17 +43,20 @@ public class ConveyorBelt extends GameBoardActor {
 
         @Override
         public boolean act(float delta) {
+            if (currentTime == 0) {
+                return true;
+            }
+
             if (beltAction == null) {
                 beltAction = getInternalBeltAction();
             }
 
             if (beltAction.act(delta)) {
+                beltAction = null;
                 currentTime--;
                 if (currentTime == 0) {
                     // We are finished
                     return true;
-                } else {
-                    beltAction = getInternalBeltAction();
                 }
             }
             return false;
