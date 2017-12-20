@@ -10,17 +10,18 @@ import java.util.List;
 import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.SpawnPoint;
 import olof.sjoholm.game.server.objects.Tile;
+import olof.sjoholm.game.shared.logic.Rotation;
 
 public class Levels {
 
     public static Level level1() {
         return new Level(
                 new int[][]{
-                        {2, 0, 0, 0, 0, 0, 0, 0},
-                        {2, 0, 0, 0, 0, 0, 1, 0},
-                        {2, 0, 0, 0, 0, 0, 0, 0},
-                        {2, 1, 0, 0, 0, 0, 1, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
+                        {6, 3, 3, 3, 3, 3, 3, 7},
+                        {2, 0, 0, 0, 0, 0, 1, 4},
+                        {2, 0, 0, 0, 0, 0, 0, 4},
+                        {2, 1, 0, 0, 0, 0, 1, 4},
+                        {9, 5, 5, 5, 5, 5, 5, 8},
                 }
         );
     }
@@ -29,7 +30,14 @@ public class Levels {
         public static final int OUT_OF_BOUNDS = -2;
         public static final int FLOOR = 0;
         public static final int SPAWN = 1;
-        public static final int CONVEYER_BELT_1 = 2;
+        public static final int CONVEYOR_BELT_UP = 2;
+        public static final int CONVEYOR_BELT_RIGHT = 3;
+        public static final int CONVEYOR_BELT_DOWN = 4;
+        public static final int CONVEYOR_BELT_LEFT = 5;
+        public static final int CONVEYOR_BELT_UP_RIGHT = 6;
+        public static final int CONVEYOR_BELT_RIGHT_RIGHT = 7;
+        public static final int CONVEYOR_BELT_DOWN_RIGHT = 8;
+        public static final int CONVEYOR_BELT_LEFT_RIGHT = 9;
 
         private final List<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
         private final int[][] tileArray;
@@ -53,8 +61,32 @@ public class Levels {
                             addTile(group, tileSize, x, y);
                             addSpawn(group, tileSize, x, y);
                             break;
-                        case CONVEYER_BELT_1:
+                        case CONVEYOR_BELT_UP:
                             addActor(group, new ConveyorBelt(Direction.UP, 1),tileSize, x, y);
+                            break;
+                        case CONVEYOR_BELT_RIGHT:
+                            addActor(group, new ConveyorBelt(Direction.RIGHT, 1),tileSize, x, y);
+                            break;
+                        case CONVEYOR_BELT_DOWN:
+                            addActor(group, new ConveyorBelt(Direction.DOWN, 1),tileSize, x, y);
+                            break;
+                        case CONVEYOR_BELT_LEFT:
+                            addActor(group, new ConveyorBelt(Direction.LEFT, 1),tileSize, x, y);
+                            break;
+                        case CONVEYOR_BELT_UP_RIGHT:
+                            addActor(group, new ConveyorBelt(Direction.RIGHT, Rotation.RIGHT, 1), tileSize, x, y);
+                            break;
+                        case CONVEYOR_BELT_RIGHT_RIGHT:
+                            addActor(group, new ConveyorBelt(Direction.DOWN, Rotation.RIGHT, 1), tileSize, x, y);
+                            break;
+                        case CONVEYOR_BELT_DOWN_RIGHT:
+                            addActor(group, new ConveyorBelt(Direction.LEFT, Rotation.RIGHT, 1), tileSize, x, y);
+                            break;
+                        case CONVEYOR_BELT_LEFT_RIGHT:
+                            addActor(group, new ConveyorBelt(Direction.UP, Rotation.RIGHT, 1), tileSize, x, y);
+                            break;
+                        default:
+                            addTile(group, tileSize, x, y);
                     }
 
                 }

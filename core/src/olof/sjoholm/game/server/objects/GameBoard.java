@@ -162,6 +162,10 @@ public class GameBoard extends Group implements EventListener {
         return level;
     }
 
+    public <T extends GameBoardActor> List<T> getActorsAt(Point point, Class<T> clazz) {
+        return getActorsAt(point.x, point.y, clazz);
+    }
+
     public <T extends GameBoardActor> List<T> getActorsAt(int x, int y, Class<T> clazz) {
         List<T> actors = new ArrayList<T>();
         for (GameBoardActor spawnedActor : gameBoardActors) {

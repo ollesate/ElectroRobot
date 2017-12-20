@@ -1,7 +1,5 @@
 package olof.sjoholm.game.shared.logic;
 
-import olof.sjoholm.game.server.logic.Direction;
-
 public enum Movement {
 
     FORWARD(0f),

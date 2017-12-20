@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import java.awt.Point;
+
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.utils.ui.Drawable;
@@ -43,6 +45,10 @@ public abstract class GameBoardActor extends Group {
     @Override
     public GameStage getStage() {
         return (GameStage) super.getStage();
+    }
+
+    public Point getGameboardPosition() {
+        return getStage().getGameBoard().getBoardPosition(this);
     }
 
     public int getId() {

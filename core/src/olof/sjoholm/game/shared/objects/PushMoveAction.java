@@ -26,16 +26,11 @@ public class PushMoveAction extends Action {
 
     @Override
     public boolean act(float delta) {
-        System.out.println("Push move act");
         if (action == null) {
             action = getInternalAction();
             action.setActor(token);
         }
-        boolean finished = action.act(delta);
-        if (finished) {
-            System.out.println("Push move finished");
-        }
-        return finished;
+        return action.act(delta);
     }
 
     @Override

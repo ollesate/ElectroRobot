@@ -27,13 +27,11 @@ public class MoveTileAction extends Action {
 
     @Override
     public boolean act(float delta) {
-        System.out.println("MoveTileAction: act");
         if (action == null) {
             action = getInternalAction();
             action.setActor(token);
         }
         if (action.act(delta)) {
-            System.out.println("MoveTileAction: finished");
             return true;
         }
         return false;
@@ -51,16 +49,13 @@ public class MoveTileAction extends Action {
 
     private Action getInternalAction() {
         if (token.getStage() == null) { // Already died
-            System.out.println("MoveTileAction: dead");
             return Actions.delay(0f);
         }
 
         if (animate) {
-            System.out.println("MoveTileAction: return move action");
             return Actions.parallel(new MoveAction(), new AnimateAction());
         }
 
-        System.out.println("MoveTileAction: return move action");
         return new MoveAction();
     }
 
@@ -69,16 +64,11 @@ public class MoveTileAction extends Action {
 
         @Override
         public boolean act(float delta) {
-            System.out.println("MoveTileAction:MoveAction: act");
             if (action == null) {
                 action = getInternalAction();
                 action.setActor(token);
             }
-            boolean finished = action.act(delta);
-            if (finished) {
-                System.out.println("MoveTileAction:MoveAction: finished");
-            }
-            return finished;
+            return action.act(delta);
         }
 
         private Action getInternalAction() {

@@ -17,6 +17,6 @@ public class TextureDrawable implements Drawable {
                      float scaleX, float scaleY, float originX, float originY, float rotation,
                      Color tint) {
         batch.setColor(tint.r, tint.g, tint.b, tint.a * parentAlpha);
-        batch.draw(texture, x, y, width, height);
+        batch.draw(texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation, 0, 0, texture.getWidth(), texture.getHeight(), false, false);
     }
 }
