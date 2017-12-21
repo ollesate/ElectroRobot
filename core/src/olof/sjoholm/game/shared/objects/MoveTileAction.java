@@ -31,10 +31,7 @@ public class MoveTileAction extends Action {
             action = getInternalAction();
             action.setActor(token);
         }
-        if (action.act(delta)) {
-            return true;
-        }
-        return false;
+        return action.act(delta);
     }
 
     @Override

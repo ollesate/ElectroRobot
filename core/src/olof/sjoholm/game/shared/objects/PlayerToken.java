@@ -297,4 +297,9 @@ public class PlayerToken extends GameBoardActor {
             );
         }
     }
+
+    public static float getWaitDuration() {
+        // TODO: Find better way
+        return 1f;
+    }
 }

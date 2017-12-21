@@ -124,7 +124,7 @@ public class ConveyorBelt extends GameBoardActor {
 
                 return move;
             }
-            return Actions.delay(DURATION);
+            return Actions.delay(DURATION + PlayerToken.getWaitDuration());
         }
     }
 }
