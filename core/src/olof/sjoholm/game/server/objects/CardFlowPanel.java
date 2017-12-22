@@ -84,6 +84,7 @@ public class CardFlowPanel extends LinearLayout {
     }
 
     public void setTurn(Turn turn) {
+        // TODO: implement again
         clear();
         cardActors.clear();
 

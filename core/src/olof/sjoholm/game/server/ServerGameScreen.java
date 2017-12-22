@@ -14,12 +14,14 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.Levels;
+import olof.sjoholm.game.server.logic.PlaySet;
 import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.server.objects.CardFlowPanel;
@@ -110,81 +112,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
             public boolean handle(Event event) {
                 if (event instanceof TerminalEvent) {
                     TerminalEvent terminalEvent = (TerminalEvent) event;
-                    String command = terminalEvent.getCommand();
-                    if ("spawn".equals(command)) {
-                        String what = terminalEvent.get(1);
-                        if ("token".equals(what)) {
-                            try {
-                                int x = terminalEvent.getInt(2);
-                                int y = terminalEvent.getInt(3);
-                                int id = gameBoard.spawnToken(x, y).getId();
-                                terminal.writeLine("Spawned token with id " +id);
-                            } catch (TerminalException e) {
-                                terminal.writeError(e.getMessage());
-                            }
-                        }
-                    } else if ("token".equals(command)) {
-                        PlayerToken playerToken = null;
-                        try {
-                            GameBoardActor gameBoardActor = gameBoard.getActor(terminalEvent.getInt(1));
-                            if (gameBoardActor instanceof PlayerToken) {
-                                playerToken = ((PlayerToken) gameBoardActor);
-                            }
-                        } catch (TerminalException e) {
-                            return false;
-                        }
-                        if (playerToken == null) {
-                            terminal.writeError("No token for " + terminalEvent.get(1));
-                            return false;
-                        }
-
-                        if ("perform".equals(terminalEvent.get(2))) {
-                            int length = terminalEvent.getLength(3);
-                            if (length == 0) {
-                                terminal.writeError("No actions");
-                            }
-                            SequenceAction sequenceAction = new SequenceAction();
-                            for (int i = 3; i < length + 3; i++) {
-                                String[] actions = terminalEvent.get(i).split(":");
-                                String action = actions.length > 0 ? actions[0] : null;
-                                Action gdxAction = null;
-                                if ("move".equals(action) && actions.length == 3) {
-                                    Movement movement = Movement.fromString(actions[1]);
-                                    int steps = NumberUtils.toInt(actions[2], -1);
-                                    if (movement != null && steps != -1) {
-                                        terminal.writeLine("Perform movement " + movement + " " + steps);
-                                        gdxAction = playerToken.getPushMoveAction(movement, steps);
-                                    } else {
-                                        terminal.writeError("Failure with move");
-                                    }
-                                } else if ("rotate".equals(action) && actions.length == 2) {
-                                    Rotation rotation = Rotation.fromString(actions[1]);
-                                    if (rotation != null) {
-                                        terminal.writeLine("Perform rotation " + rotation);
-                                        gdxAction = playerToken.rotate(rotation);
-                                    }
-                                }
-                                if (gdxAction != null) {
-                                    sequenceAction.addAction(gdxAction);
-                                }
-                            }
-                            if (sequenceAction.getActions().size > 0) {
-                                System.out.print("add sequence");
-                                gameStage.addAction(sequenceAction);
-                            }
-                        }
-                    } else if ("belts".equals(terminalEvent.getCommand())) {
-                        System.out.println("Belts should act here!");
-                        List<ConveyorBelt> belts = gameStage.getGameBoard().getActors(ConveyorBelt.class);
-                        if (belts.size() == 0) {
-                            System.out.println("No belts could be found!");
-                        }
-                        ParallelAction beltActions = new ParallelAction();
-                        for (ConveyorBelt belt : belts) {
-                            beltActions.addAction(belt.getAction());
-                        }
-                        gameStage.addAction(beltActions);
-                    }
+                    new DebugTerminalController(gameBoard, terminal).handleEvent(terminalEvent);
                 }
                 return false;
             }
@@ -291,16 +219,11 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
     }
 
     private void onGameBegin() {
-        Turn turn = new Turn(Constants.CARDS_TO_PLAY);
+        List<PlaySet> playSets = new ArrayList<PlaySet>();
         for (Player player : players) {
-            for (int i = 0; i < Constants.CARDS_TO_PLAY; i++) {
-                turn.addToRound(i, new PlayerAction(player, player.getCards().get(i)));
-            }
+            playSets.add(new PlaySet(gameBoard.getPlayerToken(player), player.getCards()));
         }
-        gameBoard.startTurn(turn);
-        cardFlowPanel.setTurn(turn);
-
-        currentTurn = turn;
+        gameBoard.playTurn(playSets);
     }
 
     public void onPlayerConnected(Player player) {
@@ -319,26 +242,38 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
     public boolean handle(Event event) {
         if (event instanceof OnStartActionEvent) {
             OnStartActionEvent startEvent = (OnStartActionEvent) event;
-            Player player = startEvent.player;
-            player.onCardActivated(startEvent.boardAction);
-            cardFlowPanel.next();
+            Player player = startEvent.playerToken.getPlayer();
+            if (player != null) { // May be testing
+                player.onCardActivated(startEvent.boardAction);
+            }
+            // TODO: implement again
+            // cardFlowPanel.next();
         } else if (event instanceof OnEndActionEvent) {
             OnEndActionEvent endEvent = (OnEndActionEvent) event;
-            Player player = endEvent.player;
-            player.onCardDeactivated(endEvent.boardAction);
+            Player player = endEvent.playerToken.getPlayer();
+            if (player != null) { // We may be testing
+                player.onCardDeactivated(endEvent.boardAction);
+            }
 
+            /*
+            // TODO: implement again
             if (currentTurn.isLastOfRound(endEvent.boardAction)) {
                 int currentRound = currentTurn.getRoundOf(endEvent.boardAction);
                 eventLog.addEventText("Round " + (currentRound + 1), 4f);
             }
+             */
         } else if (event instanceof AllPlayersShootEvent) {
-            cardFlowPanel.next();
+            // TODO: reimplement
+//            cardFlowPanel.next();
         } else if (event instanceof PlayerToken.DamagedEvent) {
             // Player got damaged
             PlayerToken.DamagedEvent damagedEvent = (PlayerToken.DamagedEvent) event;
             int damaged = damagedEvent.maxHealth - damagedEvent.healthLeft;
             PlayerToken playerToken = (PlayerToken) event.getTarget();
-            playerToken.getPlayer().updateDamage(damaged);
+            Player player = playerToken.getPlayer();
+            if (player != null) { // We may be testing
+                player.updateDamage(damaged);
+            }
         } else if (event instanceof GameBoard.TurnFinishedEvent) {
             startCardPhase();
         }

@@ -32,6 +32,14 @@ public class TerminalEvent extends Event {
         throw new TerminalException("Index out of bounds");
     }
 
+    public int getInt(int index, int defaultValue) {
+        try {
+            return getInt(index);
+        } catch (TerminalException e) {
+            return defaultValue;
+        }
+    }
+
     public int getLength(int offset) {
         return Math.max(0, args.length - offset);
     }

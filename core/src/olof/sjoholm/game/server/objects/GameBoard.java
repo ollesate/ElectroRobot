@@ -20,6 +20,7 @@ import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.DoPlayerAction;
 import olof.sjoholm.game.server.logic.Levels.Level;
+import olof.sjoholm.game.server.logic.PlaySet;
 import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.TileType;
 import olof.sjoholm.game.server.logic.Turn;
@@ -57,10 +58,14 @@ public class GameBoard extends Group implements EventListener {
         return super.removeActor(actor, unfocus);
     }
 
-    public GameBoardActor getActor(int id) {
+    public GameBoardActor getActorById(int id) {
+        return getActorById(id, GameBoardActor.class);
+    }
+
+    public <T extends GameBoardActor> T getActorById(int id, Class<T> clazz) {
         for (GameBoardActor gameBoardActor : gameBoardActors) {
-            if (gameBoardActor.getId() == id) {
-                return gameBoardActor;
+            if (gameBoardActor.getId() == id && clazz.isInstance(gameBoardActor)) {
+                return clazz.cast(gameBoardActor);
             }
         }
         return null;
@@ -126,25 +131,39 @@ public class GameBoard extends Group implements EventListener {
         throw new IllegalStateException("No spawn point for " + player);
     }
 
-    public void startTurn(final Turn turn) {
+    public void playTurn(List<PlaySet> playSets) {
+        if (playSets == null) {
+            return;
+        }
         float playSpeed = Config.get(Config.PLAY_SPEED);
+
         SequenceAction sequence = new SequenceAction();
+        int round = 0;
+        boolean hasMoreRounds = true;
+        while (hasMoreRounds) {
+            hasMoreRounds = false;
 
-        for (int i = 0; i < turn.size(); i++) {
-            for (PlayerAction playerAction : turn.getRound(i)) {
-                Player player = playerAction.player;
-                BoardAction boardAction = playerAction.boardAction;
+            for (PlaySet playSet : playSets) {
+                if (playSet.hasRound(round)) {
+                    System.out.println("Adding round " + round);
+                    hasMoreRounds = true;
 
-                sequence.addAction(new FireEventAction(new OnStartActionEvent(player, boardAction)));
-                sequence.addAction(new DoPlayerAction(this, playerAction));
-                sequence.addAction(new FireEventAction(new OnEndActionEvent(player, boardAction)));
-                sequence.addAction(new DelayAction(Constants.CARD_POST_DELAY / playSpeed));
+                    PlayerToken token = playSet.getPlayerToken();
+                    BoardAction boardAction = playSet.getRound(round);
+                    sequence.addAction(new FireEventAction(new OnStartActionEvent(token, boardAction)));
+                    sequence.addAction(boardAction.getAction(token));
+                    sequence.addAction(new FireEventAction(new OnEndActionEvent(token, boardAction)));
+                    sequence.addAction(new DelayAction(Constants.CARD_POST_DELAY / playSpeed));
+                }
             }
+
+            System.out.println("Add all players shoot and etc");
             sequence.addAction(new AllPlayersShootAction());
             sequence.addAction(new RunConveyorBeltAction());
             sequence.addAction(new ShootLasersAction());
-
+            round++;
         }
+
         sequence.addAction(new TurnFinishedAction());
         addAction(sequence);
     }
@@ -260,6 +279,7 @@ public class GameBoard extends Group implements EventListener {
         public boolean act(float delta) {
             if (shootActions == null) {
                 shootActions = getShootActions();
+                shootActions.setActor(GameBoard.this);
                 fire(new AllPlayersShootEvent());
             }
             return shootActions.act(delta);
@@ -281,6 +301,7 @@ public class GameBoard extends Group implements EventListener {
         public boolean act(float delta) {
             if (beltActions == null) {
                 beltActions = getBeltActions();
+                beltActions.setActor(GameBoard.this);
             }
             return beltActions.act(delta);
         }

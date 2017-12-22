@@ -5,13 +5,14 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
+import olof.sjoholm.game.shared.objects.PlayerToken;
 
 public class OnEndActionEvent extends Event {
     public final BoardAction boardAction;
-    public final Player player;
+    public final PlayerToken playerToken;
 
-    public OnEndActionEvent(Player player, BoardAction boardAction) {
-        this.player = player;
+    public OnEndActionEvent(PlayerToken token, BoardAction boardAction) {
+        this.playerToken = token;
         this.boardAction = boardAction;
     }
 }

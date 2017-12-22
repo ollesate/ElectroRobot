@@ -31,20 +31,8 @@ public class GameStage extends Stage {
         getRoot().setHeight(Constants.WORLD_HEIGHT);
     }
 
-    public List<GameBoardActor> getActorsAt(int x, int y) {
-        return gameBoard.getActorsAt(x, y);
-    }
-
     public List<GameBoardActor> getActors(float x, float y, float width, float height) {
         return gameBoard.getActors(x, y, width, height);
-    }
-
-    public boolean isWithinBounds(int x, int y) {
-        return gameBoard.getLevel().isWithinBounds(x, y);
-    }
-
-    public TileType getTile(int x, int y) {
-        return gameBoard.getLevel().getTile(x, y);
     }
 
     public GameBoard getGameBoard() {
