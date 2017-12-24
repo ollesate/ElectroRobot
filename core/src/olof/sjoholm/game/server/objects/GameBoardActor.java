@@ -1,6 +1,7 @@
 package olof.sjoholm.game.server.objects;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -57,5 +58,14 @@ public abstract class GameBoardActor extends Group {
 
     public void onAddedToStage() {
 
+    }
+
+    public <T extends Actor> T findChild(Class<T> clazz) {
+        for (Actor actor : getChildren()) {
+            if (clazz.isInstance(actor)) {
+                return clazz.cast(actor);
+            }
+        }
+        return null;
     }
 }

@@ -11,15 +11,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RemoveActorAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.badlogic.gdx.utils.Align;
 
 import java.awt.Point;
-import java.util.List;
 
 import olof.sjoholm.assets.Textures;
 import olof.sjoholm.configuration.Config;
@@ -27,18 +24,18 @@ import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoardActor;
-import olof.sjoholm.game.server.objects.GameStage;
+import olof.sjoholm.game.server.objects.HealthBarActor;
 import olof.sjoholm.game.server.objects.Missile;
 import olof.sjoholm.game.server.objects.SpawnPoint;
 import olof.sjoholm.game.server.server_logic.Player;
+import olof.sjoholm.game.shared.Damageable;
 import olof.sjoholm.game.shared.logic.Movement;
 import olof.sjoholm.game.shared.logic.Rotation;
 import olof.sjoholm.sfx.Muzzle;
-import olof.sjoholm.utils.Logger;
 import olof.sjoholm.utils.actions.RelativeAction;
 import olof.sjoholm.utils.ui.Drawable;
 
-public class PlayerToken extends GameBoardActor {
+public class PlayerToken extends GameBoardActor implements Damageable {
     private float stepDelay = .5f;
     private float stepSpeed = 1.0f;
     private final TankAnimation tankAnimation = new TankAnimation();
@@ -51,6 +48,14 @@ public class PlayerToken extends GameBoardActor {
     public PlayerToken() {
         setDrawable(tankAnimation);
         setTransform(false);
+        addActor(new HealthBarActor(true));
+    }
+
+    @Override
+    protected void sizeChanged() {
+        HealthBarActor healthBar = findChild(HealthBarActor.class);
+        healthBar.setSize(getWidth() * 0.75f, getHeight() * 0.1f);
+        healthBar.setPosition(getWidth() / 2, getHeight() * 0.8f, Align.center);
     }
 
     @Override
@@ -195,8 +200,19 @@ public class PlayerToken extends GameBoardActor {
         tankAnimation.pause();
     }
 
-    public void damage(int damage) {
-        currentHealth -= damage;
+    @Override
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    @Override
+    public void damage(int damagePoints) {
+        currentHealth -= damagePoints;
         if (currentHealth <= 0) {
             addAction(new RemoveActorAction());
         }
