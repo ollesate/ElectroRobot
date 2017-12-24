@@ -175,17 +175,12 @@ public class PlayerToken extends GameBoardActor {
         return new Vector2(Math.round(x), Math.round(y));
     }
 
-    public Action getPushMoveAction(Direction direction, float duration) {
-        return new MoveTileAction(this, direction, false, duration);
-    }
-
     public Action getMoveTileAction(Direction direction, float duration, boolean animate) {
         return new MoveTileAction(this, direction, animate, duration);
     }
 
     public Action getPushMoveAction(Movement movement, int steps) {
-        Direction direction = Direction.fromRotation(getRotation()).translate(movement);
-        return Actions.repeat(steps, new PushMoveAction(this, direction, true, getMoveDuration()));
+        return Actions.repeat(steps, new PushMoveAction(this, movement, getMoveDuration()));
     }
 
     private float getMoveDuration() {

@@ -8,19 +8,18 @@ import java.util.List;
 
 import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.server.objects.GameBoard;
+import olof.sjoholm.game.shared.logic.Movement;
 
 public class PushMoveAction extends Action {
     private final PlayerToken token;
-    private final Direction direction;
-    private final boolean animate;
+    private final Movement movement;
     private final float duration;
 
     private Action action;
 
-    public PushMoveAction(PlayerToken token, Direction direction, boolean animate, float duration) {
+    public PushMoveAction(PlayerToken token, Movement movement, float duration) {
         this.token = token;
-        this.direction = direction;
-        this.animate = animate;
+        this.movement = movement;
         this.duration = duration;
     }
 
@@ -49,6 +48,7 @@ public class PushMoveAction extends Action {
             return Actions.delay(0f);
         }
 
+        Direction direction = Direction.fromRotation(token.getRotation()).translate(movement);
         Point offset = direction.getPoint();
         Point nextPos = token.getGameBoardPosition(offset);
         Point nextNextPos = new Point(nextPos.x + offset.x, nextPos.y + offset.y);
@@ -56,12 +56,12 @@ public class PushMoveAction extends Action {
         List<PlayerToken> actors = gameBoard.getActorsAt(nextPos.x, nextPos.y, PlayerToken.class);
         if (actors.isEmpty()) {
             System.out.println("No actors here: move");
-            return new MoveTileAction(token, direction, animate, duration);
+            return new MoveTileAction(token, direction, true, duration);
         } else if (gameBoard.isAvailableSpace(nextNextPos.x, nextNextPos.y)) {
             System.out.println("Move other player");
             PlayerToken other = actors.get(0);
             return Actions.parallel(
-                    new MoveTileAction(token, direction, animate, duration),
+                    new MoveTileAction(token, direction, true, duration),
                     new MoveTileAction(other, direction, false, duration)
             );
         } else {
