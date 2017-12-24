@@ -331,7 +331,6 @@ public class GameBoard extends Group implements EventListener {
                 // Spawn dead players again
                 for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
                     boolean isDead = entry.getValue() == null;
-                    Logger.d(entry.getKey().getName() +  " token is " + (isDead ? "dead" : "alive"));
 
                     if (entry.getValue() == null) { // Player died
                         Logger.d("Spawn player token");
