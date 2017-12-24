@@ -275,6 +275,18 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
                 player.updateDamage(damaged);
             }
         } else if (event instanceof GameBoard.TurnFinishedEvent) {
+            if (players.isEmpty()) {
+                // This shouldn't happen except during debugging so don't do anything here.
+                return false;
+            }
+            for (Player player : players) {
+                PlayerToken playerToken = gameBoard.getPlayerToken(player);
+                if (playerToken == null) {
+                    // Player died. Respawn new token
+                    gameBoard.respawnPlayerToken(player);
+                }
+            }
+
             startCardPhase();
         }
         return false;

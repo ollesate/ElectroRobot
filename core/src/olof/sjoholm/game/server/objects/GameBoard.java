@@ -1,6 +1,5 @@
 package olof.sjoholm.game.server.objects;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -12,28 +11,21 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
-import olof.sjoholm.game.server.logic.DoPlayerAction;
 import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.game.server.logic.PlaySet;
-import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.logic.TileType;
-import olof.sjoholm.game.server.logic.Turn;
+import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
-import olof.sjoholm.game.server.server_logic.Player;
-import olof.sjoholm.utils.Logger;
 import olof.sjoholm.utils.actions.FireEventAction;
 
 public class GameBoard extends Group implements EventListener {
     private List<SpawnPoint> spawnPoints;
     private List<GameBoardActor> gameBoardActors = new ArrayList<GameBoardActor>();
-    public Map<Player, PlayerToken> playerTokens = new HashMap<Player, PlayerToken>();
     private int tileSize;
     private Level level;
 
@@ -98,7 +90,6 @@ public class GameBoard extends Group implements EventListener {
         playerToken.setPlayer(player);
         addActor(playerToken);
 
-        playerTokens.put(player, playerToken);
         playerToken.setPlayerName(player.getName());
 
         return playerToken;
@@ -164,7 +155,7 @@ public class GameBoard extends Group implements EventListener {
             round++;
         }
 
-        sequence.addAction(new TurnFinishedAction());
+        sequence.addAction(new FireEventAction(new TurnFinishedEvent()));
         addAction(sequence);
     }
 
@@ -172,7 +163,7 @@ public class GameBoard extends Group implements EventListener {
     public boolean handle(Event e) {
         if (e instanceof PlayerToken.Destroyed) {
             PlayerToken playerToken = ((PlayerToken.Destroyed) e).playerToken;
-            cleanPlayerToken(playerToken);
+            // TODO: remove this?
         }
         return false;
     }
@@ -236,25 +227,29 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public void removePlayer(Player player) {
-        PlayerToken playerToken = playerTokens.get(player);
-        removeActor(playerToken);
-        cleanPlayerToken(playerToken);
-    }
-
-    private void cleanPlayerToken(PlayerToken playerToken) {
-        playerTokens.put(playerToken.getPlayer(), null);
+        for (PlayerToken playerToken : getActors(PlayerToken.class)) {
+            if (playerToken.getPlayer() == player) {
+                removeActor(playerToken);
+            }
+        }
     }
 
     public void updatePlayer(Player player) {
-        PlayerToken playerToken = playerTokens.get(player);
-        if (playerToken != null) {
-            playerToken.setColor(player.getColor());
-            playerToken.setPlayerName(player.getName());
+        for (PlayerToken playerToken : getActors(PlayerToken.class)) {
+            if (playerToken.getPlayer() == player) {
+                playerToken.setColor(player.getColor());
+                playerToken.setPlayerName(player.getName());
+            }
         }
     }
 
     public PlayerToken getPlayerToken(Player player) {
-        return playerTokens.get(player);
+        for (PlayerToken playerToken : getActors(PlayerToken.class)) {
+            if (playerToken.getPlayer() == player) {
+                return playerToken;
+            }
+        }
+        return null;
     }
 
     public boolean isPit(int x, int y) {
@@ -267,6 +262,10 @@ public class GameBoard extends Group implements EventListener {
 
     public boolean isAvailableSpace(int x, int y) {
         return isPassableTerrain(x, y)  && getActorsAt(x, y, PlayerToken.class).isEmpty();
+    }
+
+    public void respawnPlayerToken(Player player) {
+        spawnPlayerToken(player, getSpawnPoint(player));
     }
 
     public static class AllPlayersShootEvent extends Event {}
@@ -321,28 +320,5 @@ public class GameBoard extends Group implements EventListener {
         public boolean act(float delta) {
             return true;
         }
-    }
-
-    private class TurnFinishedAction extends Action {
-
-        @Override
-            public boolean act(float delta) {
-                fire(new TurnFinishedEvent());
-                // Spawn dead players again
-                for (Map.Entry<Player, PlayerToken> entry : playerTokens.entrySet()) {
-                    boolean isDead = entry.getValue() == null;
-
-                    if (entry.getValue() == null) { // Player died
-                        Logger.d("Spawn player token");
-                        Player player = entry.getKey();
-
-                        SpawnPoint spawnPoint = getSpawnPoint(player);
-
-                        PlayerToken spawnedToken = spawnPlayerToken(player, spawnPoint);
-                        entry.setValue(spawnedToken);
-                    }
-                }
-                return true;
-            }
     }
 }
