@@ -157,6 +157,8 @@ public class GameBoard extends Group implements EventListener {
 
         sequence.addAction(new FireEventAction(new TurnFinishedEvent()));
         addAction(sequence);
+
+        fire(new TurnStartEvent(playSets));
     }
 
     @Override
@@ -269,8 +271,18 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public static class AllPlayersShootEvent extends Event {}
+    public static class RunConveyorBeltEvent extends Event {}
+    public static class RunLasersEvent extends Event {}
 
     public static class TurnFinishedEvent extends Event {}
+
+    public static class TurnStartEvent extends Event {
+        public List<PlaySet> playSets;
+
+        public TurnStartEvent(List<PlaySet> playSets) {
+            this.playSets = playSets;
+        }
+    }
 
     private class AllPlayersShootAction extends Action {
         Action shootActions;
@@ -301,6 +313,7 @@ public class GameBoard extends Group implements EventListener {
             if (beltActions == null) {
                 beltActions = getBeltActions();
                 beltActions.setActor(GameBoard.this);
+                fire(new RunConveyorBeltEvent());
             }
             return beltActions.act(delta);
         }

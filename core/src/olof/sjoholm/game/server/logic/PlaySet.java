@@ -25,4 +25,13 @@ public class PlaySet {
     public PlayerToken getPlayerToken() {
         return token;
     }
+
+    public static boolean hasMoreRounds(List<PlaySet> playSets, int round) {
+        for (PlaySet playSet : playSets) {
+            if (playSet.hasRound(round)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

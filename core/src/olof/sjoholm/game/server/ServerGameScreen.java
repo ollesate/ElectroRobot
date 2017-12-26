@@ -74,7 +74,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
         cardFlowPanel = new CardFlowPanel();
         cardFlowPanel.setDebug(true);
         gameStage.addActor(cardFlowPanel);
-
+        gameStage.addListener(cardFlowPanel); // Listen to start card events
 
         LabelActor actor = new LabelActor("Host: " + "undefined", Fonts.get(Fonts.FONT_34));
         gameStage.addActor(actor);
