@@ -95,7 +95,7 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
         int round = 0;
         while (PlaySet.hasMoreRounds(playSets, round)) {
             RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + (round + 1));
-            roundTitleActor.setHeight(GraphicsUtil.dpToPixels(100));
+            roundTitleActor.setHeight(GraphicsUtil.dpToPixels(50));
             addActor(roundTitleActor);
             for (PlaySet playSet : playSets) {
                 if (playSet.hasRound(round)) {
@@ -116,7 +116,7 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
             color = token.getPlayer().getColor();
             name = token.getPlayer().getName();
         } else {
-            color = new Color(Color.WHITE);
+            color = new Color(Color.BLUE);
             name = "token " + token.getId();
         }
 
@@ -142,6 +142,10 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
     }
 
     public void next() {
+        if (cardActors.size() <= currentCardIndex + 1) {
+            return;
+        }
+
         if (currentCardIndex != -1) {
             cardActors.get(currentCardIndex).deselect();
         }
@@ -155,15 +159,15 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
         } else if (event instanceof GameBoard.TurnFinishedEvent) {
 
         } else if (event instanceof GameBoard.AllPlayersShootEvent) {
-
+            next();
         } else if (event instanceof GameBoard.RunConveyorBeltEvent) {
             next();
         } else if (event instanceof GameBoard.RunLasersEvent) {
 
         } else if (event instanceof OnStartActionEvent) {
-
-        } else if (event instanceof OnEndActionEvent) {
             next();
+        } else if (event instanceof OnEndActionEvent) {
+
         }
         return false;
     }
