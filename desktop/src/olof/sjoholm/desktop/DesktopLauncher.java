@@ -2,7 +2,6 @@ package olof.sjoholm.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import olof.sjoholm.MyGdxGame;
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.player.PlayerGame;
 import olof.sjoholm.game.server.ServerGame;
