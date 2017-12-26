@@ -2,12 +2,14 @@ package olof.sjoholm.game.server;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
@@ -35,6 +37,7 @@ import olof.sjoholm.game.server.objects.OnEndActionEvent;
 import olof.sjoholm.game.server.objects.OnStartActionEvent;
 import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.server.server_logic.Player;
+import olof.sjoholm.game.shared.UiStage;
 import olof.sjoholm.game.shared.logic.CardGenerator;
 import olof.sjoholm.game.shared.logic.Movement;
 import olof.sjoholm.game.shared.logic.Rotation;
@@ -47,6 +50,7 @@ import olof.sjoholm.utils.ui.objects.LabelActor;
 public class ServerGameScreen extends ScreenAdapter implements EventListener {
     private List<Player> players = new ArrayList<Player>();
     private final GameStage gameStage;
+    private final UiStage uiStage;
     private boolean paused;
     private final GameBoard gameBoard;
     private final CardFlowPanel cardFlowPanel;
@@ -64,6 +68,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
     public ServerGameScreen() {
         super();
         float tileSize = Constants.STEP_SIZE;
+        uiStage = new UiStage();
         gameBoard = new GameBoard((int) tileSize);
         gameStage = new GameStage(gameBoard);
         gameBoard.loadMap(Levels.level1());
@@ -73,7 +78,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
 
         cardFlowPanel = new CardFlowPanel();
         cardFlowPanel.setDebug(true);
-        gameStage.addActor(cardFlowPanel);
+        uiStage.addActor(cardFlowPanel);
         gameStage.addListener(cardFlowPanel); // Listen to start card events
 
         LabelActor actor = new LabelActor("Host: " + "undefined", Fonts.get(Fonts.FONT_34));
@@ -84,7 +89,8 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
         terminal = new Terminal();
         terminal.setSize(500, 500);
         terminal.setVisible(false);
-        gameStage.addActor(terminal);
+        terminal.setPosition(0, 0, Align.bottomLeft);
+        uiStage.addActor(terminal);
 
         gameStage.addListener(new InputListener() {
 
@@ -107,7 +113,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
                 return false;
             }
         });
-        gameStage.addListener(new EventListener() {
+        uiStage.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
                 if (event instanceof TerminalEvent) {
@@ -126,12 +132,14 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
     @Override
     public void show() {
         super.show();
-        Gdx.input.setInputProcessor(gameStage);
+        Gdx.input.setInputProcessor(new InputMultiplexer(gameStage, uiStage));
     }
 
     @Override
     public void resize(int width, int height) {
+        System.out.println("Resize " + width + ", " + height);
         gameStage.getViewport().update(width, height);
+        uiStage.getViewport().update(width, height);
 
         cardFlowPanel.setWidth(0.2f * width);
         cardFlowPanel.setPosition(0.8f * width, height, Align.topLeft);
@@ -147,8 +155,10 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
         }
         if (!paused) {
             gameStage.act(delta);
+            uiStage.act(delta);
         }
         gameStage.draw();
+        uiStage.draw();
     }
 
     public void updateAppearance(Player player) {
