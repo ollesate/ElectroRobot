@@ -19,15 +19,16 @@ public class Levels {
                 new int[][]{
                         {6, 3, 3, 3, 3, 3, 3, 7},
                         {2, 0, 0, 0, 0, 0, 1, 4},
-                        {2, 0, 0, 0, 0, 0, 0, 4},
+                        {2, 0, 0, 0, 0, 0, -1, 4},
                         {2, 1, 0, 0, 0, 0, 1, 4},
-                        {9, 5, 5, 5, 5, 5, 5, 8},
+                        {9, 5, 5, 5, 5, 5, 5, -1},
                 }
         );
     }
 
     public static class Level {
         public static final int OUT_OF_BOUNDS = -2;
+        public static final int PIT = -1;
         public static final int FLOOR = 0;
         public static final int SPAWN = 1;
         public static final int CONVEYOR_BELT_UP = 2;
@@ -56,6 +57,8 @@ public class Levels {
                     switch (get(x, y)) {
                         case FLOOR:
                             addTile(group, tileSize, x, y);
+                            break;
+                        case PIT:
                             break;
                         case SPAWN:
                             addTile(group, tileSize, x, y);

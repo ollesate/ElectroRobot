@@ -259,7 +259,7 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public boolean isPassableTerrain(int x, int y) {
-        return level.getTile(x, y) == TileType.FLOOR;
+        return level.getTile(x, y) != TileType.OUT_OF_BOUNDS;
     }
 
     public boolean isAvailableSpace(int x, int y) {
