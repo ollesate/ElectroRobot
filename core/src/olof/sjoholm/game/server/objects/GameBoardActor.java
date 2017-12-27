@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.awt.Point;
 
+import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.utils.ui.Drawable;
@@ -67,5 +68,37 @@ public abstract class GameBoardActor extends Group {
             }
         }
         return null;
+    }
+
+    public boolean isPassable(Direction direction) {
+        return true;
+    }
+
+    public boolean isExitable(Direction direction) {
+        return true;
+    }
+
+    public boolean canMove(Direction direction) {
+        Point nextPos = new Point(getGameboardPosition());
+        nextPos.translate(direction.dirX, direction.dirY);
+
+        if (getStage().getGameBoard().isOutOfBounds(nextPos)) {
+            System.out.println("Out of bounds");
+            return false;
+        }
+
+        for (GameBoardActor actor : getStage().getGameBoard().getActorsAt(getGameboardPosition())) {
+            if (!actor.isExitable(direction)) {
+                System.out.println("Not exitable " + actor.getClass().getSimpleName());
+                return false;
+            }
+        }
+        for (GameBoardActor actor : getStage().getGameBoard().getActorsAt(nextPos)) {
+            if (!actor.isPassable(direction)) {
+                System.out.println("Not passable " + actor.getClass().getSimpleName());
+                return false;
+            }
+        }
+        return true;
     }
 }

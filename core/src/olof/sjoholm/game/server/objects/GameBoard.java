@@ -15,6 +15,7 @@ import java.util.List;
 
 import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
+import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.game.server.logic.PlaySet;
 import olof.sjoholm.game.server.logic.TileType;
@@ -174,6 +175,10 @@ public class GameBoard extends Group implements EventListener {
         return level;
     }
 
+    public List<GameBoardActor> getActorsAt(Point point) {
+        return getActorsAt(point.x, point.y, GameBoardActor.class);
+    }
+
     public <T extends GameBoardActor> List<T> getActorsAt(Point point, Class<T> clazz) {
         return getActorsAt(point.x, point.y, clazz);
     }
@@ -183,7 +188,7 @@ public class GameBoard extends Group implements EventListener {
         for (GameBoardActor spawnedActor : gameBoardActors) {
             if ((int) (spawnedActor.getX() / Constants.STEP_SIZE) == x &&
                     (int) (spawnedActor.getY() / Constants.STEP_SIZE) == y) {
-                if (clazz != null && clazz.isInstance(spawnedActor)) {
+                if (clazz.isInstance(spawnedActor)) {
                     actors.add(clazz.cast(spawnedActor));
                 }
             }
@@ -192,7 +197,7 @@ public class GameBoard extends Group implements EventListener {
     }
 
     public List<GameBoardActor> getActorsAt(int x, int y) {
-        return getActorsAt(x, y, null);
+        return getActorsAt(x, y, GameBoardActor.class);
     }
 
     public List<GameBoardActor> getActors(float x, float y, float width, float height) {
@@ -260,6 +265,10 @@ public class GameBoard extends Group implements EventListener {
 
     public boolean isPassableTerrain(int x, int y) {
         return level.getTile(x, y) != TileType.OUT_OF_BOUNDS;
+    }
+
+    public boolean isOutOfBounds(Point point) {
+        return level.getTile(point.x, point.y) == TileType.OUT_OF_BOUNDS;
     }
 
     public boolean isAvailableSpace(int x, int y) {

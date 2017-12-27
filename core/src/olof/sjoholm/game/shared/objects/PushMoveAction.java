@@ -51,15 +51,15 @@ public class PushMoveAction extends Action {
         Direction direction = Direction.fromRotation(token.getRotation()).translate(movement);
         Point offset = direction.getPoint();
         Point nextPos = token.getGameBoardPosition(offset);
-        Point nextNextPos = new Point(nextPos.x + offset.x, nextPos.y + offset.y);
         GameBoard gameBoard = token.getStage().getGameBoard();
         List<PlayerToken> actors = gameBoard.getActorsAt(nextPos.x, nextPos.y, PlayerToken.class);
+
+        PlayerToken other;
         if (actors.isEmpty()) {
             System.out.println("No actors here: move");
             return new MoveTileAction(token, direction, true, duration);
-        } else if (gameBoard.isAvailableSpace(nextNextPos.x, nextNextPos.y)) {
+        } else if ((other = actors.get(0)).canMove(direction)) {
             System.out.println("Move other player");
-            PlayerToken other = actors.get(0);
             return Actions.parallel(
                     new MoveTileAction(token, direction, true, duration),
                     new MoveTileAction(other, direction, false, duration)

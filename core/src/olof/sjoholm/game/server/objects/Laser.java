@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RemoveActorAction;
 
 import java.awt.Point;
 import java.util.List;
@@ -50,6 +49,16 @@ public class Laser extends GameBoardActor {
         return getLaserAnimation();
     }
 
+    @Override
+    public boolean isPassable(Direction direction) {
+        return this.direction != direction;
+    }
+
+    @Override
+    public boolean isExitable(Direction direction) {
+        return this.direction.getOpposite() != direction;
+    }
+
     private Action getLaserAnimation() {
         int length = 1000;
         int offset = 35;
@@ -69,9 +78,6 @@ public class Laser extends GameBoardActor {
             }
             pos.translate(direction.dirX, direction.dirY);
         }
-
-
-
 
         return Actions.delay(1f, new Action() {
             @Override

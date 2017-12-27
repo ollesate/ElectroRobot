@@ -72,10 +72,11 @@ public class MoveTileAction extends Action {
             Point offset = direction.getPoint();
             Point nextPos = token.getGameBoardPosition(offset);
 
-            boolean walkablePath = token.getStage().getGameBoard().isPassableTerrain(nextPos.x, nextPos.y);
-            if (!walkablePath) {
+            if (!token.canMove(direction)) {
+                System.out.println("Couldn't move, stand in place");
                 return Actions.delay(duration + 1f);
             }
+            System.out.println("Move player token");
 
             boolean isPit = token.getStage().getGameBoard().isPit(nextPos.x, nextPos.y);
             Action move = getMovementAction();

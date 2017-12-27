@@ -16,15 +16,19 @@ public enum Direction {
     static {
         LEFT.rotateLeft = DOWN;
         LEFT.rotateRight = UP;
+        LEFT.opposite = RIGHT;
 
         UP.rotateLeft = LEFT;
         UP.rotateRight = RIGHT;
+        UP.opposite = DOWN;
 
         RIGHT.rotateLeft = UP;
         RIGHT.rotateRight = DOWN;
+        RIGHT.opposite = LEFT;
 
         DOWN.rotateLeft = RIGHT;
         DOWN.rotateRight = LEFT;
+        DOWN.opposite = UP;
     }
 
     public final int dirX;
@@ -33,6 +37,7 @@ public enum Direction {
 
     private Direction rotateRight;
     private Direction rotateLeft;
+    private Direction opposite;
 
     Direction(int dirX, int dirY, float rotation) {
         this.dirX = dirX;
@@ -54,6 +59,10 @@ public enum Direction {
 
     public Direction getRotateLeft() {
         return rotateLeft;
+    }
+
+    public Direction getOpposite() {
+        return opposite;
     }
 
     public Direction translate(Movement movement) {
