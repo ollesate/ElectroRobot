@@ -224,6 +224,30 @@ public class GameBoard extends Group implements EventListener {
         return actors;
     }
 
+    public boolean canMove(Point position, Direction direction) {
+        Point nextPos = new Point(position);
+        nextPos.translate(direction.dirX, direction.dirY);
+
+        if (isOutOfBounds(nextPos)) {
+            System.out.println("Out of bounds");
+            return false;
+        }
+
+        for (GameBoardActor actor : getActorsAt(position)) {
+            if (!actor.isExitable(direction)) {
+                System.out.println("Not exitable " + actor.getClass().getSimpleName());
+                return false;
+            }
+        }
+        for (GameBoardActor actor : getActorsAt(nextPos)) {
+            if (!actor.isPassable(direction)) {
+                System.out.println("Not passable " + actor.getClass().getSimpleName());
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static Point getBoardPosition(float x, float y) {
         return new Point((int)(x / Constants.STEP_SIZE), (int)(y / Constants.STEP_SIZE));
     }
@@ -271,6 +295,7 @@ public class GameBoard extends Group implements EventListener {
         return level.getTile(point.x, point.y) == TileType.OUT_OF_BOUNDS;
     }
 
+    @Deprecated
     public boolean isAvailableSpace(int x, int y) {
         return isPassableTerrain(x, y)  && getActorsAt(x, y, PlayerToken.class).isEmpty();
     }

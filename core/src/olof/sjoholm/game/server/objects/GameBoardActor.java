@@ -79,26 +79,6 @@ public abstract class GameBoardActor extends Group {
     }
 
     public boolean canMove(Direction direction) {
-        Point nextPos = new Point(getGameboardPosition());
-        nextPos.translate(direction.dirX, direction.dirY);
-
-        if (getStage().getGameBoard().isOutOfBounds(nextPos)) {
-            System.out.println("Out of bounds");
-            return false;
-        }
-
-        for (GameBoardActor actor : getStage().getGameBoard().getActorsAt(getGameboardPosition())) {
-            if (!actor.isExitable(direction)) {
-                System.out.println("Not exitable " + actor.getClass().getSimpleName());
-                return false;
-            }
-        }
-        for (GameBoardActor actor : getStage().getGameBoard().getActorsAt(nextPos)) {
-            if (!actor.isPassable(direction)) {
-                System.out.println("Not passable " + actor.getClass().getSimpleName());
-                return false;
-            }
-        }
-        return true;
+        return getStage().getGameBoard().canMove(getGameboardPosition(), direction);
     }
 }

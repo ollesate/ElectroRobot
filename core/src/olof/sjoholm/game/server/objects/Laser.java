@@ -11,8 +11,10 @@ import java.awt.Point;
 import java.util.List;
 
 import olof.sjoholm.assets.Textures;
+import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
+import olof.sjoholm.utils.PointUtils;
 import olof.sjoholm.utils.ui.TextureDrawable;
 import olof.sjoholm.utils.ui.objects.DrawableActor;
 
@@ -60,24 +62,32 @@ public class Laser extends GameBoardActor {
     }
 
     private Action getLaserAnimation() {
-        int length = 1000;
-        int offset = 35;
+        GameBoard gameBoard = getStage().getGameBoard();
+        Point pos = getGameboardPosition();
+        boolean hitToken = false;
+        boolean canMove;
+        do {
+            List<PlayerToken> tokens = gameBoard.getActorsAt(pos, PlayerToken.class);
+            if (tokens.size() > 0) {
+                tokens.get(0).damage(1);
+                hitToken = true;
+                break;
+            }
+            canMove = gameBoard.canMove(pos, direction);
+            if (canMove) {
+                pos.translate(direction.dirX, direction.dirY);
+            }
+        } while (canMove);
+
+        int tilesLength = PointUtils.distance(getGameboardPosition(), pos);
+        int nozzleOffset = 35;
+        float length = (tilesLength + (hitToken ? 0.5f : 1f)) * Constants.STEP_SIZE - nozzleOffset;
         getParent().addActor(laserActor);
         laserActor.setRotation(direction.rotation);
         Vector2 nozzlePos = new Vector2(getX() + getWidth() / 2, getY() + getHeight() / 2);
         nozzlePos.sub(direction.getVector().scl(getWidth() / 2, getHeight() / 2));
-        nozzlePos.add(direction.getVector().scl(offset, offset));
+        nozzlePos.add(direction.getVector().scl(nozzleOffset, nozzleOffset));
         laserActor.setBounds(nozzlePos.x, nozzlePos.y, length, 10f);
-
-        GameBoard gameBoard = getStage().getGameBoard();
-        Point pos = getGameboardPosition();
-        for (int i = 0; i < 5; i++) {
-            List<PlayerToken> targets = gameBoard.getActorsAt(pos, PlayerToken.class);
-            if (targets.size() > 0) {
-                targets.get(0).damage(1);
-            }
-            pos.translate(direction.dirX, direction.dirY);
-        }
 
         return Actions.delay(1f, new Action() {
             @Override
