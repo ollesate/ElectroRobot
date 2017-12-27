@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.game.server.objects.ConveyorBelt;
+import olof.sjoholm.game.server.objects.Laser;
 import olof.sjoholm.game.server.objects.SpawnPoint;
 import olof.sjoholm.game.server.objects.Tile;
 import olof.sjoholm.game.shared.logic.Rotation;
@@ -18,10 +19,10 @@ public class Levels {
         return new Level(
                 new int[][]{
                         {6, 3, 3, 3, 3, 3, 3, 7},
-                        {2, 0, 0, 0, 0, 0, 1, 4},
-                        {2, 0, 0, 0, 0, 0, -1, 4},
+                        {2, 0, 0, 0, 0, 13, 10, 4},
+                        {2, 0, 0, 0, 0, 12, 11, 4},
                         {2, 1, 0, 0, 0, 0, 1, 4},
-                        {9, 5, 5, 5, 5, 5, 5, -1},
+                        {9, 5, 5, 5, 5, 5, 5, 8},
                 }
         );
     }
@@ -39,6 +40,11 @@ public class Levels {
         public static final int CONVEYOR_BELT_RIGHT_RIGHT = 7;
         public static final int CONVEYOR_BELT_DOWN_RIGHT = 8;
         public static final int CONVEYOR_BELT_LEFT_RIGHT = 9;
+        public static final int LASER_UP = 10;
+        public static final int LASER_RIGHT = 11;
+        public static final int LASER_DOWN = 12;
+        public static final int LASER_LEFT = 13;
+
 
         private final List<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
         private final int[][] tileArray;
@@ -87,6 +93,22 @@ public class Levels {
                             break;
                         case CONVEYOR_BELT_LEFT_RIGHT:
                             addActor(group, new ConveyorBelt(Direction.UP, Rotation.RIGHT, 1), tileSize, x, y);
+                            break;
+                        case LASER_UP:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new Laser(Direction.UP), tileSize, x, y);
+                            break;
+                        case LASER_RIGHT:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new Laser(Direction.RIGHT), tileSize, x, y);
+                            break;
+                        case LASER_DOWN:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new Laser(Direction.DOWN), tileSize, x, y);
+                            break;
+                        case LASER_LEFT:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new Laser(Direction.LEFT), tileSize, x, y);
                             break;
                         default:
                             addTile(group, tileSize, x, y);

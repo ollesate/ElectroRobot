@@ -102,8 +102,8 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
                     addPlayerAction(playSet.getPlayerToken(), playSet.getRound(round));
                 }
             }
-            addShootingAction();
             addConveyorBeltAction();
+            addShootingAction();
 
             round++;
         }
@@ -128,7 +128,7 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
     }
 
     private void addShootingAction() {
-        CardActor cardActor = new CardActor(null, "All players shoot", Color.ORANGE);
+        CardActor cardActor = new CardActor(null, "Missiles and lasers", Color.ORANGE);
         cardActor.setHeight(GraphicsUtil.dpToPixels(50));
         addActor(cardActor);
         cardActors.add(cardActor);

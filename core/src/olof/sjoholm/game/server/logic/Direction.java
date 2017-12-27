@@ -27,14 +27,14 @@ public enum Direction {
         DOWN.rotateRight = LEFT;
     }
 
-    public final float dirX;
-    public final float dirY;
+    public final int dirX;
+    public final int dirY;
     public final float rotation;
 
     private Direction rotateRight;
     private Direction rotateLeft;
 
-    Direction(float dirX, float dirY, float rotation) {
+    Direction(int dirX, int dirY, float rotation) {
         this.dirX = dirX;
         this.dirY = dirY;
         this.rotation = rotation;
@@ -45,7 +45,7 @@ public enum Direction {
     }
 
     public Point getPoint() {
-        return new Point((int)(dirX), (int)(dirY));
+        return new Point(dirX, dirY);
     }
 
     public Direction getRotateRight() {

@@ -11,6 +11,7 @@ import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.PlaySet;
 import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.GameBoard;
+import olof.sjoholm.game.server.objects.Laser;
 import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.shared.DebugUtil;
 import olof.sjoholm.game.shared.logic.CardGenerator;
@@ -36,6 +37,8 @@ public class DebugTerminalController {
             handleToken(event);
         } else if ("belts".equals(event.getCommand())) {
             handleBelts(event);
+        } else if ("lasers".equals(event.getCommand())) {
+            handleLasers(event);
         } else if ("play".equals(event.getCommand())) {
             handlePlay(event);
         }
@@ -135,6 +138,20 @@ public class DebugTerminalController {
             beltActions.addAction(belt.getAction());
         }
         gameBoard.addAction(beltActions);
+    }
+
+    private void handleLasers(TerminalEvent terminalEvent) {
+        List<Laser> lasers = gameBoard.getActors(Laser.class);
+        if (lasers.size() == 0) {
+            print("No lasers could be found!");
+            return;
+        }
+        print("Shoot lasers");
+        ParallelAction parallel = new ParallelAction();
+        for (Laser laser : lasers) {
+            parallel.addAction(laser.getAction());
+        }
+        gameBoard.addAction(parallel);
     }
 
     private void print(String message) {

@@ -149,9 +149,9 @@ public class GameBoard extends Group implements EventListener {
             }
 
             System.out.println("Add all players shoot and etc");
-            sequence.addAction(new AllPlayersShootAction());
             sequence.addAction(new RunConveyorBeltAction());
             sequence.addAction(new ShootLasersAction());
+            sequence.addAction(new AllPlayersShootAction());
             round++;
         }
 
@@ -329,9 +329,24 @@ public class GameBoard extends Group implements EventListener {
     }
 
     private class ShootLasersAction extends Action {
+        Action laserActions;
+
         @Override
         public boolean act(float delta) {
-            return true;
+            if (laserActions == null) {
+                laserActions = getAction();
+                laserActions.setActor(GameBoard.this);
+                fire(new RunLasersEvent());
+            }
+            return laserActions.act(delta);
+        }
+
+        private Action getAction() {
+            ParallelAction parallelAction = new ParallelAction();
+            for (Laser laser : getActors(Laser.class)) {
+                parallelAction.addAction(laser.getAction());
+            }
+            return parallelAction;
         }
     }
 }
