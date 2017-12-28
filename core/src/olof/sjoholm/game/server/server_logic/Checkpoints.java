@@ -24,6 +24,7 @@ public class Checkpoints {
     }
 
     public boolean completedAllCheckpoints() {
+        System.out.println("Check completed all? " + gatheredCheckpoints.size() + " of " + totalCheckpoints);
         return gatheredCheckpoints.size() == totalCheckpoints;
     }
 }

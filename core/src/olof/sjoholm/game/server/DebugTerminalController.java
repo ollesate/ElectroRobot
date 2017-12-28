@@ -16,7 +16,6 @@ import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.Laser;
 import olof.sjoholm.game.server.objects.Terminal;
-import olof.sjoholm.game.shared.DebugUtil;
 import olof.sjoholm.game.shared.logic.CardGenerator;
 import olof.sjoholm.game.shared.logic.Movement;
 import olof.sjoholm.game.shared.logic.Rotation;

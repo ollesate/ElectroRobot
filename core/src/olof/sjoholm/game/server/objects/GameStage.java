@@ -28,10 +28,6 @@ public class GameStage extends Stage {
         getViewport().getCamera().position.set(width / 2, height / 2, 0);
     }
 
-    public List<GameBoardActor> getActors(float x, float y, float width, float height) {
-        return gameBoard.getActors(x, y, width, height);
-    }
-
     public GameBoard getGameBoard() {
         return gameBoard;
     }

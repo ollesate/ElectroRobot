@@ -73,7 +73,7 @@ public class Missile extends Actor {
 
         if (getStage() instanceof GameStage) {
             GameStage stage = (GameStage) getStage();
-            List<GameBoardActor> actors = stage.getActors(getX(), getY(), actualWidth, actualHeight);
+            List<GameBoardActor> actors = stage.getGameBoard().getActors(getX(), getY(), actualWidth, actualHeight);
             for (GameBoardActor actor : actors) {
                 if (!actor.equals(owner)) {
                     if (actor instanceof PlayerToken) {

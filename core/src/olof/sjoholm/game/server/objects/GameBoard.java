@@ -315,10 +315,10 @@ public class GameBoard extends Group implements EventListener {
     public static class RunConveyorBeltEvent extends Event {}
     public static class RunLasersEvent extends Event {}
     public static class OnPlayerReachedCheckpoints extends Event {
-        public final PlayerToken token;
+        public final Player player;
 
-        public OnPlayerReachedCheckpoints(PlayerToken token) {
-            this.token = token;
+        public OnPlayerReachedCheckpoints(Player player) {
+            this.player = player;
         }
     }
 
@@ -415,13 +415,16 @@ public class GameBoard extends Group implements EventListener {
             for (CheckpointActor actor : getActors(CheckpointActor.class)) {
                 parallelAction.addAction(actor.getAction());
             }
+            parallelAction.setActor(GameBoard.this);
             return Actions.sequence(parallelAction, new Action() {
                 @Override
                 public boolean act(float delta) {
                     for (PlayerToken playerToken : getActors(PlayerToken.class)) {
                         if (playerToken.getCheckpoints().completedAllCheckpoints()) {
                             System.out.println("Checkpoint for player finished");
-                            fire(new OnPlayerReachedCheckpoints(playerToken));
+                            if (playerToken.getPlayer() != null) {
+                                fire(new OnPlayerReachedCheckpoints(playerToken.getPlayer()));
+                            }
                         }
                     }
                     return true;

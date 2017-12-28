@@ -8,14 +8,19 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.assets.Skins;
 import olof.sjoholm.assets.Textures;
 import olof.sjoholm.game.server.objects.GameBoard;
+import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.server.server_logic.ServerLogic;
+import olof.sjoholm.game.shared.logic.Rotation;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
+import olof.sjoholm.game.shared.logic.cards.MoveForward;
+import olof.sjoholm.game.shared.logic.cards.Rotate;
 import olof.sjoholm.net.Envelope;
 import olof.sjoholm.net.ServerConnection;
 import olof.sjoholm.utils.Logger;
@@ -121,7 +126,44 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
             }
             return true;
         } else if (event instanceof GameBoard.OnPlayerReachedCheckpoints) {
+            System.out.println("One player reached all stops");
+            Player player = ((GameBoard.OnPlayerReachedCheckpoints) event).player;
+            setScreen(new Screen() {
+                @Override
+                public void show() {
 
+                }
+
+                @Override
+                public void render(float delta) {
+
+                }
+
+                @Override
+                public void resize(int width, int height) {
+
+                }
+
+                @Override
+                public void pause() {
+
+                }
+
+                @Override
+                public void resume() {
+
+                }
+
+                @Override
+                public void hide() {
+
+                }
+
+                @Override
+                public void dispose() {
+
+                }
+            });
         }
         return false;
     }
@@ -155,6 +197,19 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
                     if (name != null) {
                         onMessageUi(playerId, new Envelope.PlayerSelectName(name));
                     }
+                } else if ("cards".equals(operation)) {
+                    int cardIndex = 4;
+                    String cardStr;
+                    List<BoardAction> boardActions = new ArrayList<BoardAction>();
+                    boardActions.add(new MoveForward(5));
+                    boardActions.add(new Rotate(Rotation.LEFT));
+                    boardActions.add(new MoveForward(2));
+                    boardActions.add(new Rotate(Rotation.LEFT));
+                    boardActions.add(new MoveForward(2));
+                    while ((cardStr = get(cardIndex)) != null) {
+
+                    }
+                    onMessage(playerId, new Envelope.SendCards(boardActions));
                 }
             }
         }
@@ -184,6 +239,13 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
                 return args[index];
             }
             throw new TerminalException(error);
+        }
+
+        private String get(int index) {
+            if (args.length > index) {
+                return args[index];
+            }
+            return null;
         }
 
         private int getInt(int index, String error) throws TerminalException {

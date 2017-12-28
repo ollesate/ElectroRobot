@@ -127,6 +127,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
 
     public void setMessageListener(EventListener eventListener) {
         gameStage.addListener(eventListener);
+        uiStage.addListener(eventListener);
     }
 
     @Override
@@ -179,7 +180,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
     }
 
     public void onPlayerCardsReceived(Player player, List<BoardAction> cards) {
-
+        // TODO: remove?
     }
 
     private void startCardPhase() {
@@ -298,9 +299,6 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
             }
 
             startCardPhase();
-        } else if (event instanceof GameBoard.OnPlayerReachedCheckpoints) {
-            PlayerToken token = ((GameBoard.OnPlayerReachedCheckpoints) event).token;
-
         }
         return false;
     }
