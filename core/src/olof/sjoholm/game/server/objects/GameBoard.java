@@ -5,13 +5,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
@@ -19,13 +22,13 @@ import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.game.server.logic.PlaySet;
 import olof.sjoholm.game.server.logic.TileType;
+import olof.sjoholm.game.server.server_logic.Checkpoints;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
 import olof.sjoholm.utils.actions.FireEventAction;
 
 public class GameBoard extends Group implements EventListener {
-    private List<SpawnPoint> spawnPoints;
     private List<GameBoardActor> gameBoardActors = new ArrayList<GameBoardActor>();
     private int tileSize;
     private Level level;
@@ -68,32 +71,25 @@ public class GameBoard extends Group implements EventListener {
         this.level = level;
         clearChildren(); // TODO: why?
         level.create(this, tileSize);
-        spawnPoints = level.getSpawnPoints();
     }
 
     public void createPlayerToken(Player player) {
-        SpawnPoint spawnPoint = findSpawnPoint();
+        SpawnPointActor spawnPoint = findSpawnPoint();
         if (spawnPoint == null) {
             // TODO?
+            throw new IllegalStateException("No more spawn points");
         }
+        spawnPoint.setOwner(player);
+        spawnPoint.setColor(player.getColor());
         spawnPlayerToken(player, spawnPoint);
     }
 
-    public PlayerToken spawnPlayerToken(Player player, SpawnPoint spawnPoint) {
-        spawnPoint.setOwner(player);
-        spawnPoint.setColor(player.getColor());
-
-        PlayerToken playerToken = new PlayerToken();
-        playerToken.setSize(tileSize, tileSize);
-        playerToken.setX(spawnPoint.getBoardX() * tileSize);
-        playerToken.setY(spawnPoint.getBoardY() * tileSize);
+    public void spawnPlayerToken(Player player, SpawnPoint spawnPoint) {
+        PlayerToken playerToken = spawnToken(spawnPoint.getBoardX(), spawnPoint.getBoardY());
         playerToken.setColor(player.getColor());
         playerToken.setPlayer(player);
-        addActor(playerToken);
-
         playerToken.setPlayerName(player.getName());
-
-        return playerToken;
+        player.setCheckpoints(playerToken.getCheckpoints());
     }
 
     public PlayerToken spawnToken(int x, int y) {
@@ -101,12 +97,17 @@ public class GameBoard extends Group implements EventListener {
         playerToken.setSize(tileSize, tileSize);
         playerToken.setX(x * tileSize);
         playerToken.setY(y * tileSize);
+        Set<Integer> checkpoints = new HashSet<Integer>();
+        for (CheckpointActor checkpointActor : getActors(CheckpointActor.class)) {
+            checkpoints.add(checkpointActor.getCheckpointNumber());
+        }
+        playerToken.setCheckpoints(new Checkpoints(checkpoints.size()));
         addActor(playerToken);
         return playerToken;
     }
 
-    private SpawnPoint findSpawnPoint() {
-        for (SpawnPoint spawnPoint : spawnPoints) {
+    private SpawnPointActor findSpawnPoint() {
+        for (SpawnPointActor spawnPoint : getActors(SpawnPointActor.class)) {
             if (spawnPoint.getOwner() == null) {
                 return spawnPoint;
             }
@@ -115,7 +116,12 @@ public class GameBoard extends Group implements EventListener {
     }
 
     private SpawnPoint getSpawnPoint(Player player) {
-        for (SpawnPoint spawnPoint : spawnPoints) {
+        for (CheckpointActor checkpoint : getActors(CheckpointActor.class)) {
+            if (player.getCheckpoints().getLast() == checkpoint.getCheckpointNumber()) {
+                return checkpoint;
+            }
+        }
+        for (SpawnPointActor spawnPoint : getActors(SpawnPointActor.class)) {
             if (player.equals(spawnPoint.getOwner())) {
                 return spawnPoint;
             }
@@ -153,6 +159,7 @@ public class GameBoard extends Group implements EventListener {
             sequence.addAction(new RunConveyorBeltAction());
             sequence.addAction(new ShootLasersAction());
             sequence.addAction(new AllPlayersShootAction());
+            sequence.addAction(new TouchCheckpointsAction());
             round++;
         }
 
@@ -307,6 +314,13 @@ public class GameBoard extends Group implements EventListener {
     public static class AllPlayersShootEvent extends Event {}
     public static class RunConveyorBeltEvent extends Event {}
     public static class RunLasersEvent extends Event {}
+    public static class OnPlayerReachedCheckpoints extends Event {
+        public final PlayerToken token;
+
+        public OnPlayerReachedCheckpoints(PlayerToken token) {
+            this.token = token;
+        }
+    }
 
     public static class TurnFinishedEvent extends Event {}
 
@@ -381,6 +395,38 @@ public class GameBoard extends Group implements EventListener {
                 parallelAction.addAction(laser.getAction());
             }
             return parallelAction;
+        }
+    }
+
+    private class TouchCheckpointsAction extends Action {
+        Action checkpointsAction;
+
+        @Override
+        public boolean act(float delta) {
+            if (checkpointsAction == null) {
+                checkpointsAction = getAction();
+                checkpointsAction.setActor(GameBoard.this);
+            }
+            return checkpointsAction.act(delta);
+        }
+
+        private Action getAction() {
+            ParallelAction parallelAction = new ParallelAction();
+            for (CheckpointActor actor : getActors(CheckpointActor.class)) {
+                parallelAction.addAction(actor.getAction());
+            }
+            return Actions.sequence(parallelAction, new Action() {
+                @Override
+                public boolean act(float delta) {
+                    for (PlayerToken playerToken : getActors(PlayerToken.class)) {
+                        if (playerToken.getCheckpoints().completedAllCheckpoints()) {
+                            System.out.println("Checkpoint for player finished");
+                            fire(new OnPlayerReachedCheckpoints(playerToken));
+                        }
+                    }
+                    return true;
+                }
+            });
         }
     }
 }

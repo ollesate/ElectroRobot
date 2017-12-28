@@ -2,7 +2,6 @@ package olof.sjoholm.game.server.server_logic;
 
 import com.badlogic.gdx.graphics.Color;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
@@ -16,6 +15,7 @@ public class Player {
     private Color color;
     private String name;
     private boolean ready;
+    private Checkpoints checkpoint;
 
     public Player(int id, ServerLogic.PlayerApi playerApi) {
         this.id = id;
@@ -87,5 +87,13 @@ public class Player {
 
     public int getId() {
         return id;
+    }
+
+    public void setCheckpoints(Checkpoints checkpoint) {
+        this.checkpoint = checkpoint;
+    }
+
+    public Checkpoints getCheckpoints() {
+        return checkpoint;
     }
 }

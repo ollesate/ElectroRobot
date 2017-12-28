@@ -1,5 +1,7 @@
 package olof.sjoholm.game.server;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Colors;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
@@ -9,6 +11,7 @@ import java.util.List;
 
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.PlaySet;
+import olof.sjoholm.game.server.objects.CheckpointActor;
 import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.Laser;
@@ -39,6 +42,8 @@ public class DebugTerminalController {
             handleBelts(event);
         } else if ("lasers".equals(event.getCommand())) {
             handleLasers(event);
+        } else if ("checkpoints".equals(event.getCommand())) {
+            handleCheckpoints(event);
         } else if ("play".equals(event.getCommand())) {
             handlePlay(event);
         }
@@ -109,6 +114,16 @@ public class DebugTerminalController {
                 System.out.print("add sequence");
                 gameBoard.addAction(sequenceAction);
             }
+        } else if ("color".equals(event.get(2))) {
+            String colorStr = event.get(3);
+            if (colorStr != null) {
+                Color color = Colors.get(colorStr.toUpperCase());
+                if (color != null) {
+                    playerToken.setColor(color);
+                } else {
+                    terminal.writeError("No color for " + colorStr);
+                }
+            }
         }
     }
 
@@ -150,6 +165,20 @@ public class DebugTerminalController {
         ParallelAction parallel = new ParallelAction();
         for (Laser laser : lasers) {
             parallel.addAction(laser.getAction());
+        }
+        gameBoard.addAction(parallel);
+    }
+
+    private void handleCheckpoints(TerminalEvent event) {
+        List<CheckpointActor> actors = gameBoard.getActors(CheckpointActor.class);
+        if (actors.size() == 0) {
+            print("No checkpoints could be found!");
+            return;
+        }
+        print("Act checkpoints");
+        ParallelAction parallel = new ParallelAction();
+        for (CheckpointActor actor : actors) {
+            parallel.addAction(actor.getAction());
         }
         gameBoard.addAction(parallel);
     }

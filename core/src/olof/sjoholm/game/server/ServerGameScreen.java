@@ -298,6 +298,9 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
             }
 
             startCardPhase();
+        } else if (event instanceof GameBoard.OnPlayerReachedCheckpoints) {
+            PlayerToken token = ((GameBoard.OnPlayerReachedCheckpoints) event).token;
+
         }
         return false;
     }

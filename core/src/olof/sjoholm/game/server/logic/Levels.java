@@ -7,9 +7,10 @@ import com.badlogic.gdx.utils.Align;
 import java.util.ArrayList;
 import java.util.List;
 
+import olof.sjoholm.game.server.objects.CheckpointActor;
 import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.Laser;
-import olof.sjoholm.game.server.objects.SpawnPoint;
+import olof.sjoholm.game.server.objects.SpawnPointActor;
 import olof.sjoholm.game.server.objects.Tile;
 import olof.sjoholm.game.shared.logic.Rotation;
 
@@ -19,9 +20,9 @@ public class Levels {
         return new Level(
                 new int[][]{
                         {6, 3, 3, 3, 3, 3, 3, 7},
-                        {2, 0, 0, 0, 0, 13, 10, 4},
-                        {2, 0, 0, 0, 0, 12, 11, 4},
-                        {2, 1, 0, 0, 0, 0, 1, 4},
+                        {2, 0, 0, 0, 16, 0, 15, 4},
+                        {2, 0, 0, 0, 0, 0, 0, 4},
+                        {2, 1, 0, 0, 0, 0, 14, 4},
                         {9, 5, 5, 5, 5, 5, 5, 8},
                 }
         );
@@ -44,9 +45,13 @@ public class Levels {
         public static final int LASER_RIGHT = 11;
         public static final int LASER_DOWN = 12;
         public static final int LASER_LEFT = 13;
+        public static final int CHECKPOINT_1 = 14;
+        public static final int CHECKPOINT_2 = 15;
+        public static final int CHECKPOINT_3 = 16;
+        public static final int CHECKPOINT_4 = 17;
 
 
-        private final List<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
+        private final List<SpawnPointActor> spawnPoints = new ArrayList<SpawnPointActor>();
         private final int[][] tileArray;
         private final int width;
         private final int height;
@@ -110,6 +115,22 @@ public class Levels {
                             addTile(group, tileSize, x, y);
                             addActor(group, new Laser(Direction.LEFT), tileSize, x, y);
                             break;
+                        case CHECKPOINT_1:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new CheckpointActor(1), tileSize, x, y);
+                            break;
+                        case CHECKPOINT_2:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new CheckpointActor(2), tileSize, x, y);
+                            break;
+                        case CHECKPOINT_3:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new CheckpointActor(3), tileSize, x, y);
+                            break;
+                        case CHECKPOINT_4:
+                            addTile(group, tileSize, x, y);
+                            addActor(group, new CheckpointActor(4), tileSize, x, y);
+                            break;
                         default:
                             addTile(group, tileSize, x, y);
                     }
@@ -136,7 +157,7 @@ public class Levels {
         }
 
         private void addSpawn(Group group, int tileSize, int x, int y) {
-            SpawnPoint spawnPoint = new SpawnPoint(tileSize, x, y);
+            SpawnPointActor spawnPoint = new SpawnPointActor(tileSize, x, y);
             spawnPoint.setPosition((x + .5f) * tileSize, (y + .5f) * tileSize, Align.center);
             group.addActor(spawnPoint);
             spawnPoints.add(spawnPoint);
@@ -168,7 +189,7 @@ public class Levels {
             return height;
         }
 
-        public List<SpawnPoint> getSpawnPoints() {
+        public List<SpawnPointActor> getSpawnPoints() {
             return spawnPoints;
         }
     }

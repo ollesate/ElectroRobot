@@ -13,6 +13,7 @@ import java.util.List;
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.assets.Skins;
 import olof.sjoholm.assets.Textures;
+import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.server_logic.ServerLogic;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.net.Envelope;
@@ -119,6 +120,8 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
                 serverGameScreen.onTerminalError(e.getMessage());
             }
             return true;
+        } else if (event instanceof GameBoard.OnPlayerReachedCheckpoints) {
+
         }
         return false;
     }

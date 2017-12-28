@@ -22,11 +22,13 @@ import olof.sjoholm.assets.Textures;
 import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.Direction;
+import olof.sjoholm.game.server.objects.Badge;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoardActor;
 import olof.sjoholm.game.server.objects.HealthBarActor;
 import olof.sjoholm.game.server.objects.Missile;
-import olof.sjoholm.game.server.objects.SpawnPoint;
+import olof.sjoholm.game.server.objects.SpawnPointActor;
+import olof.sjoholm.game.server.server_logic.Checkpoints;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.Damageable;
 import olof.sjoholm.game.shared.logic.Movement;
@@ -39,16 +41,25 @@ public class PlayerToken extends GameBoardActor implements Damageable {
     private float stepDelay = .5f;
     private float stepSpeed = 1.0f;
     private final TankAnimation tankAnimation = new TankAnimation();
-    private SpawnPoint spawnPoint;
+    private SpawnPointActor spawnPoint;
     private final int maxHealth = Constants.MAX_HEALTH;
     private int currentHealth = maxHealth;
     private Player player;
-    private olof.sjoholm.game.server.objects.Badge badge;
+    private Badge badge;
+    private Checkpoints checkpoints;
 
     public PlayerToken() {
         setDrawable(tankAnimation);
         setTransform(false);
         addActor(new HealthBarActor(true));
+    }
+
+    public void setCheckpoints(Checkpoints checkpoints) {
+        this.checkpoints = checkpoints;
+    }
+
+    public Checkpoints getCheckpoints() {
+        return checkpoints;
     }
 
     @Override
@@ -90,11 +101,11 @@ public class PlayerToken extends GameBoardActor implements Damageable {
         return sequence;
     }
 
-    public SpawnPoint getSpawnPoint() {
+    public SpawnPointActor getSpawnPoint() {
         return spawnPoint;
     }
 
-    public void setSpawnPoint(SpawnPoint spawnPoint) {
+    public void setSpawnPoint(SpawnPointActor spawnPoint) {
         this.spawnPoint = spawnPoint;
     }
 
@@ -112,7 +123,7 @@ public class PlayerToken extends GameBoardActor implements Damageable {
 
     public void setPlayerName(String name) {
         if (badge == null) {
-            badge = new olof.sjoholm.game.server.objects.Badge();
+            badge = new Badge();
             addActor(badge);
         }
         badge.setText(name);
@@ -140,6 +151,10 @@ public class PlayerToken extends GameBoardActor implements Damageable {
         action.setActor(this);
         action.setDuration(duration);
         return Actions.sequence(action, Actions.delay(1f));
+    }
+
+    public void addCheckpoint(int checkpointNumber) {
+        checkpoints.addCheckpoint(checkpointNumber);
     }
 
     private static class ShootAction extends RelativeAction {
