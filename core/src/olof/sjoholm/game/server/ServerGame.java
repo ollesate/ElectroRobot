@@ -128,42 +128,7 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
         } else if (event instanceof GameBoard.OnPlayerReachedCheckpoints) {
             System.out.println("One player reached all stops");
             Player player = ((GameBoard.OnPlayerReachedCheckpoints) event).player;
-            setScreen(new Screen() {
-                @Override
-                public void show() {
-
-                }
-
-                @Override
-                public void render(float delta) {
-
-                }
-
-                @Override
-                public void resize(int width, int height) {
-
-                }
-
-                @Override
-                public void pause() {
-
-                }
-
-                @Override
-                public void resume() {
-
-                }
-
-                @Override
-                public void hide() {
-
-                }
-
-                @Override
-                public void dispose() {
-
-                }
-            });
+            setScreen(new GameFinishedScreen(player.getName()));
         }
         return false;
     }
@@ -199,13 +164,13 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
                     }
                 } else if ("cards".equals(operation)) {
                     int cardIndex = 4;
-                    String cardStr;
                     List<BoardAction> boardActions = new ArrayList<BoardAction>();
                     boardActions.add(new MoveForward(5));
                     boardActions.add(new Rotate(Rotation.LEFT));
                     boardActions.add(new MoveForward(2));
                     boardActions.add(new Rotate(Rotation.LEFT));
                     boardActions.add(new MoveForward(2));
+                    String cardStr;
                     while ((cardStr = get(cardIndex)) != null) {
 
                     }
