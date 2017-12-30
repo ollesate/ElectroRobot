@@ -58,7 +58,9 @@ public class NetClient {
         try {
             Socket socket = Gdx.net.newClientSocket(
                     Net.Protocol.TCP, host, port, new SocketHints());
+            Logger.d("FAsdasdas");
             inputStream = new ObjectInputStream(socket.getInputStream());
+            Logger.d("Wooooow!!!!! now read obj");
             id = ((Integer) inputStream.readObject());
             outputStream = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException e) {

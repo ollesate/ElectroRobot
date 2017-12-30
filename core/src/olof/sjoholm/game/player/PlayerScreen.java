@@ -2,9 +2,9 @@ package olof.sjoholm.game.player;
 
 import com.badlogic.gdx.Screen;
 
-import olof.sjoholm.game.player.ClientServerHandler;
-import olof.sjoholm.net.Envelope;
+import olof.sjoholm.game.shared.AppPrefs;
 import olof.sjoholm.net.ClientConnection;
+import olof.sjoholm.net.Envelope;
 import olof.sjoholm.utils.Logger;
 
 public abstract class PlayerScreen implements Screen, ClientConnection.OnMessageListener,
@@ -35,9 +35,9 @@ public abstract class PlayerScreen implements Screen, ClientConnection.OnMessage
 
     }
 
-    public void connect() {
+    public void connect(String ipAddress) {
         Logger.d("Connecting...!");
-        clientConnection.connect();
+        clientConnection.connect(ipAddress);
     }
 
     public void disconnect() {

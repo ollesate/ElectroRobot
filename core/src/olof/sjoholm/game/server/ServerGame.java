@@ -48,6 +48,7 @@ public class ServerGame extends Game implements ServerConnection.OnMessageListen
         Fonts.initialize();
         serverGameScreen = new ServerGameScreen();
         serverGameScreen.setMessageListener(this);
+        serverGameScreen.setHostText(serverConnection.getHostName());
         setScreen(serverGameScreen);
         serverConnection.connect();
         serverLogic = new ServerLogic(serverGameScreen, serverConnection);

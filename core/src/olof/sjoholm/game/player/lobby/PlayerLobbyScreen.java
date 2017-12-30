@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,8 +25,12 @@ import java.util.List;
 
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.assets.Palette;
+import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.player.PlayerScreen;
 import olof.sjoholm.game.player.PlayerScreenHandler;
+import olof.sjoholm.game.shared.AppPrefs;
+import olof.sjoholm.game.shared.ui.IpAddressDialog;
+import olof.sjoholm.game.shared.ui.ThemedUi;
 import olof.sjoholm.utils.GraphicsUtil;
 import olof.sjoholm.utils.ui.objects.DrawableActor;
 import olof.sjoholm.game.shared.objects.PlayerToken;
@@ -56,10 +59,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(lobbyStage);
-        if (!isConnected()) {
-            connect();
-        }
-        lobbyStage.label.setText("Connecting...");
+        lobbyStage.label.setText("Not connected");
     }
 
     @Override
@@ -80,19 +80,7 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
     @Override
     public void onConnectionFailed(String reason) {
-        lobbyStage.label.setText("Not connected");
-        new Timer().scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                lobbyStage.label.setText("Connecting...");
-            }
-        }, 5f);
-        new Timer().scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                connect();
-            }
-        }, 8f);
+        lobbyStage.label.setText("Connection failed");
     }
 
     @Override
@@ -115,9 +103,39 @@ public class PlayerLobbyScreen extends PlayerScreen {
             Label.LabelStyle labelStyle = new Label.LabelStyle(Fonts.get(Fonts.FONT_14), Color.BLACK);
             label = new Label("", labelStyle);
             label.setAlignment(Align.center);
+            label.setHeight(GraphicsUtil.dpToPixels(48));
             label.setY(getHeight() - GraphicsUtil.dpToPixels(16) - label.getHeight());
             label.setWidth(getWidth());
             addActor(label);
+
+            TextButton connectButton = ThemedUi.createTextButton(Constants.DEFAULT_THEME);
+            connectButton.setText("Connect");
+            connectButton.setHeight(GraphicsUtil.dpToPixels(48));
+            connectButton.setWidth(getWidth() - 2 * GraphicsUtil.dpToPixels(16));
+            connectButton.setX(getWidth() / 2, Align.center);
+            connectButton.setY(label.getY(Align.bottom) - GraphicsUtil.dpToPixels(8), Align.top);
+            connectButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    final IpAddressDialog dialog = new IpAddressDialog();
+                    dialog.setText(AppPrefs.getLastIpAddress());
+                    dialog.setListener(new IpAddressDialog.DialogListener() {
+                        @Override
+                        public void onAccept(String ipAddress) {
+                            connect(ipAddress);
+                            dialog.dismiss();
+                            AppPrefs.setLastIpAddress(ipAddress);
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            dialog.dismiss();
+                        }
+                    });
+                    addActor(dialog);
+                }
+            });
+            addActor(connectButton);
 
             Group group = new Group();
             addActor(group);
@@ -328,8 +346,8 @@ public class PlayerLobbyScreen extends PlayerScreen {
 
         public MyDrawable(Texture texture) {
             this.texture = texture;
-            setMinWidth(texture.getWidth());
-            setMinHeight(texture.getHeight());
+                setMinWidth(texture.getWidth());
+                setMinHeight(texture.getHeight());
         }
 
         public void setColor(Color color) {

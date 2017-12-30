@@ -17,8 +17,8 @@ import java.util.Set;
 import olof.sjoholm.utils.Logger;
 
 public final class ServerConnection implements NetClient.Listener {
-    public static final int PORT = 9123;
-    public static final String HOST_NAME = "127.0.0.1";
+    public static final int PORT = 9129;
+    public static final String HOST_NAME = "olofsj.local";
 
     private static ServerConnection instance;
 
@@ -51,7 +51,7 @@ public final class ServerConnection implements NetClient.Listener {
     public ServerConnection() {
         String host;
         try {
-            host = InetAddress.getLocalHost().getHostName();
+            host = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             Logger.e(e.getMessage());
             host = "unavailable";

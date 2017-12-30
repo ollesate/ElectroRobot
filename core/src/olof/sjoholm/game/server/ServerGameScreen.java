@@ -57,6 +57,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
     private Turn currentTurn;
     private final EventLog eventLog;
     private final Terminal terminal;
+    private final LabelActor hostLabel;
 
     public enum GamePhase {
         LOBBY,
@@ -81,8 +82,8 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
         uiStage.addActor(cardFlowPanel);
         gameStage.addListener(cardFlowPanel); // Listen to start card events
 
-        LabelActor actor = new LabelActor("Host: " + "undefined", Fonts.get(Fonts.FONT_34));
-        gameStage.addActor(actor);
+        hostLabel = new LabelActor("Host: " + "undefined", Fonts.get(Fonts.FONT_34));
+        gameStage.addActor(hostLabel);
         eventLog = new EventLog();
         gameStage.addActor(eventLog);
 
@@ -123,6 +124,10 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
                 return false;
             }
         });
+    }
+
+    public void setHostText(String text) {
+        hostLabel.setText("Host: " + text);
     }
 
     public void setMessageListener(EventListener eventListener) {

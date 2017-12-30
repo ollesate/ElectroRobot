@@ -1,6 +1,11 @@
 package olof.sjoholm.configuration;
 
 
+import com.badlogic.gdx.graphics.Color;
+
+import olof.sjoholm.assets.Palette;
+import olof.sjoholm.game.shared.ui.ThemedUi;
+
 public class Constants {
     public static final int WORLD_WIDTH = 1920;
     public static final int WORLD_HEIGHT = 1080;
@@ -28,7 +33,5 @@ public class Constants {
 
     public static final float MISSILE_SPEED = 750f;
 
-    public static class Ui {
-
-    }
+    public static ThemedUi.Theme DEFAULT_THEME = ThemedUi.Theme.createLight(Palette.PRIMARY, Palette.ACCENT);
 }

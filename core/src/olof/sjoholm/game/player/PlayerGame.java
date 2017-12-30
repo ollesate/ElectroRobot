@@ -7,7 +7,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import olof.sjoholm.assets.Fonts;
+import olof.sjoholm.assets.Skins;
 import olof.sjoholm.assets.Textures;
+import olof.sjoholm.game.shared.AppPrefs;
 import olof.sjoholm.utils.Logger;
 
 public class PlayerGame extends Game {
@@ -17,7 +19,7 @@ public class PlayerGame extends Game {
     public void create () {
         Logger.d("Game create");
         Textures.initialize();
-        olof.sjoholm.assets.Skins.initialize();
+        Skins.initialize();
         Fonts.initialize();
         PlayerScreenHandler screenHandler = new PlayerScreenHandler(this);
         screenHandler.showScreen(PlayerScreenHandler.LOBBY);
@@ -34,7 +36,8 @@ public class PlayerGame extends Game {
     public void dispose () {
         super.dispose();
         Textures.dispose();
-        olof.sjoholm.assets.Skins.dispose();
+        Skins.dispose();
+        AppPrefs.save();
     }
 
     @Override

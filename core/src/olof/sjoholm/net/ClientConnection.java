@@ -65,12 +65,12 @@ public class ClientConnection implements NetClient.Listener {
         onMessageListeners.add(listener);
     }
 
-    public void connect() {
+    public void connect(String ipAddress) {
         if (isConnected) {
             throw new IllegalStateException("Already connected");
         }
         try {
-            connection = NetClient.accept(ServerConnection.HOST_NAME, ServerConnection.PORT);
+            connection = NetClient.accept(ipAddress, ServerConnection.PORT);
             connection.startReading(this);
             for (OnConnectionListener listener : onConnectionListeners) {
                 listener.onConnected();

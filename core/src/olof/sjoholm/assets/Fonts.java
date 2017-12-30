@@ -14,6 +14,7 @@ public class Fonts {
 
     public static final String FONT_60 = "FONT_60.ttf";
     public static final String FONT_34 = "FONT_34.ttf";
+    public static final String FONT_30 = "FONT_30.ttf";
     public static final String FONT_24 = "FONT_24.ttf";
     public static final String FONT_20 = "FONT_20.ttf";
     public static final String FONT_16 = "FONT_16.ttf";
@@ -30,6 +31,7 @@ public class Fonts {
         loadRifficFreeFont(60, FONT_60);
         loadRifficFreeFont(34, FONT_34);
         loadRifficFreeFont(24, FONT_24);
+        loadRifficFreeFont(30, FONT_30);
         loadRifficFreeFont(20, FONT_20);
         loadRifficFreeFont(16, FONT_16);
         loadRifficFreeFont(14, FONT_14);
