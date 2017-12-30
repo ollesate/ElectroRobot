@@ -117,7 +117,7 @@ public class ThemedUi {
             public Theme build() {
                 Color fontColor = lightTheme ? Color.BLACK : Color.WHITE;
                 Color backgroundColor = lightTheme ? Color.WHITE : Color.BLACK;
-                BitmapFont bitmapFont = Fonts.get(Fonts.FONT_30);
+                BitmapFont bitmapFont = Fonts.get(Fonts.FONT_24);
                 Drawable selection = new BackgroundDrawable(accent);
                 Drawable background = new BackgroundDrawable(backgroundColor);
 

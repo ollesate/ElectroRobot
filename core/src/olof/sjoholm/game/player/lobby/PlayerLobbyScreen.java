@@ -122,9 +122,9 @@ public class PlayerLobbyScreen extends PlayerScreen {
                     dialog.setListener(new IpAddressDialog.DialogListener() {
                         @Override
                         public void onAccept(String ipAddress) {
+                            AppPrefs.setLastIpAddress(ipAddress);
                             connect(ipAddress);
                             dialog.dismiss();
-                            AppPrefs.setLastIpAddress(ipAddress);
                         }
 
                         @Override
@@ -182,10 +182,12 @@ public class PlayerLobbyScreen extends PlayerScreen {
                             textField.setText("");
                         }
                     } else {
-                        unfocus(textField);
-                        Gdx.input.setOnscreenKeyboardVisible(false);
-                        if (textField.getText().equals("")) {
-                            textField.setText(hintText);
+                        if (textField.equals(getKeyboardFocus())) {
+                            unfocus(textField);
+                            Gdx.input.setOnscreenKeyboardVisible(false);
+                            if (textField.getText().equals("")) {
+                                textField.setText(hintText);
+                            }
                         }
                         if (isConnected()) {
                             if (justPressed) {

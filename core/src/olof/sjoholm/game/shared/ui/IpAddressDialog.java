@@ -1,5 +1,6 @@
 package olof.sjoholm.game.shared.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -48,7 +49,7 @@ public class IpAddressDialog extends Group {
                 if (IpAddressDialog.this.equals(hitActor)) {
                     remove();
                 }
-                return false;
+                return true;
             }
         });
     }
@@ -66,7 +67,7 @@ public class IpAddressDialog extends Group {
     protected void sizeChanged() {
         table.setX(getWidth() / 2, Align.center);
         table.setY(getHeight() / 2, Align.center);
-        table.setWidth(Math.min(getWidth() - GraphicsUtil.dpToPixels(128), 400));
+        table.setWidth(Math.min(getWidth() - GraphicsUtil.dpToPixels(32), GraphicsUtil.dpToPixels(400)));
     }
 
     private void addViews(Table table) {
