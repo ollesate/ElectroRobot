@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import olof.sjoholm.assets.Fonts;
+import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.PlaySet;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
@@ -93,7 +94,7 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
         currentCardIndex = -1;
 
         int round = 0;
-        while (PlaySet.hasMoreRounds(playSets, round)) {
+        while (PlaySet.hasMoreRounds(playSets, round) && round < Constants.CARDS_TO_PLAY) {
             RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + (round + 1));
             roundTitleActor.setHeight(GraphicsUtil.dpToPixels(50));
             addActor(roundTitleActor);

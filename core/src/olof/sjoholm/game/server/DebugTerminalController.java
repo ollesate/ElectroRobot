@@ -52,7 +52,7 @@ public class DebugTerminalController {
         if ("turn".equals(event.get(1))) {
             int cards;
             if (event.get(2) == null) {
-                cards = Constants.CARDS_TO_PLAY;
+                cards = Constants.CARDS_TO_DEAL;
             } else {
                 cards = event.getInt(2, -1);
             }

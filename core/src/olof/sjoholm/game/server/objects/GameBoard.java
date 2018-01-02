@@ -138,7 +138,8 @@ public class GameBoard extends Group implements EventListener {
         SequenceAction sequence = new SequenceAction();
         int round = 0;
         boolean hasMoreRounds = true;
-        while (hasMoreRounds) {
+        while (round < Constants.CARDS_TO_PLAY && hasMoreRounds) {
+            System.out.println("Round " + round + " of " + Constants.CARDS_TO_PLAY);
             hasMoreRounds = false;
 
             for (PlaySet playSet : playSets) {
@@ -155,11 +156,13 @@ public class GameBoard extends Group implements EventListener {
                 }
             }
 
-            System.out.println("Add all players shoot and etc");
-            sequence.addAction(new RunConveyorBeltAction());
-            sequence.addAction(new ShootLasersAction());
-            sequence.addAction(new AllPlayersShootAction());
-            sequence.addAction(new TouchCheckpointsAction());
+            if (hasMoreRounds) {
+                System.out.println("Add all players shoot and etc");
+                sequence.addAction(new RunConveyorBeltAction());
+                sequence.addAction(new ShootLasersAction());
+                sequence.addAction(new AllPlayersShootAction());
+                sequence.addAction(new TouchCheckpointsAction());
+            }
             round++;
         }
 
