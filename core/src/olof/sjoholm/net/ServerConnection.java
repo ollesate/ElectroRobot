@@ -17,8 +17,7 @@ import java.util.Set;
 import olof.sjoholm.utils.Logger;
 
 public final class ServerConnection implements NetClient.Listener {
-    public static final int PORT = 9129;
-    public static final String HOST_NAME = "olofsj.local";
+    public static final int PORT = 9123;
 
     private static ServerConnection instance;
 
@@ -105,7 +104,7 @@ public final class ServerConnection implements NetClient.Listener {
         Logger.d("connect");
 
         if (serverSocket == null) {
-            serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, HOST_NAME, PORT, null);
+            serverSocket = Gdx.net.newServerSocket(Net.Protocol.TCP, hostName, PORT, null);
         }
 
         if (loopingThread != null && loopingThread.isRunning()) {
