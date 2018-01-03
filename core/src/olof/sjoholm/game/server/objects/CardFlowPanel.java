@@ -14,6 +14,7 @@ import java.util.List;
 import olof.sjoholm.assets.Fonts;
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.PlaySet;
+import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
 import olof.sjoholm.utils.GraphicsUtil;
@@ -21,7 +22,7 @@ import olof.sjoholm.utils.ui.objects.LinearLayout;
 import olof.sjoholm.utils.ui.TextureDrawable;
 import olof.sjoholm.assets.Textures;
 
-public class CardFlowPanel extends LinearLayout implements EventListener {
+public class CardFlowPanel extends LinearLayout implements EventListener, Turn.TurnListener {
     private List<CardActor> cardActors = new ArrayList<CardActor>();
     private int currentCardIndex = -1;
 
@@ -35,12 +36,12 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
 
         private final Label cardLabel;
         private boolean selected;
-        public CardActor(String player, String cardText, Color color) {
+        public CardActor(String title, String description, Color color) {
             backgroundColor = new Color(color);
             Label.LabelStyle style = new Label.LabelStyle(Fonts.get(Fonts.FONT_24), Color.BLACK);
-            nameLabel = new Label(player, style);
+            nameLabel = new Label(title, style);
             addActor(nameLabel);
-            cardLabel = new Label(cardText, style);
+            cardLabel = new Label(description, style);
             addActor(cardLabel);
             background = new TextureDrawable(Textures.BACKGROUND);
         }
@@ -87,27 +88,51 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
         }
     }
 
-    public void setTurn(List<PlaySet> playSets) {
+    public void setTurn(Turn turn) {
         clear();
         cardActors.clear();
 
         currentCardIndex = -1;
 
-        int round = 0;
-        while (PlaySet.hasMoreRounds(playSets, round) && round < Constants.CARDS_TO_PLAY) {
-            RoundTitleActor roundTitleActor = new RoundTitleActor("Round " + (round + 1));
-            roundTitleActor.setHeight(GraphicsUtil.dpToPixels(50));
-            addActor(roundTitleActor);
-            for (PlaySet playSet : playSets) {
-                if (playSet.hasRound(round)) {
-                    addPlayerAction(playSet.getPlayerToken(), playSet.getRound(round));
-                }
+        int roundCount = 0;
+        for (Turn.Round round : turn.getRounds()) {
+            addCard("Round " + (roundCount + 1), "", Color.WHITE);
+            for (Turn.Event event : round.getEvents()) {
+                addCard(event.title, event.description, event.color);
             }
-            addConveyorBeltAction();
-            addShootingAction();
-
-            round++;
+            roundCount++;
         }
+        turn.registerEventListener(this);
+    }
+
+    @Override
+    public void onEventStart(Turn.Event event) {
+        next();
+    }
+
+    @Override
+    public void onEventEnd(Turn.Event event) {
+
+    }
+
+    @Override
+    public void onTurnStart() {
+
+    }
+
+    @Override
+    public void onTurnFinished() {
+
+    }
+
+    @Override
+    public void onRoundStart() {
+        next();
+    }
+
+    @Override
+    public void onRoundFinished() {
+
     }
 
     public void addPlayerAction(PlayerToken token, BoardAction boardAction) {
@@ -142,6 +167,13 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
         cardActors.add(cardActor);
     }
 
+    private void addCard(String title, String description, Color color) {
+        CardActor cardActor = new CardActor(title, description, color);
+        cardActor.setHeight(GraphicsUtil.dpToPixels(50));
+        addActor(cardActor);
+        cardActors.add(cardActor);
+    }
+
     public void next() {
         if (cardActors.size() <= currentCardIndex + 1) {
             return;
@@ -155,21 +187,8 @@ public class CardFlowPanel extends LinearLayout implements EventListener {
 
     @Override
     public boolean handle(Event event) {
-        if (event instanceof GameBoard.TurnStartEvent) {
-            setTurn(((GameBoard.TurnStartEvent) event).playSets);
-        } else if (event instanceof GameBoard.TurnFinishedEvent) {
 
-        } else if (event instanceof GameBoard.AllPlayersShootEvent) {
-            next();
-        } else if (event instanceof GameBoard.RunConveyorBeltEvent) {
-            next();
-        } else if (event instanceof GameBoard.RunLasersEvent) {
-
-        } else if (event instanceof OnStartActionEvent) {
-            next();
-        } else if (event instanceof OnEndActionEvent) {
-
-        }
         return false;
     }
+
 }

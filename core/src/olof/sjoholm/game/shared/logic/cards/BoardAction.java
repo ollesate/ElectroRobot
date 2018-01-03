@@ -21,5 +21,4 @@ public abstract class BoardAction implements Serializable {
     public int getId() {
         return id;
     }
-
 }

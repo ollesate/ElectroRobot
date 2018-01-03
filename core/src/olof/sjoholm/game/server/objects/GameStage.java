@@ -12,9 +12,11 @@ import olof.sjoholm.configuration.Constants;
 
 public class GameStage extends Stage {
     private GameBoard gameBoard;
+    private final CardFlowPanel cardFlowPanel;
 
-    public GameStage(GameBoard gameBoard) {
+    public GameStage(GameBoard gameBoard, CardFlowPanel cardFlowPanel) {
         this.gameBoard = gameBoard;
+        this.cardFlowPanel = cardFlowPanel;
         int width = Constants.WORLD_WIDTH;
         int height = Constants.WORLD_HEIGHT;
         OrthographicCamera camera = new OrthographicCamera(0, 0);
@@ -30,5 +32,9 @@ public class GameStage extends Stage {
 
     public GameBoard getGameBoard() {
         return gameBoard;
+    }
+
+    public CardFlowPanel getCardFlowPanel() {
+        return cardFlowPanel;
     }
 }

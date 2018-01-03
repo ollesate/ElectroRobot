@@ -4,19 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import olof.sjoholm.assets.Fonts;
@@ -24,14 +19,10 @@ import olof.sjoholm.configuration.Config;
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.Levels;
 import olof.sjoholm.game.server.logic.PlaySet;
-import olof.sjoholm.game.server.logic.PlayerAction;
-import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.server.objects.CardFlowPanel;
-import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.EventLog;
 import olof.sjoholm.game.server.objects.GameBoard;
 import olof.sjoholm.game.server.objects.GameBoard.AllPlayersShootEvent;
-import olof.sjoholm.game.server.objects.GameBoardActor;
 import olof.sjoholm.game.server.objects.GameStage;
 import olof.sjoholm.game.server.objects.OnEndActionEvent;
 import olof.sjoholm.game.server.objects.OnStartActionEvent;
@@ -39,12 +30,9 @@ import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.UiStage;
 import olof.sjoholm.game.shared.logic.CardGenerator;
-import olof.sjoholm.game.shared.logic.Movement;
-import olof.sjoholm.game.shared.logic.Rotation;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
 import olof.sjoholm.utils.Logger;
-import olof.sjoholm.utils.NumberUtils;
 import olof.sjoholm.utils.ui.objects.LabelActor;
 
 public class ServerGameScreen extends ScreenAdapter implements EventListener {
@@ -54,7 +42,6 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
     private boolean paused;
     private final GameBoard gameBoard;
     private final CardFlowPanel cardFlowPanel;
-    private Turn currentTurn;
     private final EventLog eventLog;
     private final Terminal terminal;
     private final LabelActor hostLabel;
@@ -71,14 +58,14 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
         float tileSize = Constants.STEP_SIZE;
         uiStage = new UiStage();
         gameBoard = new GameBoard((int) tileSize);
-        gameStage = new GameStage(gameBoard);
+        cardFlowPanel = new CardFlowPanel();
+        gameStage = new GameStage(gameBoard, cardFlowPanel);
         gameBoard.loadMap(Levels.level1());
         gameBoard.addListener(this);
 
         gameStage.addActor(gameBoard);
 
-        cardFlowPanel = new CardFlowPanel();
-        cardFlowPanel.setDebug(true);
+
         uiStage.addActor(cardFlowPanel);
         gameStage.addListener(cardFlowPanel); // Listen to start card events
 
@@ -119,7 +106,7 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
             public boolean handle(Event event) {
                 if (event instanceof TerminalEvent) {
                     TerminalEvent terminalEvent = (TerminalEvent) event;
-                    new DebugTerminalController(gameBoard, terminal).handleEvent(terminalEvent);
+                    new DebugTerminalController(gameStage, terminal).handleEvent(terminalEvent);
                 }
                 return false;
             }
@@ -270,14 +257,6 @@ public class ServerGameScreen extends ScreenAdapter implements EventListener {
             if (player != null) { // We may be testing
                 player.onCardDeactivated(endEvent.boardAction);
             }
-
-            /*
-            // TODO: implement again
-            if (currentTurn.isLastOfRound(endEvent.boardAction)) {
-                int currentRound = currentTurn.getRoundOf(endEvent.boardAction);
-                eventLog.addEventText("Round " + (currentRound + 1), 4f);
-            }
-             */
         } else if (event instanceof AllPlayersShootEvent) {
             // TODO: reimplement
 //            cardFlowPanel.next();

@@ -22,10 +22,12 @@ import olof.sjoholm.game.server.logic.Direction;
 import olof.sjoholm.game.server.logic.Levels.Level;
 import olof.sjoholm.game.server.logic.PlaySet;
 import olof.sjoholm.game.server.logic.TileType;
+import olof.sjoholm.game.server.logic.Turn;
 import olof.sjoholm.game.server.server_logic.Checkpoints;
 import olof.sjoholm.game.server.server_logic.Player;
 import olof.sjoholm.game.shared.logic.cards.BoardAction;
 import olof.sjoholm.game.shared.objects.PlayerToken;
+import olof.sjoholm.utils.Logger;
 import olof.sjoholm.utils.actions.FireEventAction;
 
 public class GameBoard extends Group implements EventListener {
@@ -170,6 +172,37 @@ public class GameBoard extends Group implements EventListener {
         addAction(sequence);
 
         fire(new TurnStartEvent(playSets));
+    }
+
+    public void playTurn(Turn turn) {
+        addAction(turn.getSequence());
+    }
+
+    public Turn buildTurn(List<PlaySet> playSets) {
+        Logger.d("Build turn");
+        Turn.Builder turn = new Turn.Builder();
+        List<PlayerToken> playerTokens = getActors(PlayerToken.class);
+        if (playerTokens.isEmpty()) {
+            turn.build();
+        }
+
+        for (int i = 0; i < Constants.CARDS_TO_PLAY; i++) {
+            Logger.d("Build round " + (i + 1));
+            Turn.Round.Builder roundBuilder = turn.addRound();
+            for (PlaySet playSet : playSets) {
+                BoardAction boardAction = playSet.getRound(i);
+                PlayerToken playerToken = playSet.getPlayerToken();
+                Logger.d("Add to round " + boardAction);
+                roundBuilder.addEvent(new Turn.BoardActionEvent(boardAction, playerToken));
+            }
+            roundBuilder.addEvent(new Turn.Event(new RunConveyorBeltAction(), "Run belts"));
+            roundBuilder.addEvent(new Turn.Event(Actions.sequence(
+                    new ShootLasersAction(),
+                    new AllPlayersShootAction(),
+                    new TouchCheckpointsAction()
+            ), "Lasers and missiles"));
+        }
+        return turn.build();
     }
 
     @Override

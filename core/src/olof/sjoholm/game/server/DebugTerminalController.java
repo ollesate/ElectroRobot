@@ -11,9 +11,12 @@ import java.util.List;
 
 import olof.sjoholm.configuration.Constants;
 import olof.sjoholm.game.server.logic.PlaySet;
+import olof.sjoholm.game.server.logic.Turn;
+import olof.sjoholm.game.server.objects.CardFlowPanel;
 import olof.sjoholm.game.server.objects.CheckpointActor;
 import olof.sjoholm.game.server.objects.ConveyorBelt;
 import olof.sjoholm.game.server.objects.GameBoard;
+import olof.sjoholm.game.server.objects.GameStage;
 import olof.sjoholm.game.server.objects.Laser;
 import olof.sjoholm.game.server.objects.Terminal;
 import olof.sjoholm.game.shared.logic.CardGenerator;
@@ -24,10 +27,12 @@ import olof.sjoholm.utils.NumberUtils;
 
 public class DebugTerminalController {
     private final GameBoard gameBoard;
+    private final CardFlowPanel flowPanel;
     private final Terminal terminal;
 
-    public DebugTerminalController(GameBoard gameBoard, Terminal terminal) {
-        this.gameBoard = gameBoard;
+    public DebugTerminalController(GameStage gameStage, Terminal terminal) {
+        this.gameBoard = gameStage.getGameBoard();
+        this.flowPanel = gameStage.getCardFlowPanel();
         this.terminal = terminal;
     }
 
@@ -68,7 +73,9 @@ public class DebugTerminalController {
             for (PlayerToken token : actors) {
                 playSets.add(new PlaySet(token, CardGenerator.generateList(cards)));
             }
-            gameBoard.playTurn(playSets);
+            Turn turn = gameBoard.buildTurn(playSets);
+            gameBoard.playTurn(turn);
+            flowPanel.setTurn(turn);
         }
     }
 

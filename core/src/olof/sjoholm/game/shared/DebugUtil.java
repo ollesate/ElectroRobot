@@ -5,18 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import olof.sjoholm.game.shared.logic.cards.BoardAction;
-import olof.sjoholm.game.shared.logic.CardGenerator;
-import olof.sjoholm.game.server.logic.Turn;
-import olof.sjoholm.game.server.logic.PlayerAction;
 import olof.sjoholm.game.server.server_logic.Player;
-import olof.sjoholm.configuration.Constants;
 
 public class DebugUtil {
-
-    public static Turn generateTurns(List<Player> players) {
-        return null;
-    }
 
     public static Player getPlayer(int i) {
         List<String> names = new ArrayList<String>();
